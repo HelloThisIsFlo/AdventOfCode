@@ -1,6 +1,9 @@
+import pytest
+
 from day1 import Day1
 
 
+@pytest.mark.skip
 def test_day_1():
     input_as_string = """\
 +13
@@ -991,4 +994,7 @@ def test_day_1():
 -76719
 """
     day1 = Day1(input_as_string)
-    result = day1.solve()
+    part1 = day1.solve_part_1()
+    part2 = day1.solve_part_2()
+    print(part1)
+    print(part2)
