@@ -1,10 +1,19 @@
 import pytest
 
-from day1 import Day1
+from solutions import Day1
 
 
-@pytest.mark.skip
-def test_day_1():
+def solve_and_print_result(day_class, input_as_string):
+    day = day_class(input_as_string)
+    part1 = day.solve_part_1()
+    part2 = day.solve_part_2()
+    print('')
+    print(f'{day_class.__name__}.1: {part1}')
+    print(f'{day_class.__name__}.2: {part2}')
+
+
+# @pytest.mark.skip
+def test_solve_day_1():
     input_as_string = """\
 +13
 -12
@@ -993,8 +1002,4 @@ def test_day_1():
 +3
 -76719
 """
-    day1 = Day1(input_as_string)
-    part1 = day1.solve_part_1()
-    part2 = day1.solve_part_2()
-    print(part1)
-    print(part2)
+    solve_and_print_result(Day1, input_as_string)

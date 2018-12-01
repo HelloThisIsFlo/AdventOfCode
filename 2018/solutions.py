@@ -64,7 +64,8 @@ class Day1(Day):
     def __init__(self, input_as_string: str):
         super().__init__(input_as_string)
 
-        self.traversed_frequencies = [0]
+        self.initial_freq = 0
+        self.traversed_frequencies = {self.initial_freq}
         self.changes = []
 
     def solve_part_1(self):
@@ -86,6 +87,7 @@ class Day1(Day):
             if traversed_frequency in self.traversed_frequencies:
                 first_frequency_reached_twice = traversed_frequency
                 return first_frequency_reached_twice
+            self.traversed_frequencies.add(traversed_frequency)
 
         raise ValueError(f"Shouldn't happen | Traversed frequencies: {self.traversed_frequencies}")
 
@@ -97,11 +99,10 @@ class Day1(Day):
         self.changes = list(all_changes())
 
     def _traverse_frequencies(self):
+        freq = self.initial_freq
         for change in itertools.cycle(self.changes):
-            last_freq = self.traversed_frequencies[-1]
-            new_freq = last_freq + change
-            yield new_freq
-            self.traversed_frequencies.append(new_freq)
+            freq += change
+            yield freq
 
     @staticmethod
     def _parse_line(line) -> int:

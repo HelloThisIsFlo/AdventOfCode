@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="98033895-bf27-4226-b1b2-98b8dd95c28d" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/day1.py" beforeDir="false" afterPath="$PROJECT_DIR$/day1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_day1.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_day1.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test_tdd.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day1.py" beforeDir="false" afterPath="$PROJECT_DIR$/solutions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_day1.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/test_run_solutions.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_run_solutions.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -13,7 +15,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/2018$All_tests.coverage" NAME="All tests Coverage Results" MODIFIED="1543666435309" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/2018$All_tests.coverage" NAME="All tests Coverage Results" MODIFIED="1543668643425" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2018$pytest_in_2018.coverage" NAME="Run Solution - Marked by 'to_run' Coverage Results" MODIFIED="1543662984636" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
@@ -21,10 +23,10 @@
       <split-first>
         <leaf>
           <file pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/day1.py">
+            <entry file="file://$PROJECT_DIR$/solutions.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="570">
-                  <caret line="94" column="43" selection-start-line="94" selection-start-column="43" selection-end-line="94" selection-end-column="43" />
+                <state relative-caret-position="495">
+                  <caret line="89" selection-start-line="89" selection-end-line="89" />
                   <folding>
                     <element signature="e#0#16#0" expanded="true" />
                     <element signature="e#342#1502#1" />
@@ -38,37 +40,37 @@
       <split-second>
         <leaf>
           <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/day1.py">
+            <entry file="file://$PROJECT_DIR$/solutions.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="615">
-                  <caret line="91" selection-start-line="91" selection-end-line="91" />
+                <state relative-caret-position="589">
+                  <caret line="93" selection-start-line="93" selection-end-line="93" />
                   <folding>
-                    <element signature="e#0#9#0" expanded="true" />
+                    <element signature="e#0#16#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
             </entry>
           </file>
           <file pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/test_run_solutions.py">
+            <entry file="file://$PROJECT_DIR$/test_tdd.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="75">
-                  <caret line="5" column="16" selection-start-line="5" selection-start-column="16" selection-end-line="5" selection-end-column="16" />
+                <state relative-caret-position="-46">
+                  <caret line="5" column="66" selection-start-line="5" selection-start-column="66" selection-end-line="5" selection-end-column="66" />
                   <folding>
-                    <element signature="e#0#13#0" expanded="true" />
-                    <element signature="e#90#3664#0" />
+                    <element signature="e#0#27#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
             </entry>
           </file>
           <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/test_day1.py">
+            <entry file="file://$PROJECT_DIR$/test_run_solutions.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="540">
-                  <caret line="45" selection-start-line="45" selection-end-line="45" />
+                <state relative-caret-position="255">
+                  <caret line="1004" selection-start-line="1004" selection-end-line="1004" />
                   <folding>
-                    <element signature="e#0#27#0" expanded="true" />
+                    <element signature="e#0#13#0" expanded="true" />
+                    <element signature="e#373#3947#0" />
                   </folding>
                 </state>
               </provider>
@@ -92,9 +94,11 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/day_1.py" />
-        <option value="$PROJECT_DIR$/test_day1.py" />
         <option value="$PROJECT_DIR$/day1.py" />
+        <option value="$PROJECT_DIR$/test_day1.py" />
+        <option value="$PROJECT_DIR$/test_tdd.py" />
         <option value="$PROJECT_DIR$/test_run_solutions.py" />
+        <option value="$PROJECT_DIR$/solutions.py" />
       </list>
     </option>
   </component>
@@ -151,44 +155,52 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1543662482908</updated>
-      <workItem from="1543662486139" duration="3791000" />
+      <workItem from="1543662486139" duration="5861000" />
     </task>
+    <task id="LOCAL-00001" summary="Solve Day 1 - Part 1 &amp; 2">
+      <created>1543666476140</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1543666476140</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="All_tests - 2018.12.01 at 12h 02m 28s.xml">
+    <history-entry file="All_tests - 2018.12.01 at 12h 48m 51s.xml">
       <configuration name="All tests" configurationId="tests" />
     </history-entry>
-    <history-entry file="All_tests - 2018.12.01 at 12h 02m 31s.xml">
+    <history-entry file="All_tests - 2018.12.01 at 12h 48m 56s.xml">
       <configuration name="All tests" configurationId="tests" />
     </history-entry>
-    <history-entry file="All_tests - 2018.12.01 at 12h 02m 35s.xml">
+    <history-entry file="All_tests - 2018.12.01 at 12h 49m 05s.xml">
       <configuration name="All tests" configurationId="tests" />
     </history-entry>
-    <history-entry file="All_tests - 2018.12.01 at 12h 04m 04s.xml">
+    <history-entry file="All_tests - 2018.12.01 at 12h 49m 12s.xml">
       <configuration name="All tests" configurationId="tests" />
     </history-entry>
-    <history-entry file="All_tests - 2018.12.01 at 12h 04m 12s.xml">
+    <history-entry file="All_tests - 2018.12.01 at 12h 49m 26s.xml">
       <configuration name="All tests" configurationId="tests" />
     </history-entry>
-    <history-entry file="All_tests - 2018.12.01 at 12h 04m 31s.xml">
+    <history-entry file="All_tests - 2018.12.01 at 12h 49m 43s.xml">
       <configuration name="All tests" configurationId="tests" />
     </history-entry>
-    <history-entry file="All_tests - 2018.12.01 at 12h 08m 20s.xml">
+    <history-entry file="All_tests - 2018.12.01 at 12h 49m 45s.xml">
       <configuration name="All tests" configurationId="tests" />
     </history-entry>
-    <history-entry file="All_tests - 2018.12.01 at 12h 09m 29s.xml">
+    <history-entry file="All_tests - 2018.12.01 at 12h 49m 50s.xml">
       <configuration name="All tests" configurationId="tests" />
     </history-entry>
-    <history-entry file="All_tests - 2018.12.01 at 12h 10m 07s.xml">
+    <history-entry file="All_tests - 2018.12.01 at 12h 50m 32s.xml">
       <configuration name="All tests" configurationId="tests" />
     </history-entry>
-    <history-entry file="All_tests - 2018.12.01 at 12h 11m 18s.xml">
+    <history-entry file="All_tests - 2018.12.01 at 12h 50m 35s.xml">
       <configuration name="All tests" configurationId="tests" />
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3791000" />
+    <option name="totallyTimeSpent" value="5861000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="2560" height="1440" extended-state="0" />
@@ -220,34 +232,48 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Solve Day 1 - Part 1 &amp; 2" />
+    <option name="LAST_COMMIT_MESSAGE" value="Solve Day 1 - Part 1 &amp; 2" />
+  </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/test_day1.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="540">
-          <caret line="45" selection-start-line="45" selection-end-line="45" />
+        <state>
           <folding>
             <element signature="e#0#27#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/day1.py">
+    <entry file="file://$PROJECT_DIR$/test_run_solutions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="615">
-          <caret line="91" selection-start-line="91" selection-end-line="91" />
+        <state relative-caret-position="255">
+          <caret line="1004" selection-start-line="1004" selection-end-line="1004" />
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
+            <element signature="e#0#13#0" expanded="true" />
+            <element signature="e#373#3947#0" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test_run_solutions.py">
+    <entry file="file://$PROJECT_DIR$/test_tdd.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="16" selection-start-line="5" selection-start-column="16" selection-end-line="5" selection-end-column="16" />
+        <state relative-caret-position="-46">
+          <caret line="5" column="66" selection-start-line="5" selection-start-column="66" selection-end-line="5" selection-end-column="66" />
           <folding>
-            <element signature="e#0#13#0" expanded="true" />
-            <element signature="e#90#3664#0" />
+            <element signature="e#0#27#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/solutions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="89" selection-start-line="89" selection-end-line="89" />
+          <folding>
+            <element signature="e#0#16#0" expanded="true" />
+            <element signature="e#342#1502#1" />
           </folding>
         </state>
       </provider>
