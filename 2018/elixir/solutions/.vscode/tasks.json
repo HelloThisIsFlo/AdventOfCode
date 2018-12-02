@@ -28,8 +28,7 @@
             "command": "mix",
             "args": [
                 "test.watch",
-                "--color",
-                "--trace"
+                "--color"
             ],
             "options": {
                 "cwd": "${workspaceRoot}",
