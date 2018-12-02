@@ -10,6 +10,12 @@ def solve_and_print_result(day_class):
     print(f'{day_class.__name__}.2: {part2}')
 
 
+def test_print_intro():
+    print('')
+    print('Solutions to Advent of Code 2018')
+    print('--------------------------------')
+
+
 def test_solve_day_1():
     solve_and_print_result(Day1)
 
