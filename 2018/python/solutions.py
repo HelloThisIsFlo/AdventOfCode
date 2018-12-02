@@ -16,7 +16,7 @@ class Day(metaclass=ABCMeta):
             return problem_input_file_name
 
         def read_file(file_name) -> str:
-            file_path = Path('./inputs') / file_name
+            file_path = Path('../inputs') / file_name
             with file_path.open('r') as file:
                 return file.read()
 

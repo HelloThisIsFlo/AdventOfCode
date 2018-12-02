@@ -7,4 +7,13 @@ defmodule Solution.Day1Test do
       +1
     """)
   end
+
+  test "Multiple Changes" do
+    assert "85" == Day1.solve_part_1("""
+      +1
+      +1
+      -44
+      +127
+    """)
+  end
 end

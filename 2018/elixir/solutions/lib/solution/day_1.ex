@@ -52,6 +52,7 @@ defmodule Solution.Day1 do
 
   def solve_part_2(input_as_string) do
     input_as_string
+    ""
   end
 
   defp parse_changes(input_as_string) do

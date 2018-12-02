@@ -13,18 +13,45 @@ defmodule RunSolutions do
       |> Atom.to_string()
       |> String.capitalize()
 
-    day_module_full_name = String.to_existing_atom("Elixir.Solution." <> module_as_string)
+    day_module_full_name =
+      "Elixir.Solution."
+      |> Kernel.<>(module_as_string)
+      |> String.to_existing_atom()
+
+    input_as_string = read_input_for(day_module)
 
     IO.puts("")
-    IO.puts("#{module_as_string}.1: " <> apply(day_module_full_name, :solve_part_1, []))
-    IO.puts("#{module_as_string}.2: " <> apply(day_module_full_name, :solve_part_2, []))
+
+    IO.puts(
+      "#{module_as_string}.1: " <> apply(day_module_full_name, :solve_part_1, [input_as_string])
+    )
+
+    IO.puts(
+      "#{module_as_string}.2: " <> apply(day_module_full_name, :solve_part_2, [input_as_string])
+    )
   end
 
-  @tag :skip
   test "Solve All" do
     [
       :day1,
-      :day2,
-    ] |> Enum.each(&solve_and_print_solution/1)
+      :day2
+    ]
+    |> Enum.each(&solve_and_print_solution/1)
+  end
+
+  def read_input_for(day_module) do
+    file_name =
+      day_module
+      |> Atom.to_string()
+      |> String.downcase()
+      |> Kernel.<>(".txt")
+
+    "../../inputs/"
+    |> Path.join(file_name)
+    |> File.read!()
+  end
+
+  test "open file" do
+    read_input_for(:day1)
   end
 end
