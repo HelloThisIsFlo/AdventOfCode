@@ -135,3 +135,77 @@ class Day1(Day):
             return -digit
         else:
             raise ValueError("Parsing error!")
+
+
+class Day2(Day):
+    """
+    --- Part One ---
+    To make sure you didn't miss any, you scan the likely candidate boxes again, counting the number
+    that have an ID containing exactly two of any letter and then separately counting those with
+    exactly three of any letter. You can multiply those two counts together to get a rudimentary
+    checksum and compare it to what your device predicts.
+
+    For example, if you see the following box IDs:
+
+    'abcdef' contains no letters that appear exactly two or three times.
+    'bababc' contains two a and three b, so it counts for both.
+    'abbcde' contains two b, but no letter appears exactly three times.
+    'abcccd' contains three c, but no letter appears exactly two times.
+    'aabcdd' contains two a and two d, but it only counts once.
+    'abcdee' contains two e.
+    'ababab' contains three a and three b, but it only counts once.
+
+    Of these box IDs, four of them contain a letter which appears exactly twice, and three of
+    them contain a letter which appears exactly three times. Multiplying these together produces
+    a checksum of 4 * 3 = 12.
+
+    What is the checksum for your list of box IDs?
+
+
+    --- Part Two ---
+    """
+
+    def __init__(self, input_as_string: str):
+        super().__init__(input_as_string)
+        self.box_names = self._parse_box_names()
+        self.number_of_boxes_with_duplicates = 0
+        self.number_of_boxes_with_triplicates = 0
+
+    def solve_part_1(self):
+        """
+        Checksum:
+        - Find number of boxes with duplicate letters
+        - Find number of boxes with triplicate letters
+        - Multiply these numbers
+        """
+
+        self._count_box_names_with_duplicates_and_triplicates()
+        checksum = self.number_of_boxes_with_duplicates * self.number_of_boxes_with_triplicates
+        return checksum
+
+    def solve_part_2(self):
+        pass
+
+    def _parse_box_names(self):
+        return self._input.splitlines()
+
+    def _count_box_names_with_duplicates_and_triplicates(self):
+        for name in self.box_names:
+            if self._contains_exactly(2).occurrences_of_any_letters(name):
+                self.number_of_boxes_with_duplicates += 1
+            if self._contains_exactly(3).occurrences_of_any_letters(name):
+                self.number_of_boxes_with_triplicates += 1
+
+    @staticmethod
+    def _contains_exactly(number_of_occurrences):
+        class Wrapper:
+            @staticmethod
+            def occurrences_of_any_letters(name):
+                from collections import Counter
+                count_of_appearance_for_each_letter = Counter(name)
+                if number_of_occurrences in count_of_appearance_for_each_letter.values():
+                    return True
+                else:
+                    return False
+
+        return Wrapper()

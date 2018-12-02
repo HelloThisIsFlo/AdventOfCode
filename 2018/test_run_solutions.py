@@ -1,4 +1,4 @@
-from solutions import Day1, Day
+from solutions import Day1, Day, Day2
 
 
 def solve_and_print_result(day_class):
@@ -10,6 +10,9 @@ def solve_and_print_result(day_class):
     print(f'{day_class.__name__}.2: {part2}')
 
 
-# @pytest.mark.skip
 def test_solve_day_1():
     solve_and_print_result(Day1)
+
+
+def test_solve_day_2():
+    solve_and_print_result(Day2)
