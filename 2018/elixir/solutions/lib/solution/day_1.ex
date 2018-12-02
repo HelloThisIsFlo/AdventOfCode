@@ -43,6 +43,9 @@ defmodule Solution.Day1 do
   """
   @behaviour Solution
 
+  @doc """
+  The result is simply the sum of all frequency changes.
+  """
   def solve_part_1(input_as_string) do
     input_as_string
     |> parse_changes()
@@ -50,9 +53,49 @@ defmodule Solution.Day1 do
     |> Integer.to_string()
   end
 
+  @doc """
+  While probably not the most optimized solution a simple implementation would be to
+  keep track of all traversed frequencies, and each time a new frequency is reached,
+  check the list to see if the frequency was already there.
+  """
   def solve_part_2(input_as_string) do
     input_as_string
-    ""
+    |> parse_changes()
+    |> find_frequency_reached_twice()
+    |> Integer.to_string()
+  end
+
+  defp find_frequency_reached_twice(changes) do
+    do_find_frequency_reached_twice(0, MapSet.new(), changes, changes)
+  end
+
+  defp do_find_frequency_reached_twice(
+         current_freq,
+         traversed_freq,
+         changes_to_apply,
+         all_changes
+       )
+
+  defp do_find_frequency_reached_twice(current_freq, traversed_freq, [], all_changes) do
+    do_find_frequency_reached_twice(current_freq, traversed_freq, all_changes, all_changes)
+  end
+
+  defp do_find_frequency_reached_twice(
+         current_freq,
+         traversed_freq,
+         [next_change | rest_of_changes_to_apply],
+         all_changes
+       ) do
+    if Enum.member?(traversed_freq, current_freq) do
+      current_freq
+    else
+      do_find_frequency_reached_twice(
+        current_freq + next_change,
+        MapSet.put(traversed_freq, current_freq),
+        rest_of_changes_to_apply,
+        all_changes
+      )
+    end
   end
 
   defp parse_changes(input_as_string) do
