@@ -109,3 +109,19 @@ class TestDay2:
                     ababab
                 """,
                 expected_solution=12)
+
+    class TestPart2:
+        def test_example_from_the_problem_statement(self):
+            # No duplicate
+            assert_solution_part_2(
+                Day2,
+                given_input="""\
+                    abcde
+                    fghij
+                    klmno
+                    pqrst
+                    fguij
+                    axcye
+                    wvxyz
+                """,
+                expected_solution='fgij')

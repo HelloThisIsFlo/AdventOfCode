@@ -163,6 +163,26 @@ class Day2(Day):
 
 
     --- Part Two ---
+    Confident that your list of box IDs is complete, you're ready to find the boxes full of
+    prototype fabric.
+
+    The boxes will have IDs which differ by exactly one character at the same position in
+    both strings. For example, given the following box IDs:
+
+    abcde
+    fghij
+    klmno
+    pqrst
+    fguij
+    axcye
+    wvxyz
+
+    The IDs abcde and axcye are close, but they differ by two characters (the second and fourth).
+    However, the IDs fghij and fguij differ by exactly one character, the third (h and u). Those
+    must be the correct boxes.
+
+    What letters are common between the two correct box IDs? (In the example above, this is found
+    by removing the differing character from either ID, producing fgij.)
     """
 
     def __init__(self, input_as_string: str):
@@ -184,7 +204,49 @@ class Day2(Day):
         return checksum
 
     def solve_part_2(self):
-        pass
+        """
+        A simple solution would go as follow:
+        - For each box name:
+          - For each other box name:
+            - For each char:
+              if different, increase diff_counter
+              if diff_counter > 1, skip to next entry
+        """
+
+        def find_boxes_whose_names_differ_only_by_one_char():
+            def have_exactly_one_char_of_difference(name1, name2):
+                def have_at_most_one_char_of_difference():
+                    diff_counter = 0
+                    for char_in_name1, char_in_name2 in zip(name1, name2):
+                        if char_in_name1 != char_in_name2:
+                            diff_counter += 1
+                        if diff_counter > 1:
+                            return False
+                    return True
+
+                def are_not_equal():
+                    return name1 != name2
+
+                return are_not_equal() and have_at_most_one_char_of_difference()
+
+            for box in self.box_names:
+                all_other_boxes = self.box_names.copy()
+                all_other_boxes.remove(box)
+                for other_box in all_other_boxes:
+                    if have_exactly_one_char_of_difference(box, other_box):
+                        return box, other_box
+
+        def find_common_letters(name1, name2):
+            def common_letters():
+                for char_in_name1, char_in_name2 in zip(name1, name2):
+                    if char_in_name1 == char_in_name2:
+                        yield char_in_name1
+
+            common_letters_as_string = ''.join(common_letters())
+            return common_letters_as_string
+
+        prototype_box_1, prototype_box_2 = find_boxes_whose_names_differ_only_by_one_char()
+        return find_common_letters(prototype_box_1, prototype_box_2)
 
     def _parse_box_names(self):
         return self._input.splitlines()
