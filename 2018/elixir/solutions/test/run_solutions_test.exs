@@ -41,7 +41,8 @@ defmodule RunSolutions do
   test "Solve All" do
     [
       :day1,
-      :day2
+      :day2,
+      :day3,
     ]
     |> Enum.each(&solve_and_print_solution/1)
   end
