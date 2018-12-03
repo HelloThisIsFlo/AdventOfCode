@@ -31,19 +31,29 @@ defmodule Solution.Day2Test do
     test "Example from Problem Statement" do
       assert "12" ==
                Day2.solve_part_1("""
-                   abcdef
-                   bababc
-                   abbcde
-                   abcccd
-                   aabcdd
-                   abcdee
-                   ababab
+               abcdef
+               bababc
+               abbcde
+               abcccd
+               aabcdd
+               abcdee
+               ababab
                """)
     end
   end
 
   describe "Part 2" do
-    @tag :skip
-    test "todo 2"
+    test "Example from Problem Statement" do
+      assert "fgij" ==
+               Day2.solve_part_2("""
+               abcde
+               fghij
+               klmno
+               pqrst
+               fguij
+               axcye
+               wvxyz
+               """)
+    end
   end
 end

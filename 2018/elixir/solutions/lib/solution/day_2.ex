@@ -66,20 +66,8 @@ defmodule Solution.Day2 do
       |> Enum.filter(&has_triplicate_letters/1)
       |> Enum.count()
 
-    (num_of_boxes_with_duplicate_letters  * num_of_boxes_with_triplicate_letters)
+    (num_of_boxes_with_duplicate_letters * num_of_boxes_with_triplicate_letters)
     |> Integer.to_string()
-  end
-
-  @doc """
-  A simple solution would go as follow
-  - For each box name:
-    - For each other box name:
-      - For each char:
-        if different, increase diff_counter
-        if diff_counter > 1, skip to next entry
-  """
-  def solve_part_2(_input_as_string) do
-    ""
   end
 
   defp parse_box_names(input_as_string) do
@@ -99,5 +87,44 @@ defmodule Solution.Day2 do
     |> Enum.any?(fn {_char, occurences} ->
       occurences == expected_number_of_occurrences
     end)
+  end
+
+  @doc """
+  A simple solution would go as follow
+  - For each box name:
+    - For each other box name:
+      - For each char:
+        if different, increase diff_counter
+        if diff_counter > 1, skip to next entry
+  """
+  def solve_part_2(input_as_string) do
+    input_as_string
+    |> parse_box_names()
+    |> find_two_boxes_whose_names_differ_by_only_one_char()
+    |> find_common_letters()
+  end
+
+  defp find_two_boxes_whose_names_differ_by_only_one_char(box_names)
+  defp find_two_boxes_whose_names_differ_by_only_one_char([]), do: :not_found
+
+  defp find_two_boxes_whose_names_differ_by_only_one_char([first_box_name | rest_of_box_names]) do
+    case Enum.find(rest_of_box_names, &differ_by_exactly_one_char(first_box_name, &1)) do
+      nil -> find_two_boxes_whose_names_differ_by_only_one_char(rest_of_box_names)
+      matching_box -> {first_box_name, matching_box}
+    end
+  end
+
+  defp differ_by_exactly_one_char(name_1, name_2) do
+    length(String.codepoints(name_1) -- String.codepoints(name_2)) == 1
+  end
+
+  defp find_common_letters({box_1_name, box_2_name})
+       when is_list(box_1_name) and is_list(box_2_name) do
+    char_in_name_1_but_not_name_2 = box_1_name -- box_2_name
+    List.to_string(box_1_name -- char_in_name_1_but_not_name_2)
+  end
+
+  defp find_common_letters({box_1_name, box_2_name}) do
+    find_common_letters({String.codepoints(box_1_name), String.codepoints(box_2_name)})
   end
 end
