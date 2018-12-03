@@ -96,7 +96,6 @@ class TestDay2:
                 expected_solution=1)
 
         def test_example_from_the_problem_statement(self):
-            # No duplicate
             assert_solution_part_1(
                 Day2,
                 given_input="""\
