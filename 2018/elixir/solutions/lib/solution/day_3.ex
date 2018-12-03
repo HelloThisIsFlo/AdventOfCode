@@ -188,7 +188,8 @@ defmodule Solution.Day3 do
   def solve_part_2(input_as_string) do
     input_as_string
     |> parse_claims()
-    |> find_id_of_only_non_overlapping_claim()
+    # |> find_id_of_only_non_overlapping_claim()
+    |> find_id_of_only_non_overlapping_claim_v2()
     |> Integer.to_string()
   end
 
@@ -213,4 +214,16 @@ defmodule Solution.Day3 do
   end
 
   defp map_to_fabric_coordinates(%ClaimedCoordinates{coordinates: coordinates}), do: coordinates
+
+  defp find_id_of_only_non_overlapping_claim_v2(claimed_areas) do
+    ids_of_areas_with_coordinates_claimed_more_than_once =
+      claimed_areas
+      |> find_coordinates_claimed_more_than_once()
+      |> Enum.flat_map(&Map.get(&1, :claimed_by))
+      |> Enum.uniq()
+
+    claimed_areas
+    |> Enum.map(&Map.get(&1, :id))
+    |> Enum.find(&(not Enum.member?(ids_of_areas_with_coordinates_claimed_more_than_once, &1)))
+  end
 end
