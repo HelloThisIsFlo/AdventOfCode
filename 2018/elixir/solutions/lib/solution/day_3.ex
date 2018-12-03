@@ -43,6 +43,11 @@ defmodule Solution.Day3 do
 
 
   --- Part Two ---
+  Amidst the chaos, you notice that exactly one claim doesn't overlap by even a single square inch of fabric with any other claim. If you can somehow draw attention to it, maybe the Elves will be able to make Santa's suit after all!
+
+  For example, in the claims above, only claim 3 is intact after all claims are made.
+
+  What is the ID of the only claim that doesn't overlap?
   """
   alias __MODULE__.ClaimedArea
   alias __MODULE__.FabricCoordinates
@@ -120,6 +125,7 @@ defmodule Solution.Day3 do
   end
 
   @doc """
+  Solves: "How many square inches of fabric are within two or more claims?"
   """
   def solve_part_1(input_as_string) do
     input_as_string
@@ -137,10 +143,20 @@ defmodule Solution.Day3 do
 
   defp calculate_area_of_overlapping(claimed_areas) do
     claimed_areas
+    |> find_coordinates_claimed_more_than_once()
+    |> Enum.count()
+  end
+
+  defp find_coordinates_claimed_more_than_once(claimed_areas) do
+    claimed_areas
+    |> map_to_claimed_coordinates()
+    |> Enum.filter(&claimed_by_mode_than_one_person/1)
+  end
+
+  defp map_to_claimed_coordinates(claimed_areas) when is_list(claimed_areas) do
+    claimed_areas
     |> Enum.flat_map(&ClaimedArea.all_claimed_coordinates/1)
     |> merge_claims_at_each_coordinates()
-    |> Enum.filter(&claimed_by_mode_than_one_person/1)
-    |> Enum.count()
   end
 
   defp merge_claims_at_each_coordinates(claimed_coordinates) do
@@ -166,10 +182,35 @@ defmodule Solution.Day3 do
 
   defp claimed_by_mode_than_one_person(_), do: false
 
-
   @doc """
+  Solves: "What is the ID of the only claim that doesn't overlap?"
   """
-  def solve_part_2(_input_as_string) do
-    ""
+  def solve_part_2(input_as_string) do
+    input_as_string
+    |> parse_claims()
+    |> find_id_of_only_non_overlapping_claim()
+    |> Integer.to_string()
   end
+
+  defp find_id_of_only_non_overlapping_claim(claimed_areas) do
+    coordinates_claimed_more_than_once =
+      claimed_areas
+      |> find_coordinates_claimed_more_than_once()
+      |> Enum.map(&map_to_fabric_coordinates/1)
+
+    claimed_areas
+    |> Enum.find(fn claimed_area ->
+      contains_overlapping_coordinates? =
+        claimed_area
+        |> ClaimedArea.all_claimed_coordinates()
+        |> Enum.any?(fn %ClaimedCoordinates{coordinates: coordinates} ->
+          Enum.member?(coordinates_claimed_more_than_once, coordinates)
+        end)
+
+      not contains_overlapping_coordinates?
+    end)
+    |> Map.get(:id)
+  end
+
+  defp map_to_fabric_coordinates(%ClaimedCoordinates{coordinates: coordinates}), do: coordinates
 end

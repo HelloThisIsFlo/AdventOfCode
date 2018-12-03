@@ -61,17 +61,13 @@ defmodule Solution.Day3Test do
   end
 
   describe "Part 2" do
-    # test "Example from Problem Statement" do
-    #   assert "fgij" ==
-    #            Day3.solve_part_2("""
-    #            abcde
-    #            fghij
-    #            klmno
-    #            pqrst
-    #            fguij
-    #            axcye
-    #            wvxyz
-    #            """)
-    # end
+    test "Example from Problem Statement" do
+      assert "3" ==
+               Day3.solve_part_2("""
+               #1 @ 1,3: 4x4
+               #2 @ 3,1: 4x4
+               #3 @ 5,5: 2x2
+               """)
+    end
   end
 end
