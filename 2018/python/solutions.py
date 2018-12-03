@@ -1,5 +1,4 @@
 import itertools
-import re
 from abc import ABCMeta, abstractmethod
 from pathlib import Path
 
@@ -100,18 +99,16 @@ class Day1(Day):
         """
         self._parse_changes()
 
-        for traversed_frequency in self._traverse_frequencies():
-            if traversed_frequency in self.traversed_frequencies:
-                first_frequency_reached_twice = traversed_frequency
+        for current_frequency in self._traverse_frequencies():
+            if current_frequency in self.traversed_frequencies:
+                first_frequency_reached_twice = current_frequency
                 return first_frequency_reached_twice
-            self.traversed_frequencies.add(traversed_frequency)
-
-        raise ValueError(f"Shouldn't happen | Traversed frequencies: {self.traversed_frequencies}")
+            self.traversed_frequencies.add(current_frequency)
 
     def _parse_changes(self):
         def all_changes():
             for line in self._input.splitlines():
-                yield self._parse_line(line)
+                yield int(line)
 
         self.changes = list(all_changes())
 
@@ -120,21 +117,6 @@ class Day1(Day):
         for change in itertools.cycle(self.changes):
             freq += change
             yield freq
-
-    @staticmethod
-    def _parse_line(line) -> int:
-        regex = re.compile(r'([+-])(\d+)')
-        match = regex.match(line)
-
-        sign = match.group(1)
-        digit = int(match.group(2))
-
-        if sign == '+':
-            return digit
-        elif sign == '-':
-            return -digit
-        else:
-            raise ValueError("Parsing error!")
 
 
 class Day2(Day):
