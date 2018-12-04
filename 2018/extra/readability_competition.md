@@ -11,9 +11,13 @@ For each puzzle, the other must measure the amount of time to comprehension.
 
 ### Guidelines for measuring time
 * Timer must be started the second the code is being read, no "pre-glancing" allowed
-* Timer must be stopped after **90% comprehension**
-* **90% comprehension** is defined as the amount of comprehension that make you confident you could make changes to this code without breaking any test
+* Timer must be stopped after **80% comprehension**
 * Each Part is to be timed separately
+
+#### 80% Comprehension
+* **80% comprehension** is defined as the amount of comprehension that make you confident you could make changes to this code without breaking any test.
+* Whether or not making changes would _actually_ break tests is irrelevant
+* In a real codebase tests are here to catch you if a misunderstanding sneaked in these last 20%
 
 
 ## Results
