@@ -69,5 +69,14 @@ defmodule Solution.Day3Test do
                #3 @ 5,5: 2x2
                """)
     end
+
+    test "Old version" do
+      assert "3" ==
+               Day3.solve_part_2_old_version("""
+               #1 @ 1,3: 4x4
+               #2 @ 3,1: 4x4
+               #3 @ 5,5: 2x2
+               """)
+    end
   end
 end

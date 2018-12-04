@@ -188,12 +188,18 @@ defmodule Solution.Day3 do
   def solve_part_2(input_as_string) do
     input_as_string
     |> parse_claims()
-    # |> find_id_of_only_non_overlapping_claim()
-    |> find_id_of_only_non_overlapping_claim_v2()
+    |> find_id_of_only_non_overlapping_claim()
     |> Integer.to_string()
   end
 
-  defp find_id_of_only_non_overlapping_claim(claimed_areas) do
+  def solve_part_2_old_version(input_as_string) do
+    input_as_string
+    |> parse_claims()
+    |> find_id_of_only_non_overlapping_claim_old_version()
+    |> Integer.to_string()
+  end
+
+  defp find_id_of_only_non_overlapping_claim_old_version(claimed_areas) do
     coordinates_claimed_more_than_once =
       claimed_areas
       |> find_coordinates_claimed_more_than_once()
@@ -215,7 +221,7 @@ defmodule Solution.Day3 do
 
   defp map_to_fabric_coordinates(%ClaimedCoordinates{coordinates: coordinates}), do: coordinates
 
-  defp find_id_of_only_non_overlapping_claim_v2(claimed_areas) do
+  defp find_id_of_only_non_overlapping_claim(claimed_areas) do
     ids_of_areas_with_coordinates_claimed_more_than_once =
       claimed_areas
       |> find_coordinates_claimed_more_than_once()
