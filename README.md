@@ -13,7 +13,7 @@ If you get stuck on a particular problem, instead of reaching for the solution t
 
 ## Solutions
 
-* Solutions are classed by year, and then language.
+* Solutions are sorted by year, and then language.
 * Not all days are solved in all languages.
 * Solutions are usually optimized for readability 
 
