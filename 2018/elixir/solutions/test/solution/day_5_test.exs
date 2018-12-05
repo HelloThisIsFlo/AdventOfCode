@@ -43,12 +43,10 @@ defmodule Solution.Day5Test do
       """) == "0"
     end
 
-    @tag timeout: 3000
     @tag :skip
-    test "performance" do
+    test "Debug Performance" do
       from_file = File.read!("../../inputs/day5.txt")
       res = Day5.solve_part_1(from_file)
-      Enum.each(1..100, fn _ -> IO.puts(res) end)
     end
 
   end

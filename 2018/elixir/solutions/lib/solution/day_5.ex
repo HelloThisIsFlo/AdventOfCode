@@ -58,7 +58,6 @@ defmodule Solution.Day5 do
   end
 
   defp react_until_stable(to_react) do
-    # IO.puts("New pass: #{length(to_react)}")
     case do_react(to_react, []) do
       ^to_react -> to_react
       result_not_yet_stable -> react_until_stable(result_not_yet_stable)
@@ -68,13 +67,19 @@ defmodule Solution.Day5 do
   defp count_remaining_units(remaning_units) when is_list(remaning_units),
     do: length(remaning_units)
 
-  defp do_react([], reacted), do: reacted
-  defp do_react([last], reacted), do: reacted ++ [last]
+  # Note: For performance reasons, instead of appending each time to the reaction_result,
+  #       elements are prepended, and the result is reversed before being returned
+  #
+  #       In elixir lists are linked lists so:
+  #        - Appending takes linear time
+  #        - Prepending takes constant time
+  defp do_react([], reacted), do: Enum.reverse(reacted)
+  defp do_react([last], reacted), do: do_react([], [last | reacted])
   defp do_react([first | [second | all_but_first_two] = all_but_first], reacted) do
     if reacting?(first, second) do
       do_react(all_but_first_two, reacted)
     else
-      do_react(all_but_first, reacted ++ [first])
+      do_react(all_but_first, [first | reacted])
     end
   end
 
