@@ -1,3 +1,3 @@
 #!/bin/bash
 
-mix test --include skip
+mix test --include skip --trace
