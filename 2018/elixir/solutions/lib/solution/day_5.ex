@@ -1,5 +1,6 @@
 defmodule Solution.Day5 do
   require Logger
+
   @moduledoc """
   --- Part One ---
   You've managed to sneak in to the prototype suit manufacturing lab.
@@ -109,13 +110,14 @@ defmodule Solution.Day5 do
   end
 
   defp reacting?(unit_1, unit_2) do
-    different_case?(unit_1, unit_2) and same_letter?(unit_1, unit_2)
+    same_type?(unit_1, unit_2) and different_polarity?(unit_1, unit_2)
   end
 
-  defp different_case?(char_1, char_2),
+  defp different_polarity?(char_1, char_2),
     do: (downcase?(char_1) and not downcase?(char_2)) or (upcase?(char_1) and not upcase?(char_2))
-  defp same_letter?(char_1, char_2),
+  defp same_type?(char_1, char_2),
     do: String.upcase(char_1) == String.upcase(char_2)
+
   defp downcase?(char),
     do: String.downcase(char) == char
   defp upcase?(char),
@@ -126,7 +128,10 @@ defmodule Solution.Day5 do
            all units of exactly one type and fully reacting the result?"
   """
   def solve_part_2(input_as_string) do
-    polymer = String.trim(input_as_string)
+    polymer =
+      input_as_string
+      |> String.trim()
+      |> String.codepoints()
 
     {_unit_type_removed_producing_shortest_reaction, shortest_reaction} =
       polymer
@@ -141,10 +146,10 @@ defmodule Solution.Day5 do
 
   defp polymer_reaction_without_given_type(polymer, unit_type_to_remove) do
     Logger.info("Processing reaction without type: '#{unit_type_to_remove}'")
+
     reaction =
       polymer
       |> remove_given_type(unit_type_to_remove)
-      |> String.codepoints()
       |> react_until_stable()
 
     {unit_type_to_remove, reaction}
@@ -152,16 +157,13 @@ defmodule Solution.Day5 do
 
   defp remove_given_type(polymer, unit_type_to_remove) do
     polymer
-    |> String.replace(
-      ~r/[#{String.upcase(unit_type_to_remove)}#{String.downcase(unit_type_to_remove)}]/,
-      ""
-    )
+    |> Enum.reject(&(&1 == String.upcase(unit_type_to_remove)))
+    |> Enum.reject(&(&1 == String.downcase(unit_type_to_remove)))
   end
 
   defp all_unit_types(poylymer) do
     poylymer
-    |> String.downcase()
-    |> String.codepoints()
+    |> Enum.map(&String.downcase/1)
     |> MapSet.new()
   end
 end
