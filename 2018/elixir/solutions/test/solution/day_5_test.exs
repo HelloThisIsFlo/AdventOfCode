@@ -2,6 +2,8 @@ defmodule Solution.Day5Test do
   use ExUnit.Case, async: false
   alias Solution.Day5
 
+  @moduletag :capture_log
+
   describe "Part 1" do
     test "Same letter - Opposite polarity" do
       assert Day5.solve_part_1("aA") == "0"
@@ -38,21 +40,21 @@ defmodule Solution.Day5Test do
     test "Trim newlines" do
       assert Day5.solve_part_1("""
 
-      abcdDCBA
+             abcdDCBA
 
-      """) == "0"
+             """) == "0"
     end
 
     @tag :skip
     test "Debug Performance" do
       from_file = File.read!("../../inputs/day5.txt")
-      res = Day5.solve_part_1(from_file)
+      Day5.solve_part_1(from_file)
     end
-
   end
 
-  # describe "Part 2" do
-  #   test "Example from Problem Statement" do
-  #   end
-  # end
+  describe "Part 2" do
+    test "Example from Problem Statement" do
+      assert Day5.solve_part_2("dabAcCaCBAcCcaDA") == "4"
+    end
+  end
 end
