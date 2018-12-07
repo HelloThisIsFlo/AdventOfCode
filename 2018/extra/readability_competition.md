@@ -29,8 +29,8 @@ For each puzzle, the other must measure the amount of time to comprehension.
 ### Part won
 | Name    | Number of Parts won |
 | ------- |:-------------------:|
-| Florian | 0                   |
-| Toni    | 0                   |
+| Florian | 1                   |
+| Toni    | 1                   |
 
 ### Part detail
 
@@ -40,8 +40,8 @@ For each puzzle, the other must measure the amount of time to comprehension.
 |      | 2    | /        | /        | /        |
 | 2    | 1    | 2min     | /        | /        |
 |      | 2    | 2min57s  | /        | /        |
-| 3    | 1    | /        | /        | /        |
-|      | 2    | /        | /        | /        |
+| 3    | 1    | 6min47s  | 4min49s  | Toni     |
+|      | 2    | 3min10s  | 3min43s  | Florian  |
 | 4    | 1    | /        | /        | /        |
 |      | 2    | /        | /        | /        |
 | 5    | 1    | /        | /        | /        |
