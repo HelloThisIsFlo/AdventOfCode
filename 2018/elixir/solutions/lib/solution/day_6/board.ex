@@ -29,6 +29,13 @@ defmodule Solution.Day6.Board do
     %__MODULE__{areas: areas}
   end
 
+  def to_grid(%__MODULE__{areas: areas}) do
+    areas
+    |> Enum.map(&ClosestPointsArea.to_grid_points/1)
+    |> List.flatten()
+    |> Grid.to_grid()
+  end
+
   defp validate_grid_points(grid_points) do
     if Enum.any?(grid_points, fn %{value: val} -> val != "0" end) do
       raise InvalidBoard, "Board grid can only contain areas at stage 0 (origin only)"

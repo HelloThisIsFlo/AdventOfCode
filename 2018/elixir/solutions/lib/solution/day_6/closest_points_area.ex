@@ -34,13 +34,13 @@ defmodule Solution.Day6.ClosestPointsArea do
     }
   end
 
-  def to_grid(%__MODULE__{grow_stages: grow_stages}) do
-    grow_stages
+  def to_grid(area) do
+    area
     |> to_grid_points()
     |> Grid.to_grid()
   end
 
-  defp to_grid_points(grow_stages) do
+  def to_grid_points(%__MODULE__{grow_stages: grow_stages}) do
     do_to_grid_points(0, grow_stages, [])
   end
 
