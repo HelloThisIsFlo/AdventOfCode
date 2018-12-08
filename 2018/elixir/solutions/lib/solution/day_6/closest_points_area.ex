@@ -3,7 +3,7 @@ defmodule Solution.Day6.ClosestPointsArea do
   @type y() :: integer()
   @type point() :: {x(), y()}
 
-  @type t :: %{
+  @type t :: %__MODULE__{
           fully_grown?: boolean(),
           grow_stages: [[point()]]
         }
@@ -19,14 +19,14 @@ defmodule Solution.Day6.ClosestPointsArea do
     end
   end
 
-  @spec from_origin([any()]) :: __MODULE__.t
+  @spec from_origin([point()]) :: __MODULE__.t()
   def from_origin(origin) do
     %__MODULE__{
       grow_stages: [[origin]]
     }
   end
 
-  @spec from_grid([[String.t]]) :: __MODULE__.t
+  @spec from_grid([[String.t()]]) :: __MODULE__.t()
   def from_grid(grid) do
     %__MODULE__{
       grow_stages: to_grow_stages(grid)

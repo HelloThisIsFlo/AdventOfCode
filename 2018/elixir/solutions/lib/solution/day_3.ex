@@ -65,6 +65,7 @@ defmodule Solution.Day3 do
   end
 
   defmodule ClaimedCoordinates do
+    alias Solution.Day3
     @type t :: %__MODULE__{
             coordinates: %FabricCoordinates{},
             claimed_by: list(Day3.id())
@@ -73,6 +74,7 @@ defmodule Solution.Day3 do
   end
 
   defmodule ClaimedArea do
+    alias Solution.Day3
     @moduledoc """
     Coordinates are given with a `y` axis pointing downwards
     """
