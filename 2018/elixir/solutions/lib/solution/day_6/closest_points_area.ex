@@ -2,10 +2,11 @@ defmodule Solution.Day6.ClosestPointsArea do
   @type x() :: integer()
   @type y() :: integer()
   @type point() :: {x(), y()}
+  @type grow_stage() :: [point()]
 
   @type t :: %__MODULE__{
           fully_grown?: boolean(),
-          grow_stages: [[point()]]
+          grow_stages: [grow_stage()]
         }
   defstruct fully_grown?: false,
             grow_stages: []
@@ -41,12 +42,19 @@ defmodule Solution.Day6.ClosestPointsArea do
 
   def next_candidate_area(%__MODULE__{grow_stages: grow_stages, fully_grown?: true}),
     do: List.last(grow_stages)
-
   def next_candidate_area(%__MODULE__{grow_stages: grow_stages}),
     do: do_next_candidate_area(Enum.reverse(grow_stages))
 
-  def current_grow_stage(%__MODULE__{grow_stages: []}), do: 0
+  def commit_valid_grow_stage(area, valid_grow_stage_to_commit) do
+    do_commit_valid_grow_stage(
+      area,
+      area.fully_grown?,
+      List.last(area.grow_stages),
+      valid_grow_stage_to_commit
+    )
+  end
 
+  def current_grow_stage(%__MODULE__{grow_stages: []}), do: 0
   def current_grow_stage(%__MODULE__{grow_stages: grow_stages}),
     do: length(grow_stages) - 1
 
@@ -90,16 +98,12 @@ defmodule Solution.Day6.ClosestPointsArea do
   end
 
   defp do_next_candidate_area(grow_stages_in_reverse_order)
-
   defp do_next_candidate_area([]),
     do: raise(InvalidArea, "No grow stages")
-
   defp do_next_candidate_area([only_stage]) when length(only_stage) > 1,
     do: raise(InvalidArea, "First stage should only contain origin")
-
   defp do_next_candidate_area([[origin]]),
     do: grow_in_all_4_directions(origin)
-
   defp do_next_candidate_area([last_stage | [second_last_stage | _]]) do
     last_stage
     |> Enum.flat_map(&grow_in_all_4_directions/1)
@@ -115,4 +119,20 @@ defmodule Solution.Day6.ClosestPointsArea do
       {x, y - 1}
     ]
   end
+
+  defp do_commit_valid_grow_stage(area, fully_grown?, last_grow_stage, valid_grow_stage_to_commit)
+  defp do_commit_valid_grow_stage(_area, true, last_grow_stage, valid_grow_stage_to_commit)
+       when last_grow_stage != valid_grow_stage_to_commit,
+       do:
+         raise(
+           InvalidArea,
+           "Invalid Grow Stage! Area is fully grown, yet it is attempted to add a new grow stage not equal to the last one!"
+         )
+  defp do_commit_valid_grow_stage(area, true, _last_grow_stage, _valid_grow_stage_to_commit),
+    do: area
+  defp do_commit_valid_grow_stage(area, false, last_grow_stage, valid_grow_stage_to_commit)
+       when last_grow_stage != valid_grow_stage_to_commit,
+       do: %{area | grow_stages: area.grow_stages ++ [valid_grow_stage_to_commit]}
+  defp do_commit_valid_grow_stage(area, false, _last_grow_stage, _valid_grow_stage_to_commit),
+    do: %{area | fully_grown?: true}
 end

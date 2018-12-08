@@ -343,11 +343,89 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
         |> List.last()
 
       assert next_candidate_area == last_grow_stage
+
+      assert Enum.sort(next_candidate_area) ==
+               [
+                 [" ", " ", " ", " ", " "],
+                 [" ", " ", "x", " ", " "],
+                 [" ", "x", " ", "x", " "],
+                 [" ", " ", "x", " ", " "],
+                 [" ", " ", " ", " ", " "]
+               ]
+               |> to_grow_stage()
     end
   end
 
   describe "Commit next valid Grow Stage" do
-    @tag :skip
-    test "todo"
+    test "- Not fully grown - Different from last stage - Add to the list of Grow stages" do
+      area = %ClosestPointsArea{
+        fully_grown?: false,
+        grow_stages: [
+          [{2, 2}],
+          [{2, 1}, {1, 2}, {3, 2}, {2, 3}]
+        ]
+      }
+
+      new_valid_stage = [{2, 0}, {1, 1}, {3, 1}, {0, 2}, {4, 2}, {1, 3}, {3, 3}, {2, 4}]
+
+      after_commit = ClosestPointsArea.commit_valid_grow_stage(area, new_valid_stage)
+
+      assert after_commit == %ClosestPointsArea{
+               fully_grown?: false,
+               grow_stages: [
+                 [{2, 2}],
+                 [{2, 1}, {1, 2}, {3, 2}, {2, 3}],
+                 new_valid_stage
+               ]
+             }
+    end
+
+    test "- Not fully grown - Stage equal to last stage - Unchanged & Set fully_grow? to true" do
+      area = %ClosestPointsArea{
+        fully_grown?: false,
+        grow_stages: [
+          [{2, 2}],
+          [{2, 1}, {1, 2}, {3, 2}, {2, 3}]
+        ]
+      }
+
+      new_valid_stage = List.last(area.grow_stages)
+      after_commit = ClosestPointsArea.commit_valid_grow_stage(area, new_valid_stage)
+
+      assert after_commit.fully_grown? == true
+      assert after_commit.grow_stages == area.grow_stages
+    end
+
+    test "- Fully grown - Stage equal to last stage - Unchanged" do
+      fully_grown_area = %ClosestPointsArea{
+        fully_grown?: true,
+        grow_stages: [
+          [{2, 2}],
+          [{2, 1}, {1, 2}, {3, 2}, {2, 3}]
+        ]
+      }
+
+      new_valid_stage = List.last(fully_grown_area.grow_stages)
+      after_commit = ClosestPointsArea.commit_valid_grow_stage(fully_grown_area, new_valid_stage)
+
+      assert after_commit.fully_grown? == true
+      assert after_commit.grow_stages == fully_grown_area.grow_stages
+    end
+
+    test "- Fully grown - Stage isn't equal to last stage - Raise error" do
+      fully_grown_area = %ClosestPointsArea{
+        fully_grown?: true,
+        grow_stages: [
+          [{2, 2}],
+          [{2, 1}, {1, 2}, {3, 2}, {2, 3}]
+        ]
+      }
+
+      new_valid_stage = [{2, 0}, {1, 1}, {3, 1}, {0, 2}, {4, 2}, {1, 3}, {3, 3}, {2, 4}]
+
+      assert_raise InvalidArea, fn ->
+        ClosestPointsArea.commit_valid_grow_stage(fully_grown_area, new_valid_stage)
+      end
+    end
   end
 end
