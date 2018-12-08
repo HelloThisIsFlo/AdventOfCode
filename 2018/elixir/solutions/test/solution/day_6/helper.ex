@@ -5,6 +5,7 @@ defmodule Solution.Day6.Helper do
         case get_point(grid, x, y) do
           " " -> nil
           "x" -> {x, y}
+          "X" -> {x, y}
         end
       end
     end
