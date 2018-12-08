@@ -8,11 +8,6 @@ defmodule Solution.Day6Test do
 
   @moduletag :capture_log
 
-  describe "Test Area Growth" do
-    test "asdf" do
-
-    end
-  end
 
   describe "Part 1" do
     @tag :skip

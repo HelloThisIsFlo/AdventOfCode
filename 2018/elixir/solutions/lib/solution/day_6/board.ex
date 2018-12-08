@@ -36,14 +36,6 @@ defmodule Solution.Day6.Board do
     |> Grid.to_grid()
   end
 
-  defp validate_grid_points(grid_points) do
-    if Enum.any?(grid_points, fn %{value: val} -> val != "0" end) do
-      raise InvalidBoard, "Board grid can only contain areas at stage 0 (origin only)"
-    else
-      grid_points
-    end
-  end
-
   @spec validate_grow_stages([ClosestPointsArea.grow_stage()]) :: [ClosestPointsArea.grow_stage()]
   def validate_grow_stages(candidate_grow_stages_for_all_points) do
     contested_points =
@@ -53,12 +45,27 @@ defmodule Solution.Day6.Board do
     |> Enum.map(fn grow_stage -> grow_stage -- contested_points end)
   end
 
+  def grow(%__MODULE__{areas: areas} = board) do
+    grown_areas =
+      areas
+      |> Enum.map(&ClosestPointsArea.next_grow_stage_candidate/1)
+      |> validate_grow_stages()
+      |> Enum.zip(areas)
+      |> Enum.map(fn {valid_next_stage, area} ->
+        ClosestPointsArea.commit_valid_grow_stage(area, valid_next_stage)
+      end)
+
+    %{board | areas: grown_areas}
+  end
+
   # ------- Private Functions -------------
   # ------- Private Functions -------------
   # ------- Private Functions -------------
   defp contested_points(contested_pts, claimed_or_contested_pts, candidate_grow_stages)
+
   defp contested_points(contested_points, _, []),
     do: Enum.to_list(contested_points)
+
   defp contested_points(contested_pts, claimed_or_contested_pts, [candidate | rest_of_candidates]) do
     new_contested_points =
       candidate
@@ -72,5 +79,13 @@ defmodule Solution.Day6.Board do
       |> MapSet.union(claimed_or_contested_pts)
 
     contested_points(new_contested_points, new_claimed_or_contested_pts, rest_of_candidates)
+  end
+
+  defp validate_grid_points(grid_points) do
+    if Enum.any?(grid_points, fn %{value: val} -> val != "0" end) do
+      raise InvalidBoard, "Board grid can only contain areas at stage 0 (origin only)"
+    else
+      grid_points
+    end
   end
 end
