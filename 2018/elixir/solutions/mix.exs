@@ -21,7 +21,8 @@ defmodule Solutions.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:mix_test_watch, "~> 0.8", only: :dev}
+      {:mix_test_watch, "~> 0.8", only: :dev},
+      {:dialyxir, "~> 0.5", only: [:dev], runtime: false}
     ]
   end
 end
