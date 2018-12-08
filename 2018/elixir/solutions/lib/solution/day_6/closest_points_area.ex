@@ -70,10 +70,10 @@ defmodule Solution.Day6.ClosestPointsArea do
     |> MapSet.new()
   end
 
-  def next_candidate_area(%__MODULE__{grow_stages: grow_stages, fully_grown?: true}),
+  def next_grow_stage_candidate(%__MODULE__{grow_stages: grow_stages, fully_grown?: true}),
     do: List.last(grow_stages)
-  def next_candidate_area(%__MODULE__{grow_stages: grow_stages}),
-    do: do_next_candidate_area(Enum.reverse(grow_stages))
+  def next_grow_stage_candidate(%__MODULE__{grow_stages: grow_stages}),
+    do: do_next_grow_stage_candidate(Enum.reverse(grow_stages))
 
   def commit_valid_grow_stage(area, valid_grow_stage_to_commit) do
     do_commit_valid_grow_stage(
@@ -113,14 +113,14 @@ defmodule Solution.Day6.ClosestPointsArea do
     end
   end
 
-  defp do_next_candidate_area(grow_stages_in_reverse_order)
-  defp do_next_candidate_area([]),
+  defp do_next_grow_stage_candidate(grow_stages_in_reverse_order)
+  defp do_next_grow_stage_candidate([]),
     do: raise(InvalidArea, "No grow stages")
-  defp do_next_candidate_area([only_stage]) when length(only_stage) > 1,
+  defp do_next_grow_stage_candidate([only_stage]) when length(only_stage) > 1,
     do: raise(InvalidArea, "First stage should only contain origin")
-  defp do_next_candidate_area([[origin]]),
+  defp do_next_grow_stage_candidate([[origin]]),
     do: grow_in_all_4_directions(origin)
-  defp do_next_candidate_area([last_stage | [second_last_stage | _]]) do
+  defp do_next_grow_stage_candidate([last_stage | [second_last_stage | _]]) do
     last_stage
     |> Enum.flat_map(&grow_in_all_4_directions/1)
     |> Enum.uniq()

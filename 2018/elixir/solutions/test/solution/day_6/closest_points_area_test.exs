@@ -205,7 +205,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
         |> ClosestPointsArea.from_grid()
 
       assert_raise InvalidArea, fn ->
-        ClosestPointsArea.next_candidate_area(invalid_area)
+        ClosestPointsArea.next_grow_stage_candidate(invalid_area)
       end
     end
 
@@ -219,7 +219,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
           [" ", " ", " ", " ", " "]
         ]
         |> ClosestPointsArea.from_grid()
-        |> ClosestPointsArea.next_candidate_area()
+        |> ClosestPointsArea.next_grow_stage_candidate()
 
       assert candidate_area_for_step_1 |> Enum.sort() ==
                [
@@ -242,7 +242,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
         |> ClosestPointsArea.from_grid()
 
       assert_raise InvalidArea, fn ->
-        ClosestPointsArea.next_candidate_area(invalid_area)
+        ClosestPointsArea.next_grow_stage_candidate(invalid_area)
       end
     end
 
@@ -256,7 +256,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
           [" ", " ", " ", " ", " "]
         ]
         |> ClosestPointsArea.from_grid()
-        |> ClosestPointsArea.next_candidate_area()
+        |> ClosestPointsArea.next_grow_stage_candidate()
 
       assert candidate_area_for_step_2 |> Enum.sort() ==
                [
@@ -281,7 +281,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
           [" ", " ", " ", " ", " ", " ", " "]
         ]
         |> ClosestPointsArea.from_grid()
-        |> ClosestPointsArea.next_candidate_area()
+        |> ClosestPointsArea.next_grow_stage_candidate()
 
       assert candidate_area_for_step_3 |> Enum.sort() ==
                [
@@ -308,7 +308,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
           [" ", " ", " ", " ", " ", " ", " "]
         ]
         |> ClosestPointsArea.from_grid()
-        |> ClosestPointsArea.next_candidate_area()
+        |> ClosestPointsArea.next_grow_stage_candidate()
 
       assert candidate_area_for_step_3 |> Enum.sort() ==
                [
@@ -335,16 +335,16 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
         |> ClosestPointsArea.from_grid()
         |> Map.replace!(:fully_grown?, true)
 
-      next_candidate_area = ClosestPointsArea.next_candidate_area(fully_grown_area)
+      next_grow_stage_candidate = ClosestPointsArea.next_grow_stage_candidate(fully_grown_area)
 
       last_grow_stage =
         fully_grown_area
         |> Map.get(:grow_stages)
         |> List.last()
 
-      assert next_candidate_area == last_grow_stage
+      assert next_grow_stage_candidate == last_grow_stage
 
-      assert Enum.sort(next_candidate_area) ==
+      assert Enum.sort(next_grow_stage_candidate) ==
                [
                  [" ", " ", " ", " ", " "],
                  [" ", " ", "x", " ", " "],

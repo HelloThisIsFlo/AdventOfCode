@@ -1,7 +1,6 @@
 defmodule Solution.Day6.Board do
   alias Solution.Day6.ClosestPointsArea
   alias Solution.Day6.Grid
-  alias Solution.Day6.Grid.GridPoint
 
   @type t :: %__MODULE__{
           areas: [ClosestPointsArea.t()]
@@ -29,6 +28,7 @@ defmodule Solution.Day6.Board do
     %__MODULE__{areas: areas}
   end
 
+  @spec to_grid(Solution.Day6.Board.t()) :: [any()]
   def to_grid(%__MODULE__{areas: areas}) do
     areas
     |> Enum.map(&ClosestPointsArea.to_grid_points/1)
