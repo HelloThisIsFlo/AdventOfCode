@@ -1,8 +1,8 @@
 defmodule Solution.Day6.ClosestPointsArea do
-  @type x() :: integer()
-  @type y() :: integer()
-  @type point() :: {x(), y()}
-  @type grow_stage() :: [point()]
+  alias Solution.Day6.Grid
+  alias Solution.Day6.Grid.GridPoint
+
+  @type grow_stage() :: [Grid.point()]
 
   @type t :: %__MODULE__{
           fully_grown?: boolean(),
@@ -20,7 +20,7 @@ defmodule Solution.Day6.ClosestPointsArea do
     end
   end
 
-  @spec from_origin([point()]) :: __MODULE__.t()
+  @spec from_origin([Grid.point()]) :: __MODULE__.t()
   def from_origin(origin) do
     %__MODULE__{
       grow_stages: [[origin]]
@@ -32,6 +32,36 @@ defmodule Solution.Day6.ClosestPointsArea do
     %__MODULE__{
       grow_stages: to_grow_stages(grid)
     }
+  end
+
+  def to_grid(%__MODULE__{grow_stages: grow_stages}) do
+    grow_stages
+    |> to_grid_points()
+    |> Grid.to_grid()
+  end
+
+  defp to_grid_points(grow_stages) do
+    do_to_grid_points(0, grow_stages, [])
+  end
+
+  defp do_to_grid_points(current_stage, grow_stages, grid_points)
+  defp do_to_grid_points(_, [], grid_points), do: grid_points
+
+  defp do_to_grid_points(current_stage_number, [current_stage | other_stages], grid_points) do
+    grid_points_for_current_stage =
+      current_stage
+      |> Enum.map(fn point ->
+        %GridPoint{
+          point: point,
+          value: Integer.to_string(current_stage_number)
+        }
+      end)
+
+    do_to_grid_points(
+      current_stage_number + 1,
+      other_stages,
+      grid_points ++ grid_points_for_current_stage
+    )
   end
 
   def all_points(%__MODULE__{grow_stages: grow_stages}) do
@@ -63,38 +93,24 @@ defmodule Solution.Day6.ClosestPointsArea do
   # ------- Private Functions -------------
 
   defp to_grow_stages(grid) do
-    for y <- 0..(length(grid) - 1) do
-      for x <- 0..(length(get_line(grid, y)) - 1) do
-        case get_point(grid, x, y) do
-          " " ->
-            nil
-
-          stage_as_str ->
-            point = {x, y}
-            stage = String.to_integer(stage_as_str)
-            {stage, point}
-        end
-      end
-    end
-    |> List.flatten()
-    |> Enum.reject(&(&1 == nil))
-    |> Enum.sort(fn {stage1, _}, {stage2, _} -> stage1 <= stage2 end)
-    |> Enum.chunk_by(fn {stage, _} -> stage end)
+    grid
+    |> Grid.to_grid_points()
+    |> Enum.reject(&(&1.value == " "))
+    |> Enum.map(&parse_value_to_stage_number/1)
+    |> Enum.sort(fn %{stage: stage1}, %{stage: stage2} -> stage1 <= stage2 end)
+    |> Enum.chunk_by(fn %{stage: stage} -> stage end)
     |> Enum.map(fn stage_points ->
       stage_points
-      |> Enum.map(fn {_stage, point} -> point end)
+      |> Enum.map(fn %{point: point} -> point end)
     end)
   end
 
-  defp get_line(grid, y) do
-    grid
-    |> Enum.at(y)
-  end
-
-  defp get_point(grid, x, y) do
-    grid
-    |> get_line(y)
-    |> Enum.at(x)
+  defp parse_value_to_stage_number(%GridPoint{point: point, value: value_as_string}) do
+    with {stage_number, _} <- Integer.parse(value_as_string) do
+      %{point: point, stage: stage_number}
+    else
+      :error -> raise InvalidArea, "Grid point couldn't be parsed to a number"
+    end
   end
 
   defp do_next_candidate_area(grow_stages_in_reverse_order)

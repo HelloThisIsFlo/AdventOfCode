@@ -13,7 +13,20 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
            }
   end
 
-  describe "Build from Grid" do
+  describe "From Grid - " do
+    test "Invalid Grid" do
+      # "x" is not a number
+      assert_raise InvalidArea, fn ->
+        ClosestPointsArea.from_grid([
+          [" ", " ", " ", " ", " "],
+          [" ", " ", " ", " ", " "],
+          [" ", " ", "x", " ", " "],
+          [" ", " ", " ", " ", " "],
+          [" ", " ", " ", " ", " "]
+        ])
+      end
+    end
+
     test "Origin only" do
       #
       # x-----> x
@@ -97,6 +110,27 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
                  [{2, 0}]
                ]
              }
+    end
+  end
+
+  describe "To Grid" do
+    test "Valid area" do
+      valid_area =
+        ClosestPointsArea.from_grid([
+          [" ", " ", "2", " ", " "],
+          [" ", "2", "1", "2", " "],
+          ["2", "1", "0", "1", "2"],
+          [" ", "2", "1", "2", " "],
+          [" ", " ", "2", " ", " "]
+        ])
+
+      assert ClosestPointsArea.to_grid(valid_area) == [
+               [" ", " ", "2", " ", " "],
+               [" ", "2", "1", "2", " "],
+               ["2", "1", "0", "1", "2"],
+               [" ", "2", "1", "2", " "],
+               [" ", " ", "2", " ", " "]
+             ]
     end
   end
 

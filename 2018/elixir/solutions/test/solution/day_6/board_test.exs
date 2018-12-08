@@ -52,10 +52,10 @@ defmodule Solution.Day6.BoardTest do
       board = Board.from_grid(grid)
 
       assert board.areas == [
-               ClosestPointsArea.from_origin({1, 1}),
-               ClosestPointsArea.from_origin({2, 4}),
-               ClosestPointsArea.from_origin({5, 5})
-             ]
+        ClosestPointsArea.from_origin({1, 1}),
+        ClosestPointsArea.from_origin({2, 4}),
+        ClosestPointsArea.from_origin({5, 5}),
+      ]
     end
   end
 

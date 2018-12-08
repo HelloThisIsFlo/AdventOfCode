@@ -1,5 +1,7 @@
 defmodule Solution.Day6.Board do
   alias Solution.Day6.ClosestPointsArea
+  alias Solution.Day6.Grid
+  alias Solution.Day6.Grid.GridPoint
 
   @type t :: %__MODULE__{
           areas: [ClosestPointsArea.t()]
@@ -15,34 +17,24 @@ defmodule Solution.Day6.Board do
     end
   end
 
-  # TODO: Refactor all grid realted functions in separated module
   def from_grid(board_grid) do
     areas =
-      for y <- 0..(length(board_grid) - 1) do
-        for x <- 0..(length(get_line(board_grid, y)) - 1) do
-          case get_point(board_grid, x, y) do
-            " " -> nil
-            "0" -> {x, y}
-            _ -> raise InvalidBoard, "Board grid can only contain areas at stage 0 (origin only)"
-          end
-        end
-      end
-      |> List.flatten()
-      |> Enum.reject(&(&1 == nil))
+      board_grid
+      |> Grid.to_grid_points()
+      |> Enum.reject(fn %{value: val} -> val == " " end)
+      |> validate_grid_points()
+      |> Enum.map(fn %{point: point} -> point end)
       |> Enum.map(&ClosestPointsArea.from_origin/1)
 
     %__MODULE__{areas: areas}
   end
 
-  defp get_line(grid, y) do
-    grid
-    |> Enum.at(y)
-  end
-
-  defp get_point(grid, x, y) do
-    grid
-    |> get_line(y)
-    |> Enum.at(x)
+  defp validate_grid_points(grid_points) do
+    if Enum.any?(grid_points, fn %{value: val} -> val != "0" end) do
+      raise InvalidBoard, "Board grid can only contain areas at stage 0 (origin only)"
+    else
+      grid_points
+    end
   end
 
   @spec validate_grow_stages([ClosestPointsArea.grow_stage()]) :: [ClosestPointsArea.grow_stage()]
@@ -58,10 +50,8 @@ defmodule Solution.Day6.Board do
   # ------- Private Functions -------------
   # ------- Private Functions -------------
   defp contested_points(contested_pts, claimed_or_contested_pts, candidate_grow_stages)
-
   defp contested_points(contested_points, _, []),
     do: Enum.to_list(contested_points)
-
   defp contested_points(contested_pts, claimed_or_contested_pts, [candidate | rest_of_candidates]) do
     new_contested_points =
       candidate

@@ -1,10 +1,10 @@
 defmodule Solution.Day6Test do
   use ExUnit.Case, async: false
-  alias Solution.Day6
-  alias Solution.Day6.Board
-  alias Solution.Day6.ClosestPointsArea
-  alias Solution.Day6.ClosestPointsArea.InvalidArea
-  import Solution.Day6.Helper, only: [to_grow_stage: 1]
+  # alias Solution.Day6
+  # alias Solution.Day6.Board
+  # alias Solution.Day6.ClosestPointsArea
+  # alias Solution.Day6.ClosestPointsArea.InvalidArea
+  # import Solution.Day6.Helper, only: [to_grow_stage: 1]
 
   @moduletag :capture_log
 
