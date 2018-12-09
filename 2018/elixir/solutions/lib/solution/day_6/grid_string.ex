@@ -1,13 +1,13 @@
-defmodule Solution.Day6.Grid do
+defmodule Solution.Day6.GridString do
   @type x() :: integer()
   @type y() :: integer()
   @type point() :: {x(), y()}
 
   defmodule GridPoint do
-    alias Solution.Day6.Grid
+    alias Solution.Day6.GridString
 
     @type t :: %__MODULE__{
-            point: Grid.point(),
+            point: GridString.point(),
             value: String.t()
           }
     defstruct [
@@ -28,7 +28,7 @@ defmodule Solution.Day6.Grid do
     |> List.flatten()
   end
 
-  def to_grid(grid_points) do
+  def to_grid_string(grid_points) do
     grid_width =
       grid_points
       |> Enum.map(fn %{point: {x, _}} -> x end)

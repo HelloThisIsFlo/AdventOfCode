@@ -1,8 +1,8 @@
 defmodule Solution.Day6.ClosestPointsArea do
-  alias Solution.Day6.Grid
-  alias Solution.Day6.Grid.GridPoint
+  alias Solution.Day6.GridString
+  alias Solution.Day6.GridString.GridPoint
 
-  @type grow_stage() :: [Grid.point()]
+  @type grow_stage() :: [GridString.point()]
 
   @type t :: %__MODULE__{
           fully_grown?: boolean(),
@@ -20,24 +20,24 @@ defmodule Solution.Day6.ClosestPointsArea do
     end
   end
 
-  @spec from_origin([Grid.point()]) :: __MODULE__.t()
+  @spec from_origin([GridString.point()]) :: __MODULE__.t()
   def from_origin(origin) do
     %__MODULE__{
       grow_stages: [[origin]]
     }
   end
 
-  @spec from_grid([[String.t()]]) :: __MODULE__.t()
-  def from_grid(grid) do
+  @spec from_grid_string([[String.t()]]) :: __MODULE__.t()
+  def from_grid_string(grid) do
     %__MODULE__{
       grow_stages: to_grow_stages(grid)
     }
   end
 
-  def to_grid(area) do
+  def to_grid_string(area) do
     area
     |> to_grid_points()
-    |> Grid.to_grid()
+    |> GridString.to_grid_string()
   end
 
   def to_grid_points(%__MODULE__{grow_stages: grow_stages}) do
@@ -94,7 +94,7 @@ defmodule Solution.Day6.ClosestPointsArea do
 
   defp to_grow_stages(grid) do
     grid
-    |> Grid.to_grid_points()
+    |> GridString.to_grid_points()
     |> Enum.reject(&(&1.value == " "))
     |> Enum.map(&parse_value_to_stage_number/1)
     |> Enum.sort(fn %{stage: stage1}, %{stage: stage2} -> stage1 <= stage2 end)
@@ -109,7 +109,7 @@ defmodule Solution.Day6.ClosestPointsArea do
     with {stage_number, _} <- Integer.parse(value_as_string) do
       %{point: point, stage: stage_number}
     else
-      :error -> raise InvalidArea, "Grid point couldn't be parsed to a number"
+      :error -> raise InvalidArea, "GridString point couldn't be parsed to a number"
     end
   end
 

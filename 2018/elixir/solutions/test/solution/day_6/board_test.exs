@@ -4,7 +4,7 @@ defmodule Solution.Day6.BoardTest do
   alias Solution.Day6.Board.InvalidBoard
   alias Solution.Day6.ClosestPointsArea
 
-  describe "Build from Grid" do
+  describe "Build from GridString" do
     test "Areas already grown - Raise error" do
       grid_with_with_areas_not_at_stage_0 = [
         [" ", "1", " ", " ", " ", " ", " "],
@@ -17,7 +17,7 @@ defmodule Solution.Day6.BoardTest do
       ]
 
       assert_raise InvalidBoard, fn ->
-        Board.from_grid(grid_with_with_areas_not_at_stage_0)
+        Board.from_grid_string(grid_with_with_areas_not_at_stage_0)
       end
     end
 
@@ -32,7 +32,7 @@ defmodule Solution.Day6.BoardTest do
         [" ", " ", " ", " ", " ", " ", " "]
       ]
 
-      board = Board.from_grid(grid)
+      board = Board.from_grid_string(grid)
 
       assert board.areas == [ClosestPointsArea.from_origin({1, 1})]
     end
@@ -48,7 +48,7 @@ defmodule Solution.Day6.BoardTest do
         [" ", " ", " ", " ", " ", " ", " "]
       ]
 
-      board = Board.from_grid(grid)
+      board = Board.from_grid_string(grid)
 
       assert board.areas == [
                ClosestPointsArea.from_origin({1, 1}),
@@ -58,7 +58,7 @@ defmodule Solution.Day6.BoardTest do
     end
   end
 
-  describe "To Grid" do
+  describe "To GridString" do
     test "Valid Board with Multiple Areas" do
       area_1 =
         [
@@ -71,7 +71,7 @@ defmodule Solution.Day6.BoardTest do
           [" ", " ", " ", " ", " ", " ", " ", " ", " "],
           [" ", " ", " ", " ", " ", " ", " ", " ", " "]
         ]
-        |> ClosestPointsArea.from_grid()
+        |> ClosestPointsArea.from_grid_string()
 
       area_2 =
         [
@@ -84,7 +84,7 @@ defmodule Solution.Day6.BoardTest do
           [" ", " ", " ", " ", " ", " ", " ", " ", " "],
           [" ", " ", " ", " ", " ", " ", " ", " ", " "]
         ]
-        |> ClosestPointsArea.from_grid()
+        |> ClosestPointsArea.from_grid_string()
 
       area_3 =
         [
@@ -97,11 +97,11 @@ defmodule Solution.Day6.BoardTest do
           [" ", " ", " ", " ", " ", "2", "1", "2", " "],
           [" ", " ", " ", " ", " ", " ", "2", " ", " "]
         ]
-        |> ClosestPointsArea.from_grid()
+        |> ClosestPointsArea.from_grid_string()
 
       board = %Board{areas: [area_1, area_2, area_3]}
 
-      assert Board.to_grid(board) == [
+      assert Board.to_grid_string(board) == [
                [" ", " ", "2", " ", " ", " ", " ", " ", " "],
                [" ", "2", "1", "2", "2", " ", " ", " ", " "],
                ["2", "1", "0", "1", "1", "2", " ", " ", " "],
@@ -126,7 +126,7 @@ defmodule Solution.Day6.BoardTest do
           [" ", " ", " ", " ", " ", " ", " "],
           [" ", " ", " ", " ", " ", " ", " "]
         ]
-        |> Board.from_grid()
+        |> Board.from_grid_string()
 
       board_grown_3_times =
         board
@@ -134,7 +134,7 @@ defmodule Solution.Day6.BoardTest do
         |> Board.grow()
         |> Board.grow()
 
-      assert Board.to_grid(board_grown_3_times) == [
+      assert Board.to_grid_string(board_grown_3_times) == [
                [" ", " ", " ", "3", " ", " ", " "],
                [" ", " ", "3", "2", "3", " ", " "],
                [" ", "3", "2", "1", "2", "3", " "],
@@ -157,14 +157,14 @@ defmodule Solution.Day6.BoardTest do
           [" ", " ", " ", " ", " ", " ", " ", " ", " "],
           [" ", " ", " ", " ", " ", " ", " ", " ", " "]
         ]
-        |> Board.from_grid()
+        |> Board.from_grid_string()
 
       board_grown_2_times =
         board
         |> Board.grow()
         |> Board.grow()
 
-      assert Board.to_grid(board_grown_2_times) ==
+      assert Board.to_grid_string(board_grown_2_times) ==
                [
                  [" ", " ", "2", " ", " ", " ", " ", " ", " "],
                  [" ", "2", "1", "2", " ", " ", " ", " ", " "],
@@ -186,7 +186,7 @@ defmodule Solution.Day6.BoardTest do
           [" ", " ", " ", " ", " ", " ", " ", " ", " "],
           [" ", " ", " ", " ", " ", " ", " ", " ", " "]
         ]
-        |> Board.from_grid()
+        |> Board.from_grid_string()
 
       board_grown_2_times =
         board
@@ -195,7 +195,7 @@ defmodule Solution.Day6.BoardTest do
 
       # Point at {x: 4, y; 2} is equidistant from both origins, therefore it is
       # excluded from both areas
-      assert Board.to_grid(board_grown_2_times) ==
+      assert Board.to_grid_string(board_grown_2_times) ==
                [
                  [" ", " ", "2", " ", " ", " ", "2", " ", " "],
                  [" ", "2", "1", "2", " ", "2", "1", "2", " "],
@@ -215,7 +215,7 @@ defmodule Solution.Day6.BoardTest do
           [" ", " ", " ", " ", " ", " ", " "],
           [" ", " ", " ", " ", " ", " ", " "]
         ]
-        |> Board.from_grid()
+        |> Board.from_grid_string()
 
       board_grown_1_time_no_intersection_yet =
         board
@@ -226,7 +226,7 @@ defmodule Solution.Day6.BoardTest do
         |> Board.grow()
         |> Board.grow()
 
-      assert Board.to_grid(board_grown_1_time_no_intersection_yet) == [
+      assert Board.to_grid_string(board_grown_1_time_no_intersection_yet) == [
                [" ", " ", " ", " ", " ", " "],
                [" ", " ", "1", " ", " ", " "],
                [" ", "1", "0", "1", "1", " "],
@@ -234,7 +234,7 @@ defmodule Solution.Day6.BoardTest do
                [" ", " ", " ", " ", "1", " "]
              ]
 
-      assert Board.to_grid(board_grown_2_times_areas_arent_overrunning_each_other) == [
+      assert Board.to_grid_string(board_grown_2_times_areas_arent_overrunning_each_other) == [
                [" ", " ", "2", " ", " ", " ", " "],
                [" ", "2", "1", "2", "2", " ", " "],
                ["2", "1", "0", "1", "1", "2", " "],
@@ -256,7 +256,7 @@ defmodule Solution.Day6.BoardTest do
           [" ", " ", " ", " ", " ", " ", " ", " ", " "],
           [" ", " ", " ", " ", " ", " ", " ", " ", " "]
         ]
-        |> Board.from_grid()
+        |> Board.from_grid_string()
 
       board_grown_1_time =
         board
@@ -267,7 +267,7 @@ defmodule Solution.Day6.BoardTest do
         |> Board.grow()
         |> Board.grow()
 
-      assert Board.to_grid(board_grown_1_time) == [
+      assert Board.to_grid_string(board_grown_1_time) == [
                [" ", " ", " ", " ", " ", " ", " ", " "],
                [" ", " ", "1", " ", " ", " ", " ", " "],
                [" ", "1", "0", "1", "1", " ", " ", " "],
@@ -277,7 +277,7 @@ defmodule Solution.Day6.BoardTest do
                [" ", " ", " ", " ", " ", " ", "1", " "]
              ]
 
-      assert Board.to_grid(board_grown_2_times) == [
+      assert Board.to_grid_string(board_grown_2_times) == [
                [" ", " ", "2", " ", " ", " ", " ", " ", " "],
                [" ", "2", "1", "2", "2", " ", " ", " ", " "],
                ["2", "1", "0", "1", "1", "2", " ", " ", " "],

@@ -13,11 +13,11 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
            }
   end
 
-  describe "From Grid - " do
-    test "Invalid Grid" do
+  describe "From GridString - " do
+    test "Invalid GridString" do
       # "x" is not a number
       assert_raise InvalidArea, fn ->
-        ClosestPointsArea.from_grid([
+        ClosestPointsArea.from_grid_string([
           [" ", " ", " ", " ", " "],
           [" ", " ", " ", " ", " "],
           [" ", " ", "x", " ", " "],
@@ -34,7 +34,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
       # |
       # v y
       #
-      assert ClosestPointsArea.from_grid([
+      assert ClosestPointsArea.from_grid_string([
                [" ", " ", " ", " ", " "],
                [" ", " ", " ", " ", " "],
                [" ", " ", "0", " ", " "],
@@ -55,7 +55,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
       # 2 |
       #   v y
       #
-      assert ClosestPointsArea.from_grid([
+      assert ClosestPointsArea.from_grid_string([
                [" ", " ", "2", " ", " "],
                [" ", "2", "1", "2", " "],
                ["2", "1", "0", "1", "2"],
@@ -78,7 +78,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
       # 2 |
       #   v y
       #
-      assert ClosestPointsArea.from_grid([
+      assert ClosestPointsArea.from_grid_string([
                [" ", "1", " "],
                ["1", "0", "1"],
                [" ", "1", " "]
@@ -98,7 +98,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
       # 2 |
       #   v y
       #
-      assert ClosestPointsArea.from_grid([
+      assert ClosestPointsArea.from_grid_string([
                [" ", "1", "2"],
                [" ", "0", "1"],
                [" ", " ", " "]
@@ -113,10 +113,10 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
     end
   end
 
-  describe "To Grid" do
+  describe "To GridString" do
     test "Valid area" do
       valid_area =
-        ClosestPointsArea.from_grid([
+        ClosestPointsArea.from_grid_string([
           [" ", " ", "2", " ", " "],
           [" ", "2", "1", "2", " "],
           ["2", "1", "0", "1", "2"],
@@ -124,7 +124,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
           [" ", " ", "2", " ", " "]
         ])
 
-      assert ClosestPointsArea.to_grid(valid_area) == [
+      assert ClosestPointsArea.to_grid_string(valid_area) == [
                [" ", " ", "2", " ", " "],
                [" ", "2", "1", "2", " "],
                ["2", "1", "0", "1", "2"],
@@ -144,7 +144,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
                  [" ", " ", " ", " ", " "],
                  [" ", " ", " ", " ", " "]
                ]
-               |> ClosestPointsArea.from_grid()
+               |> ClosestPointsArea.from_grid_string()
                |> ClosestPointsArea.current_grow_stage()
     end
 
@@ -157,7 +157,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
                  [" ", "2", "1", "2", " "],
                  [" ", " ", "2", " ", " "]
                ]
-               |> ClosestPointsArea.from_grid()
+               |> ClosestPointsArea.from_grid_string()
                |> ClosestPointsArea.current_grow_stage()
     end
   end
@@ -172,7 +172,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
           [" ", "2", "1", "2", " "],
           [" ", " ", "2", " ", " "]
         ]
-        |> ClosestPointsArea.from_grid()
+        |> ClosestPointsArea.from_grid_string()
         |> ClosestPointsArea.all_points()
 
       assert all_points ==
@@ -202,7 +202,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
           [" ", " ", " "],
           [" ", " ", " "]
         ]
-        |> ClosestPointsArea.from_grid()
+        |> ClosestPointsArea.from_grid_string()
 
       assert_raise InvalidArea, fn ->
         ClosestPointsArea.next_grow_stage_candidate(invalid_area)
@@ -218,7 +218,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
           [" ", " ", " ", " ", " "],
           [" ", " ", " ", " ", " "]
         ]
-        |> ClosestPointsArea.from_grid()
+        |> ClosestPointsArea.from_grid_string()
         |> ClosestPointsArea.next_grow_stage_candidate()
 
       assert candidate_area_for_step_1 |> Enum.sort() ==
@@ -239,7 +239,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
           [" ", "0", "0"],
           [" ", " ", "0"]
         ]
-        |> ClosestPointsArea.from_grid()
+        |> ClosestPointsArea.from_grid_string()
 
       assert_raise InvalidArea, fn ->
         ClosestPointsArea.next_grow_stage_candidate(invalid_area)
@@ -255,7 +255,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
           [" ", " ", "1", " ", " "],
           [" ", " ", " ", " ", " "]
         ]
-        |> ClosestPointsArea.from_grid()
+        |> ClosestPointsArea.from_grid_string()
         |> ClosestPointsArea.next_grow_stage_candidate()
 
       assert candidate_area_for_step_2 |> Enum.sort() ==
@@ -280,7 +280,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
           [" ", " ", " ", "2", " ", " ", " "],
           [" ", " ", " ", " ", " ", " ", " "]
         ]
-        |> ClosestPointsArea.from_grid()
+        |> ClosestPointsArea.from_grid_string()
         |> ClosestPointsArea.next_grow_stage_candidate()
 
       assert candidate_area_for_step_3 |> Enum.sort() ==
@@ -307,7 +307,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
           [" ", " ", " ", "2", " ", " ", " "],
           [" ", " ", " ", " ", " ", " ", " "]
         ]
-        |> ClosestPointsArea.from_grid()
+        |> ClosestPointsArea.from_grid_string()
         |> ClosestPointsArea.next_grow_stage_candidate()
 
       assert candidate_area_for_step_3 |> Enum.sort() ==
@@ -332,7 +332,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
           [" ", " ", "1", " ", " "],
           [" ", " ", " ", " ", " "]
         ]
-        |> ClosestPointsArea.from_grid()
+        |> ClosestPointsArea.from_grid_string()
         |> Map.replace!(:fully_grown?, true)
 
       next_grow_stage_candidate = ClosestPointsArea.next_grow_stage_candidate(fully_grown_area)

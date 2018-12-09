@@ -1,4 +1,4 @@
-defmodule Solution.Day6.GridTest do
+defmodule Solution.Day6.GridStringTest do
 
 
 

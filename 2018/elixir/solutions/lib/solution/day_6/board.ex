@@ -1,6 +1,6 @@
 defmodule Solution.Day6.Board do
   alias Solution.Day6.ClosestPointsArea
-  alias Solution.Day6.Grid
+  alias Solution.Day6.GridString
 
   @type t :: %__MODULE__{
           areas: [ClosestPointsArea.t()]
@@ -16,10 +16,10 @@ defmodule Solution.Day6.Board do
     end
   end
 
-  def from_grid(board_grid) do
+  def from_grid_string(board_grid) do
     areas =
       board_grid
-      |> Grid.to_grid_points()
+      |> GridString.to_grid_points()
       |> Enum.reject(fn %{value: val} -> val == " " end)
       |> validate_grid_points()
       |> Enum.map(fn %{point: point} -> point end)
@@ -28,12 +28,12 @@ defmodule Solution.Day6.Board do
     %__MODULE__{areas: areas}
   end
 
-  @spec to_grid(Solution.Day6.Board.t()) :: [any()]
-  def to_grid(%__MODULE__{areas: areas}) do
+  @spec to_grid_string(Solution.Day6.Board.t()) :: [any()]
+  def to_grid_string(%__MODULE__{areas: areas}) do
     areas
     |> Enum.map(&ClosestPointsArea.to_grid_points/1)
     |> List.flatten()
-    |> Grid.to_grid()
+    |> GridString.to_grid_string()
   end
 
   def grow(%__MODULE__{areas: areas} = board) do
