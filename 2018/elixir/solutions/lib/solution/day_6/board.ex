@@ -33,6 +33,7 @@ defmodule Solution.Day6.Board do
     areas
     |> Enum.map(&ClosestPointsArea.to_grid_points/1)
     |> List.flatten()
+    |> format_equidistant_points()
     |> GridString.from_grid_points()
   end
 
@@ -65,11 +66,7 @@ defmodule Solution.Day6.Board do
 
     all_claimed_points = Enum.flat_map(areas, &ClosestPointsArea.all_points/1)
 
-    contested_points =
-      contested_points(MapSet.new(), MapSet.new(), candidate_grow_stages_for_all_points)
-
     candidate_grow_stages_for_all_points
-    |> Enum.map(fn grow_stage -> grow_stage -- contested_points end)
     |> Enum.map(fn grow_stage -> grow_stage -- all_claimed_points end)
     |> Enum.zip(areas)
     |> Enum.map(fn {valid_next_stage, area} ->
@@ -77,21 +74,17 @@ defmodule Solution.Day6.Board do
     end)
   end
 
-  defp contested_points(contested_pts, claimed_or_contested_pts, candidate_grow_stages)
-  defp contested_points(contested_points, _, []),
-    do: Enum.to_list(contested_points)
-  defp contested_points(contested_pts, claimed_or_contested_pts, [candidate | rest_of_candidates]) do
-    new_contested_points =
-      candidate
-      |> MapSet.new()
-      |> MapSet.intersection(claimed_or_contested_pts)
-      |> MapSet.union(contested_pts)
+  defp format_equidistant_points(grid_points) do
+    unique_grid_points = Enum.uniq(grid_points)
 
-    new_claimed_or_contested_pts =
-      candidate
-      |> MapSet.new()
-      |> MapSet.union(claimed_or_contested_pts)
+    equidistant_points = grid_points -- unique_grid_points
 
-    contested_points(new_contested_points, new_claimed_or_contested_pts, rest_of_candidates)
+    formatted_equidistant_points =
+      equidistant_points
+      |> Enum.map(fn grid_point -> %{grid_point | value: "."} end)
+
+    unique_grid_points
+    |> Kernel.--(equidistant_points)
+    |> Kernel.++(formatted_equidistant_points)
   end
 end

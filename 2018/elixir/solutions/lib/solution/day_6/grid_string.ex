@@ -30,13 +30,12 @@ defmodule Solution.Day6.GridString do
   defimpl String.Chars, for: __MODULE__ do
     def to_string(%{grid: grid}) do
       grid
-      |> Enum.map(fn line ->
-        line
-        |> Enum.join(" | ")
-        |> String.trim()
-      end)
+      |> Enum.map(&("| " <> Enum.join(&1, " | ") <> " |"))
       |> Enum.join("\n")
+      |> prepend_newline()
     end
+
+    defp prepend_newline(string), do: "\n" <> string
   end
 
   @spec from_string(binary()) :: Solution.Day6.GridString.t()
