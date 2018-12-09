@@ -3,7 +3,6 @@ defmodule Solution.Day6.BoardTest do
   alias Solution.Day6.Board
   alias Solution.Day6.Board.InvalidBoard
   alias Solution.Day6.ClosestPointsArea
-  import Solution.Day6.Helper, only: [to_grow_stage: 1]
 
   describe "Build from Grid" do
     test "Areas already grown - Raise error" do
