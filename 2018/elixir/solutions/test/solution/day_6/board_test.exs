@@ -205,7 +205,6 @@ defmodule Solution.Day6.BoardTest do
                ]
     end
 
-    @tag :skip
     test "- 2 Points  - Bound / Points to grow into are already belonging to another Area" do
       board =
         [
@@ -245,7 +244,6 @@ defmodule Solution.Day6.BoardTest do
              ]
     end
 
-    @tag :skip
     test "Multiple points" do
       board =
         [
@@ -289,17 +287,6 @@ defmodule Solution.Day6.BoardTest do
                [" ", " ", " ", " ", " ", "2", "1", "2", " "],
                [" ", " ", " ", " ", " ", " ", "2", " ", " "]
              ]
-
-      test = [
-        [" ", " ", "2", " ", " ", " ", " ", " ", " "],
-        [" ", "2", "1", "2", "2", " ", " ", " ", " "],
-        ["2", "1", "0", "1", "2", "2", " ", " ", " "],
-        [" ", "2", "1", "2", "0", "1", " ", " ", " "],
-        [" ", " ", "2", "2", "1", " ", "1", "2", " "],
-        [" ", " ", " ", " ", " ", "1", "0", "1", "2"],
-        [" ", " ", " ", " ", " ", "2", "1", "2", " "],
-        [" ", " ", " ", " ", " ", " ", "2", " ", " "]
-      ]
     end
   end
 end

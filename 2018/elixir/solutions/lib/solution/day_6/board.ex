@@ -63,14 +63,14 @@ defmodule Solution.Day6.Board do
     {candidate_grow_stages_for_all_points, areas} =
       Enum.unzip(candidate_grow_stages_with_associated_areas)
 
-    # all_claimed_points = Enum.flat_map(areas, &ClosestPointsArea.all_points/1)
+    all_claimed_points = Enum.flat_map(areas, &ClosestPointsArea.all_points/1)
 
     contested_points =
       contested_points(MapSet.new(), MapSet.new(), candidate_grow_stages_for_all_points)
 
     candidate_grow_stages_for_all_points
     |> Enum.map(fn grow_stage -> grow_stage -- contested_points end)
-    # |> Enum.map(fn grow_stage -> grow_stage -- all_claimed_points end)
+    |> Enum.map(fn grow_stage -> grow_stage -- all_claimed_points end)
     |> Enum.zip(areas)
     |> Enum.map(fn {valid_next_stage, area} ->
       ClosestPointsArea.commit_valid_grow_stage(area, valid_next_stage)
