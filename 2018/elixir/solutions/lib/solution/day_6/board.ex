@@ -2,6 +2,10 @@ defmodule Solution.Day6.Board do
   alias Solution.Day6.ClosestPointsArea
   alias Solution.Day6.GridString
 
+  @type x() :: integer()
+  @type y() :: integer()
+  @type point() :: {x(), y()}
+
   @type t :: %__MODULE__{
           areas: [ClosestPointsArea.t()]
         }

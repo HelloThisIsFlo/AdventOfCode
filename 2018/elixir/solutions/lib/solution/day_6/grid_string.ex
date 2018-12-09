@@ -1,7 +1,5 @@
 defmodule Solution.Day6.GridString do
-  @type x() :: integer()
-  @type y() :: integer()
-  @type point() :: {x(), y()}
+  alias Solution.Day6.Board
 
   @type t :: %__MODULE__{
           grid: [[String.t()]]
@@ -9,10 +7,8 @@ defmodule Solution.Day6.GridString do
   defstruct [:grid]
 
   defmodule GridPoint do
-    alias Solution.Day6.GridString
-
     @type t :: %__MODULE__{
-            point: GridString.point(),
+            point: Board.point(),
             value: String.t()
           }
     defstruct [

@@ -1,15 +1,18 @@
 defmodule Solution.Day6.ClosestPointsArea do
+  alias Solution.Day6.Board
   alias Solution.Day6.GridString
   alias Solution.Day6.GridString.GridPoint
 
-  @type grow_stage() :: [GridString.point()]
+  @type grow_stage() :: [Board.point()]
 
   @type t :: %__MODULE__{
           fully_grown?: boolean(),
-          grow_stages: [grow_stage()]
+          grow_stages: [grow_stage()],
+          equidistant_points: MapSet.t(Board.point())
         }
   defstruct fully_grown?: false,
-            grow_stages: []
+            grow_stages: [],
+            equidistant_points: MapSet.new()
 
   defmodule InvalidArea do
     defexception [:message]
@@ -20,7 +23,7 @@ defmodule Solution.Day6.ClosestPointsArea do
     end
   end
 
-  @spec from_origin([GridString.point()]) :: __MODULE__.t()
+  @spec from_origin(Board.point()) :: __MODULE__.t()
   def from_origin(origin) do
     %__MODULE__{
       grow_stages: [[origin]]
@@ -85,12 +88,12 @@ defmodule Solution.Day6.ClosestPointsArea do
   def next_grow_stage_candidate(%__MODULE__{grow_stages: grow_stages}),
     do: do_next_grow_stage_candidate(Enum.reverse(grow_stages))
 
-  def commit_valid_grow_stage(area, valid_grow_stage_to_commit) do
+  def commit_valid_grow_stage(area, closest_points, equidistant_points \\ []) do
     do_commit_valid_grow_stage(
       area,
       area.fully_grown?,
       List.last(area.grow_stages),
-      valid_grow_stage_to_commit
+      closest_points
     )
   end
 

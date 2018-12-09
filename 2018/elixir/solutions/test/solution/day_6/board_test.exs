@@ -399,12 +399,14 @@ defmodule Solution.Day6.BoardTest do
                """
                |> GridString.from_string()
     end
+  end
 
+  describe "Debug" do
     @tag :skip
     test "Board from Problem statement" do
       IO.puts("")
 
-      grow_board =
+      grown_board =
         """
         |   |   |   |   |   |   |   |   |   |   |
         |   | 0 |   |   |   |   |   |   |   |   |
@@ -429,12 +431,98 @@ defmodule Solution.Day6.BoardTest do
         |> Board.grow()
         |> Board.grow()
 
-      grow_board
-      |> Map.get(:areas)
+      areas = Map.get(grown_board, :areas)
+
+      _grow_areas =
+        areas
+        |> Enum.filter(fn %{fully_grown?: grown?} -> grown? end)
+        |> IO.inspect()
+
+      area_D = Enum.find(areas, fn %{grow_stages: stages} -> Enum.at(stages, 0) == [{3, 4}] end)
+      area_E = Enum.find(areas, fn %{grow_stages: stages} -> Enum.at(stages, 0) == [{5, 5}] end)
+
+      IO.inspect(area_D, label: "D")
+      IO.inspect(area_E, label: "E")
+
+      grown_board
+      |> Board.to_grid_string()
+      |> IO.inspect()
+    end
+
+    @tag :skip
+    test "Finite Center Area - With infinite Equidistant points" do
+      grown_board =
+        """
+        |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+        |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+        |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+        |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+        |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+        |   |   |   |   |   |   |   | 0 |   |   |   | 0 |   |   |
+        |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+        |   |   |   |   |   |   |   |   |   | 0 |   |   |   |   |
+        |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+        |   |   |   |   |   |   |   | 0 |   |   |   | 0 |   |   |
+        """
+        |> GridString.from_string()
+        |> Board.from_grid_string()
+        |> Board.grow()
+        |> Board.grow()
+        |> Board.grow()
+        |> Board.grow()
+        |> Board.grow()
+        |> Board.grow()
+        |> Board.grow()
+
+      Map.get(grown_board, :areas)
       |> Enum.filter(fn %{fully_grown?: grown?} -> grown? end)
       |> IO.inspect()
 
-      grow_board
+      grown_board
+      |> Board.to_grid_string()
+      |> IO.inspect()
+    end
+
+    @tag :skip
+    test "Finite Center Area - No infinite Equidistant points" do
+      grown_board =
+        """
+        |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+        |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+        |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+        |   |   |   |   |   |   |   |   | 0 |   |   |   |   |   |
+        |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+        |   |   |   |   |   |   | 0 |   |   |   | 0 |   |   |   |
+        |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+        |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+        |   |   |   |   | 0 |   |   |   | 0 |   |   |   | 0 |   |
+        |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+        |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+        |   |   |   |   |   |   | 0 |   |   |   | 0 |   |   |   |
+        |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+        |   |   |   |   |   |   |   |   | 0 |   |   |   |   |   |
+        """
+        |> GridString.from_string()
+        |> Board.from_grid_string()
+        |> Board.grow()
+        |> Board.grow()
+        |> Board.grow()
+        |> Board.grow()
+        |> Board.grow()
+        |> Board.grow()
+        |> Board.grow()
+
+      Map.get(grown_board, :areas)
+      |> Enum.filter(fn %{fully_grown?: grown?} -> grown? end)
+      |> IO.inspect()
+
+      _center_area =
+        grown_board
+        |> Map.get(:areas)
+        |> Enum.find(fn %{grow_stages: stages} -> Enum.at(stages, 0) == [{8, 5}] end)
+        |> IO.inspect()
+
+      grown_board
       |> Board.to_grid_string()
       |> IO.inspect()
     end

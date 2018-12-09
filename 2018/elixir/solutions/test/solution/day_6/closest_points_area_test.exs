@@ -392,7 +392,29 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
   end
 
   describe "Commit next valid Grow Stage" do
-    test "- Not fully grown - Different from last stage - Add to the list of Grow stages" do
+    test "- Equidistant points not contained in closest -> Raise Error"
+
+    test "- Fully grown - New closest points - Only some equidistant -> Raise Error"
+    test "- Fully grown - New closest points - All equidistant -> Update"
+
+    test "- Not fully grown - New closest points - None equidistant -> Update"
+    test "- Not fully grown - New closest points - Some equidistant -> Update"
+    test "- Not fully grown - New closest points - All equidistant -> Update & Set to Fully Grown"
+    test "- Not fully grown - No new closest points - No equidistant -> Set to Fully Grown"
+
+    # BELOW: OLD TESTS REFACTOR INTO TESTS ABOVE
+    # BELOW: OLD TESTS REFACTOR INTO TESTS ABOVE
+    # BELOW: OLD TESTS REFACTOR INTO TESTS ABOVE
+    # BELOW: OLD TESTS REFACTOR INTO TESTS ABOVE
+    # BELOW: OLD TESTS REFACTOR INTO TESTS ABOVE
+    # BELOW: OLD TESTS REFACTOR INTO TESTS ABOVE
+    # BELOW: OLD TESTS REFACTOR INTO TESTS ABOVE
+    # BELOW: OLD TESTS REFACTOR INTO TESTS ABOVE
+    # BELOW: OLD TESTS REFACTOR INTO TESTS ABOVE
+    # BELOW: OLD TESTS REFACTOR INTO TESTS ABOVE
+    # BELOW: OLD TESTS REFACTOR INTO TESTS ABOVE
+    # We don't care anymore about "equal last stage"
+    test "- Not fully grown - No Equidistant points - Different from last stage - Add to the list of Grow stages" do
       area = %ClosestPointsArea{
         fully_grown?: false,
         grow_stages: [
@@ -415,7 +437,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
              }
     end
 
-    test "- Not fully grown - Stage equal to last stage - Unchanged & Set fully_grow? to true" do
+    test "- Not fully grown - No Equidistant points  - Stage equal to last stage - Unchanged & Set fully_grow? to true" do
       area = %ClosestPointsArea{
         fully_grown?: false,
         grow_stages: [
@@ -431,7 +453,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
       assert after_commit.grow_stages == area.grow_stages
     end
 
-    test "- Fully grown - Stage equal to last stage - Unchanged" do
+    test "- Fully grown - No Equidistant points - Stage equal to last stage - Unchanged" do
       fully_grown_area = %ClosestPointsArea{
         fully_grown?: true,
         grow_stages: [
@@ -447,7 +469,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
       assert after_commit.grow_stages == fully_grown_area.grow_stages
     end
 
-    test "- Fully grown - Stage isn't equal to last stage - Raise error" do
+    test "- Fully grown - No Equidistant points - Stage isn't equal to last stage - Raise error" do
       fully_grown_area = %ClosestPointsArea{
         fully_grown?: true,
         grow_stages: [
