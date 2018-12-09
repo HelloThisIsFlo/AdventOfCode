@@ -16,9 +16,9 @@ defmodule Solution.Day6.Board do
     end
   end
 
-  def from_grid_string(board_grid) do
+  def from_grid_string(board_grid_string) do
     areas =
-      board_grid
+      board_grid_string
       |> GridString.to_grid_points()
       |> Enum.reject(fn %{value: val} -> val == " " end)
       |> validate_grid_points()
@@ -33,7 +33,7 @@ defmodule Solution.Day6.Board do
     areas
     |> Enum.map(&ClosestPointsArea.to_grid_points/1)
     |> List.flatten()
-    |> GridString.to_grid_string()
+    |> GridString.from_grid_points()
   end
 
   def grow(%__MODULE__{areas: areas} = board) do

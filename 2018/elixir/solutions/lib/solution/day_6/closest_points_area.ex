@@ -28,16 +28,16 @@ defmodule Solution.Day6.ClosestPointsArea do
   end
 
   @spec from_grid_string([[String.t()]]) :: __MODULE__.t()
-  def from_grid_string(grid) do
+  def from_grid_string(grid_string) do
     %__MODULE__{
-      grow_stages: to_grow_stages(grid)
+      grow_stages: to_grow_stages(grid_string)
     }
   end
 
   def to_grid_string(area) do
     area
     |> to_grid_points()
-    |> GridString.to_grid_string()
+    |> GridString.from_grid_points()
   end
 
   def to_grid_points(%__MODULE__{grow_stages: grow_stages}) do
@@ -92,8 +92,8 @@ defmodule Solution.Day6.ClosestPointsArea do
   # ------- Private Functions -------------
   # ------- Private Functions -------------
 
-  defp to_grow_stages(grid) do
-    grid
+  defp to_grow_stages(grid_string) do
+    grid_string
     |> GridString.to_grid_points()
     |> Enum.reject(&(&1.value == " "))
     |> Enum.map(&parse_value_to_stage_number/1)
@@ -109,7 +109,7 @@ defmodule Solution.Day6.ClosestPointsArea do
     with {stage_number, _} <- Integer.parse(value_as_string) do
       %{point: point, stage: stage_number}
     else
-      :error -> raise InvalidArea, "GridString point couldn't be parsed to a number"
+      :error -> raise InvalidArea, "Grid point couldn't be parsed to a number"
     end
   end
 

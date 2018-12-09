@@ -3,6 +3,11 @@ defmodule Solution.Day6.GridString do
   @type y() :: integer()
   @type point() :: {x(), y()}
 
+  @type t :: %__MODULE__{
+          grid: [[String.t()]]
+        }
+  defstruct [:grid]
+
   defmodule GridPoint do
     alias Solution.Day6.GridString
 
@@ -16,19 +21,23 @@ defmodule Solution.Day6.GridString do
     ]
   end
 
-  def to_grid_points(grid) do
-    for y <- 0..(length(grid) - 1) do
-      for x <- 0..(length(get_line(grid, y)) - 1) do
-        %GridPoint{
-          point: {x, y},
-          value: get_point(grid, x, y)
-        }
-      end
-    end
-    |> List.flatten()
+  @spec from_string(binary()) :: Solution.Day6.GridString.t()
+  def from_string(grid_as_string) do
+    %__MODULE__{
+      grid:
+        grid_as_string
+        |> String.split("\n")
+        |> Enum.reject(&(&1 == ""))
+        |> Enum.map(fn line ->
+          line
+          |> String.split("|")
+          |> Enum.reject(&(&1 == ""))
+          |> Enum.map(&String.at(&1, 1))
+        end)
+    }
   end
 
-  def to_grid_string(grid_points) do
+  def from_grid_points(grid_points) do
     grid_width =
       grid_points
       |> Enum.map(fn %{point: {x, _}} -> x end)
@@ -39,11 +48,27 @@ defmodule Solution.Day6.GridString do
       |> Enum.map(fn %{point: {_, y}} -> y end)
       |> Enum.max()
 
-    for y <- 0..grid_height do
-      for x <- 0..grid_width do
-        find_value_at_coordinates(grid_points, x, y)
+    %__MODULE__{
+      grid:
+        for y <- 0..grid_height do
+          for x <- 0..grid_width do
+            find_value_at_coordinates(grid_points, x, y)
+          end
+        end
+    }
+  end
+
+  @spec to_grid_points(__MODULE__.t()) :: [__MODULE__.GridPoint.t()]
+  def to_grid_points(%__MODULE__{grid: grid}) do
+    for y <- 0..(length(grid) - 1) do
+      for x <- 0..(length(get_line(grid, y)) - 1) do
+        %GridPoint{
+          point: {x, y},
+          value: get_point(grid, x, y)
+        }
       end
     end
+    |> List.flatten()
   end
 
   # ------- Private Functions -------------
