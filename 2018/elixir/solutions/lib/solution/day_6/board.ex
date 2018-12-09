@@ -28,7 +28,7 @@ defmodule Solution.Day6.Board do
     %__MODULE__{areas: areas}
   end
 
-  @spec to_grid_string(Solution.Day6.Board.t()) :: [any()]
+  @spec to_grid_string(Solution.Day6.Board.t()) :: GridString.t()
   def to_grid_string(%__MODULE__{areas: areas}) do
     areas
     |> Enum.map(&ClosestPointsArea.to_grid_points/1)
@@ -78,10 +78,8 @@ defmodule Solution.Day6.Board do
   end
 
   defp contested_points(contested_pts, claimed_or_contested_pts, candidate_grow_stages)
-
   defp contested_points(contested_points, _, []),
     do: Enum.to_list(contested_points)
-
   defp contested_points(contested_pts, claimed_or_contested_pts, [candidate | rest_of_candidates]) do
     new_contested_points =
       candidate

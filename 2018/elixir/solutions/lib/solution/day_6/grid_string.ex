@@ -21,6 +21,24 @@ defmodule Solution.Day6.GridString do
     ]
   end
 
+  defimpl Inspect, for: __MODULE__ do
+    def inspect(grid_string, _opts) do
+      to_string(grid_string)
+    end
+  end
+
+  defimpl String.Chars, for: __MODULE__ do
+    def to_string(%{grid: grid}) do
+      grid
+      |> Enum.map(fn line ->
+        line
+        |> Enum.join(" | ")
+        |> String.trim()
+      end)
+      |> Enum.join("\n")
+    end
+  end
+
   @spec from_string(binary()) :: Solution.Day6.GridString.t()
   def from_string(grid_as_string) do
     %__MODULE__{

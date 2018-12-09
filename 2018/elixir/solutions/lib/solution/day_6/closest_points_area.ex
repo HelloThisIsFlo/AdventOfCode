@@ -27,10 +27,20 @@ defmodule Solution.Day6.ClosestPointsArea do
     }
   end
 
-  @spec from_grid_string([[String.t()]]) :: __MODULE__.t()
+  @spec from_grid_string(GridString.t()) :: __MODULE__.t()
   def from_grid_string(grid_string) do
     %__MODULE__{
-      grow_stages: to_grow_stages(grid_string)
+      grow_stages:
+        grid_string
+        |> GridString.to_grid_points()
+        |> Enum.reject(&(&1.value == " "))
+        |> Enum.map(&parse_value_to_stage_number/1)
+        |> Enum.sort(fn %{stage: stage1}, %{stage: stage2} -> stage1 <= stage2 end)
+        |> Enum.chunk_by(fn %{stage: stage} -> stage end)
+        |> Enum.map(fn stage_points ->
+          stage_points
+          |> Enum.map(fn %{point: point} -> point end)
+        end)
     }
   end
 
@@ -91,19 +101,6 @@ defmodule Solution.Day6.ClosestPointsArea do
   # ------- Private Functions -------------
   # ------- Private Functions -------------
   # ------- Private Functions -------------
-
-  defp to_grow_stages(grid_string) do
-    grid_string
-    |> GridString.to_grid_points()
-    |> Enum.reject(&(&1.value == " "))
-    |> Enum.map(&parse_value_to_stage_number/1)
-    |> Enum.sort(fn %{stage: stage1}, %{stage: stage2} -> stage1 <= stage2 end)
-    |> Enum.chunk_by(fn %{stage: stage} -> stage end)
-    |> Enum.map(fn stage_points ->
-      stage_points
-      |> Enum.map(fn %{point: point} -> point end)
-    end)
-  end
 
   defp parse_value_to_stage_number(%GridPoint{point: point, value: value_as_string}) do
     with {stage_number, _} <- Integer.parse(value_as_string) do
