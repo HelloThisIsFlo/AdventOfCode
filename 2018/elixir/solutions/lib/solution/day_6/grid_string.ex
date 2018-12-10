@@ -24,11 +24,43 @@ defmodule Solution.Day6.GridString do
   end
 
   defimpl String.Chars, for: __MODULE__ do
+    alias Solution.Day6.GridString
+
     def to_string(%{grid: grid}) do
-      grid
-      |> Enum.map(&("| " <> Enum.join(&1, " | ") <> " |"))
+      for y <- 0..(length(grid) - 1) do
+        for x <- 0..(length(GridString.get_line(grid, y)) - 1) do
+          grid
+          |> GridString.get_point(x, y)
+          |> add_padding(column_cell_max_width(grid, x))
+        end
+      end
+      |> Enum.map(&format_line/1)
       |> Enum.join("\n")
       |> prepend_newline()
+    end
+
+    defp add_padding(cell_as_string, column_cell_max_width),
+      do: append_spaces(cell_as_string, column_cell_max_width - String.length(cell_as_string))
+
+    defp append_spaces(text, 0), do: text
+    defp append_spaces(text, n) do
+      spaces =
+        1..n
+        |> Enum.map(fn _ -> " " end)
+        |> Enum.join()
+
+      text <> spaces
+    end
+
+    defp column_cell_max_width(grid, column_number) do
+      grid
+      |> Enum.map(&Enum.at(&1, column_number))
+      |> Enum.map(&String.length/1)
+      |> Enum.max()
+    end
+
+    defp format_line(line_cells) when is_list(line_cells) do
+      "| " <> Enum.join(line_cells, " | ") <> " |"
     end
 
     defp prepend_newline(string), do: "\n" <> string
@@ -45,7 +77,7 @@ defmodule Solution.Day6.GridString do
           line
           |> String.split("|")
           |> Enum.reject(&(&1 == ""))
-          |> Enum.map(&String.at(&1, 1))
+          |> Enum.map(&to_value/1)
         end)
     }
   end
@@ -87,12 +119,19 @@ defmodule Solution.Day6.GridString do
   # ------- Private Functions -------------
   # ------- Private Functions -------------
   # ------- Private Functions -------------
-  defp get_line(grid, y) do
+  defp to_value(cell_content_as_string) do
+    case String.trim(cell_content_as_string) do
+      "" -> " "
+      val -> val
+    end
+  end
+
+  def get_line(grid, y) do
     grid
     |> Enum.at(y)
   end
 
-  defp get_point(grid, x, y) do
+  def get_point(grid, x, y) do
     grid
     |> get_line(y)
     |> Enum.at(x)
