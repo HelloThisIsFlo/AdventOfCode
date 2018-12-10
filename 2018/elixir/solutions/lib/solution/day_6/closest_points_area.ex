@@ -32,18 +32,26 @@ defmodule Solution.Day6.ClosestPointsArea do
 
   @spec from_grid_string(GridString.t()) :: __MODULE__.t()
   def from_grid_string(grid_string) do
+    valid_grid_points =
+      grid_string
+      |> GridString.to_grid_points()
+      |> Enum.reject(&(&1.value == " "))
+
     %__MODULE__{
       grow_stages:
-        grid_string
-        |> GridString.to_grid_points()
-        |> Enum.reject(&(&1.value == " "))
+        valid_grid_points
         |> Enum.map(&parse_value_to_stage_number/1)
         |> Enum.sort(fn %{stage: stage1}, %{stage: stage2} -> stage1 <= stage2 end)
         |> Enum.chunk_by(fn %{stage: stage} -> stage end)
         |> Enum.map(fn stage_points ->
           stage_points
           |> Enum.map(fn %{point: point} -> point end)
-        end)
+        end),
+      equidistant_points:
+        valid_grid_points
+        |> Enum.filter(&is_equidistant_point/1)
+        |> Enum.map(&Map.get(&1, :point))
+        |> MapSet.new()
     }
   end
 
@@ -53,28 +61,8 @@ defmodule Solution.Day6.ClosestPointsArea do
     |> GridString.from_grid_points()
   end
 
-  def to_grid_points(%__MODULE__{grow_stages: grow_stages}) do
-    do_to_grid_points(0, grow_stages, [])
-  end
-
-  defp do_to_grid_points(current_stage, grow_stages, grid_points)
-  defp do_to_grid_points(_, [], grid_points), do: grid_points
-
-  defp do_to_grid_points(current_stage_number, [current_stage | other_stages], grid_points) do
-    grid_points_for_current_stage =
-      current_stage
-      |> Enum.map(fn point ->
-        %GridPoint{
-          point: point,
-          value: Integer.to_string(current_stage_number)
-        }
-      end)
-
-    do_to_grid_points(
-      current_stage_number + 1,
-      other_stages,
-      grid_points ++ grid_points_for_current_stage
-    )
+  def to_grid_points(%__MODULE__{grow_stages: grow_stages, equidistant_points: equidistant_points}) do
+    do_to_grid_points(0, grow_stages, equidistant_points, [])
   end
 
   def all_points(%__MODULE__{grow_stages: grow_stages}) do
@@ -83,18 +71,43 @@ defmodule Solution.Day6.ClosestPointsArea do
     |> MapSet.new()
   end
 
+  @spec next_grow_stage_candidate(Solution.Day6.ClosestPointsArea.t()) :: any()
   def next_grow_stage_candidate(%__MODULE__{grow_stages: grow_stages, fully_grown?: true}),
     do: List.last(grow_stages)
   def next_grow_stage_candidate(%__MODULE__{grow_stages: grow_stages}),
     do: do_next_grow_stage_candidate(Enum.reverse(grow_stages))
 
   def commit_valid_grow_stage(area, closest_points, equidistant_points \\ []) do
-    do_commit_valid_grow_stage(
-      area,
-      area.fully_grown?,
-      List.last(area.grow_stages),
-      closest_points
-    )
+    if not Enum.all?(equidistant_points, &Enum.member?(closest_points, &1)) do
+      raise InvalidArea,
+            "Wrong Commit: All equidistant points should be included in the list of closest points"
+    else
+      if closest_points == equidistant_points do
+        %{
+          area
+          | fully_grown?: true,
+            grow_stages: area.grow_stages ++ [closest_points],
+            equidistant_points:
+              MapSet.union(area.equidistant_points, MapSet.new(equidistant_points))
+        }
+      else
+        if fully_grown?(area) do
+          raise InvalidArea,
+                "After area is considered fully grown it can only 'grow' with equidistant points"
+        else
+          %{
+            area
+            | grow_stages: area.grow_stages ++ [closest_points],
+              equidistant_points:
+                MapSet.union(area.equidistant_points, MapSet.new(equidistant_points))
+          }
+        end
+      end
+    end
+  end
+
+  def fully_grown?(area) do
+    area.fully_grown?
   end
 
   def current_grow_stage(%__MODULE__{grow_stages: []}), do: 0
@@ -104,6 +117,9 @@ defmodule Solution.Day6.ClosestPointsArea do
   # ------- Private Functions -------------
   # ------- Private Functions -------------
   # ------- Private Functions -------------
+
+  defp is_equidistant_point(%GridPoint{value: value_as_string}),
+    do: String.contains?(value_as_string, ".")
 
   defp parse_value_to_stage_number(%GridPoint{point: point, value: value_as_string}) do
     with {stage_number, _} <- Integer.parse(value_as_string) do
@@ -136,19 +152,35 @@ defmodule Solution.Day6.ClosestPointsArea do
     ]
   end
 
-  defp do_commit_valid_grow_stage(area, fully_grown?, last_grow_stage, valid_grow_stage_to_commit)
-  defp do_commit_valid_grow_stage(_area, true, last_grow_stage, valid_grow_stage_to_commit)
-       when last_grow_stage != valid_grow_stage_to_commit,
-       do:
-         raise(
-           InvalidArea,
-           "Invalid Grow Stage! Area is fully grown, yet it is attempted to add a new grow stage not equal to the last one!"
-         )
-  defp do_commit_valid_grow_stage(area, true, _last_grow_stage, _valid_grow_stage_to_commit),
-    do: area
-  defp do_commit_valid_grow_stage(area, false, last_grow_stage, valid_grow_stage_to_commit)
-       when last_grow_stage != valid_grow_stage_to_commit,
-       do: %{area | grow_stages: area.grow_stages ++ [valid_grow_stage_to_commit]}
-  defp do_commit_valid_grow_stage(area, false, _last_grow_stage, _valid_grow_stage_to_commit),
-    do: %{area | fully_grown?: true}
+  defp do_to_grid_points(current_stage, grow_stages, equidistant_points, grid_points)
+  defp do_to_grid_points(_, [], _, grid_points), do: grid_points
+  defp do_to_grid_points(
+         current_stage_number,
+         [current_stage | other_stages],
+         equidistant_points,
+         grid_points
+       ) do
+    grid_points_for_current_stage =
+      current_stage
+      |> Enum.map(fn point ->
+        stage_as_string = Integer.to_string(current_stage_number)
+
+        %GridPoint{
+          point: point,
+          value:
+            if not MapSet.member?(equidistant_points, point) do
+              stage_as_string
+            else
+              stage_as_string <> "."
+            end
+        }
+      end)
+
+    do_to_grid_points(
+      current_stage_number + 1,
+      other_stages,
+      equidistant_points,
+      grid_points ++ grid_points_for_current_stage
+    )
+  end
 end
