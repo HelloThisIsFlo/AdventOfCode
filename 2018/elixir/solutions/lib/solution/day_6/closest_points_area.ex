@@ -77,37 +77,22 @@ defmodule Solution.Day6.ClosestPointsArea do
   def next_grow_stage_candidate(%__MODULE__{grow_stages: grow_stages}),
     do: do_next_grow_stage_candidate(Enum.reverse(grow_stages))
 
-  def commit_valid_grow_stage(area, closest_points, equidistant_points \\ []) do
-    if not Enum.all?(equidistant_points, &Enum.member?(closest_points, &1)) do
-      raise InvalidArea,
-            "Wrong Commit: All equidistant points should be included in the list of closest points"
-    else
-      if closest_points == equidistant_points do
-        %{
-          area
-          | fully_grown?: true,
-            grow_stages: area.grow_stages ++ [closest_points],
-            equidistant_points:
-              MapSet.union(area.equidistant_points, MapSet.new(equidistant_points))
-        }
-      else
-        if fully_grown?(area) do
-          raise InvalidArea,
-                "After area is considered fully grown it can only 'grow' with equidistant points"
-        else
-          %{
-            area
-            | grow_stages: area.grow_stages ++ [closest_points],
-              equidistant_points:
-                MapSet.union(area.equidistant_points, MapSet.new(equidistant_points))
-          }
-        end
-      end
-    end
+  def commit_valid_grow_stage(area, grow_stage_to_commit, equidistant_points_to_commit \\ []) do
+    validate_commit(area, grow_stage_to_commit, equidistant_points_to_commit)
+
+    %{
+      area
+      | grow_stages: area.grow_stages ++ [grow_stage_to_commit],
+        equidistant_points:
+          equidistant_points_to_commit |> MapSet.new() |> MapSet.union(area.equidistant_points)
+    }
   end
 
-  def fully_grown?(area) do
-    area.fully_grown?
+  def fully_grown?(%__MODULE__{grow_stages: stages, equidistant_points: equidistants}) do
+    last_stage_contains_only_equidistants =
+      Enum.all?(List.last(stages), &MapSet.member?(equidistants, &1))
+
+    last_stage_contains_only_equidistants
   end
 
   def current_grow_stage(%__MODULE__{grow_stages: []}), do: 0
@@ -150,6 +135,18 @@ defmodule Solution.Day6.ClosestPointsArea do
       {x, y + 1},
       {x, y - 1}
     ]
+  end
+
+  defp validate_commit(area, grow_stage_to_commit, equidistant_points_to_commit) do
+    if not Enum.all?(equidistant_points_to_commit, &Enum.member?(grow_stage_to_commit, &1)) do
+      raise InvalidArea,
+            "Wrong Commit: All new equidistant points should be included in the new grow stage"
+    end
+
+    if grow_stage_to_commit != equidistant_points_to_commit and fully_grown?(area) do
+      raise InvalidArea,
+            "After area is considered fully grown it can only 'grow' with equidistant points"
+    end
   end
 
   defp do_to_grid_points(current_stage, grow_stages, equidistant_points, grid_points)

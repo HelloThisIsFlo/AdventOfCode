@@ -449,7 +449,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
   end
 
   describe "Commit next valid Grow Stage" do
-    test "- Equidistant points not contained in closest -> Raise Error" do
+    test "* Equidistant points not contained in closest -> Raise Error" do
       area =
         """
         |   |   |   |   |   |
@@ -461,7 +461,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
         |> GridString.from_string()
         |> ClosestPointsArea.from_grid_string()
 
-      closest_to_commit =
+      grow_stage_to_commit =
         """
         |   |   |   |   |   |
         |   |   | x |   |   |
@@ -486,26 +486,25 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
       assert_raise InvalidArea, fn ->
         ClosestPointsArea.commit_valid_grow_stage(
           area,
-          closest_to_commit,
+          grow_stage_to_commit,
           equidistant_points_to_commit
         )
       end
     end
 
-    test "- Fully grown - New closest points - Only some equidistant -> Raise Error" do
+    test "* Fully grown - New closest points - Only some equidistant -> Raise Error" do
       fully_grown_area =
         """
-        |   |   |   |   |   |
-        |   |   | 1 |   |   |
-        |   | 1 | 0 | 1 |   |
-        |   |   | 1 |   |   |
-        |   |   |   |   |   |
+        |   |    |    |   |   |
+        |   |    | 1. |   |   |
+        |   | 1. | 0  | 1.|   |
+        |   |    | 1. |   |   |
+        |   |    |    |   |   |
         """
         |> GridString.from_string()
         |> ClosestPointsArea.from_grid_string()
-        |> Map.replace!(:fully_grown?, true)
 
-      closest_to_commit =
+      grow_stage_to_commit =
         """
         |   |   | x |   |   |
         |   | x |   | x |   |
@@ -530,69 +529,36 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
       assert_raise InvalidArea, fn ->
         ClosestPointsArea.commit_valid_grow_stage(
           fully_grown_area,
-          closest_to_commit,
+          grow_stage_to_commit,
           equidistant_points_to_commit
         )
       end
     end
 
-    test "- Fully grown - New closest points - All equidistant -> Update" do
-      fully_grown_area =
+    test "- No new closest points - Append empty stage to the list of stages (ie, fully grown)" do
+      area =
         """
-        |   |   |   |   |   |
-        |   |   | 1 |   |   |
-        |   | 1 | 0 | 1 |   |
-        |   |   | 1 |   |   |
-        |   |   |   |   |   |
+        |   | 1 |   |
+        | 1 | 0 | 1 |
+        |   | 1 |   |
         """
         |> GridString.from_string()
         |> ClosestPointsArea.from_grid_string()
-        |> Map.replace!(:fully_grown?, true)
 
-      closest_to_commit =
-        """
-        |   |   | x |   |   |
-        |   | x |   | x |   |
-        | x |   |   |   | x |
-        |   | x |   | x |   |
-        |   |   | x |   |   |
-        """
-        |> GridString.from_string()
-        |> to_list_of_points()
+      after_commit = ClosestPointsArea.commit_valid_grow_stage(area, [], [])
 
-      equidistant_points_to_commit =
-        """
-        |   |   | x |   |   |
-        |   | x |   | x |   |
-        | x |   |   |   | x |
-        |   | x |   | x |   |
-        |   |   | x |   |   |
-        """
-        |> GridString.from_string()
-        |> to_list_of_points()
-
-      after_commit =
-        ClosestPointsArea.commit_valid_grow_stage(
-          fully_grown_area,
-          closest_to_commit,
-          equidistant_points_to_commit
-        )
-
-      assert after_commit.fully_grown? == true
-
+      assert after_commit |> Map.get(:grow_stages) |> List.last() == []
       assert after_commit
              |> ClosestPointsArea.to_grid_string() ==
                """
-               |    |    | 2. |    |    |
-               |    | 2. | 1  | 2. |    |
-               | 2. | 1  | 0  | 1  | 2. |
-               |    | 2. | 1  | 2. |    |
-               |    |    | 2. |    |    |
+               |   | 1 |   |
+               | 1 | 0 | 1 |
+               |   | 1 |   |
                """
                |> GridString.from_string()
     end
 
-    test "- Not fully grown - New closest points - None equidistant -> Update" do
+    test "- New closest points - Some equidistant -> Update" do
       area =
         """
         |   |   |   |   |   |
@@ -604,62 +570,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
         |> GridString.from_string()
         |> ClosestPointsArea.from_grid_string()
 
-      closest_to_commit =
-        """
-        |   |   | x |   |   |
-        |   | x |   | x |   |
-        | x |   |   |   | x |
-        |   | x |   | x |   |
-        |   |   | x |   |   |
-        """
-        |> GridString.from_string()
-        |> to_list_of_points()
-
-      equidistant_points_to_commit =
-        """
-        |   |   |   |   |   |
-        |   |   |   |   |   |
-        |   |   |   |   |   |
-        |   |   |   |   |   |
-        |   |   |   |   |   |
-        """
-        |> GridString.from_string()
-        |> to_list_of_points()
-
-      after_commit =
-        ClosestPointsArea.commit_valid_grow_stage(
-          area,
-          closest_to_commit,
-          equidistant_points_to_commit
-        )
-
-      assert after_commit.fully_grown? == false
-
-      assert after_commit
-             |> ClosestPointsArea.to_grid_string() ==
-               """
-               |    |    | 2  |    |    |
-               |    | 2  | 1  | 2  |    |
-               | 2  | 1  | 0  | 1  | 2  |
-               |    | 2  | 1  | 2  |    |
-               |    |    | 2  |    |    |
-               """
-               |> GridString.from_string()
-    end
-
-    test "- Not fully grown - New closest points - Some equidistant -> Update" do
-      area =
-        """
-        |   |   |   |   |   |
-        |   |   | 1 |   |   |
-        |   | 1 | 0 | 1 |   |
-        |   |   | 1 |   |   |
-        |   |   |   |   |   |
-        """
-        |> GridString.from_string()
-        |> ClosestPointsArea.from_grid_string()
-
-      closest_to_commit =
+      grow_stage_to_commit =
         """
         |   |   | x |   |   |
         |   | x |   | x |   |
@@ -684,11 +595,9 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
       after_commit =
         ClosestPointsArea.commit_valid_grow_stage(
           area,
-          closest_to_commit,
+          grow_stage_to_commit,
           equidistant_points_to_commit
         )
-
-      assert after_commit.fully_grown? == false
 
       assert after_commit
              |> ClosestPointsArea.to_grid_string() ==
@@ -701,109 +610,44 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
                """
                |> GridString.from_string()
     end
+  end
 
-    test "- Not fully grown - New closest points - All equidistant -> Update & Set to Fully Grown" do
-      not_fully_grown_area =
-        """
-        |   |   |   |   |   |
-        |   |   | 1 |   |   |
-        |   | 1 | 0 | 1 |   |
-        |   |   | 1 |   |   |
-        |   |   |   |   |   |
-        """
-        |> GridString.from_string()
-        |> ClosestPointsArea.from_grid_string()
+  describe "Fully Grown?" do
+    test "- Fully Grown: Last stage is empty" do
+      area_with_last_stage_empty = %ClosestPointsArea{
+        grow_stages: [
+          [{2, 2}],
+          [{2, 1}, {1, 2}, {3, 2}, {2, 3}],
+          []
+        ],
+        equidistant_points: MapSet.new()
+      }
 
-      closest_to_commit =
-        """
-        |   |   | x |   |   |
-        |   | x |   | x |   |
-        | x |   |   |   | x |
-        |   | x |   | x |   |
-        |   |   | x |   |   |
-        """
-        |> GridString.from_string()
-        |> to_list_of_points()
-
-      equidistant_points_to_commit =
-        """
-        |   |   | x |   |   |
-        |   | x |   | x |   |
-        | x |   |   |   | x |
-        |   | x |   | x |   |
-        |   |   | x |   |   |
-        """
-        |> GridString.from_string()
-        |> to_list_of_points()
-
-      after_commit =
-        ClosestPointsArea.commit_valid_grow_stage(
-          not_fully_grown_area,
-          closest_to_commit,
-          equidistant_points_to_commit
-        )
-
-      assert not_fully_grown_area.fully_grown? == false
-      assert after_commit.fully_grown? == true
-
-      assert after_commit
-             |> ClosestPointsArea.to_grid_string() ==
-               """
-               |    |    | 2. |    |    |
-               |    | 2. | 1  | 2. |    |
-               | 2. | 1  | 0  | 1  | 2. |
-               |    | 2. | 1  | 2. |    |
-               |    |    | 2. |    |    |
-               """
-               |> GridString.from_string()
+      assert area_with_last_stage_empty |> ClosestPointsArea.fully_grown?()
     end
 
-    test "- Not fully grown - No new closest points - No equidistant -> Set to Fully Grown" do
-      not_fully_grown_area =
-        """
-        |   | 1 |   |
-        | 1 | 0 | 1 |
-        |   | 1 |   |
-        """
-        |> GridString.from_string()
-        |> ClosestPointsArea.from_grid_string()
+    test "- Fully Grown: Last stage only made of equidistant points" do
+      area_with_last_stage_only_equidistants = %ClosestPointsArea{
+        grow_stages: [
+          [{2, 2}],
+          [{2, 1}, {1, 2}, {3, 2}, {2, 3}]
+        ],
+        equidistant_points: MapSet.new([{2, 1}, {1, 2}, {3, 2}, {2, 3}])
+      }
 
-      closest_to_commit =
-        """
-        |   |   |   |
-        |   |   |   |
-        |   |   |   |
-        """
-        |> GridString.from_string()
-        |> to_list_of_points()
+      assert area_with_last_stage_only_equidistants |> ClosestPointsArea.fully_grown?()
+    end
 
-      equidistant_points_to_commit =
-        """
-        |   |   |   |
-        |   |   |   |
-        |   |   |   |
-        """
-        |> GridString.from_string()
-        |> to_list_of_points()
+    test "- Not Fully Grown: Last stage made of points not all equidistants" do
+      area_with_last_stage_only_equidistants = %ClosestPointsArea{
+        grow_stages: [
+          [{2, 2}],
+          [{2, 1}, {1, 2}, {3, 2}, {2, 3}]
+        ],
+        equidistant_points: MapSet.new([{2, 1}, {1, 2}])
+      }
 
-      after_commit =
-        ClosestPointsArea.commit_valid_grow_stage(
-          not_fully_grown_area,
-          closest_to_commit,
-          equidistant_points_to_commit
-        )
-
-      assert not_fully_grown_area.fully_grown? == false
-      assert after_commit.fully_grown? == true
-
-      assert after_commit
-             |> ClosestPointsArea.to_grid_string() ==
-               """
-               |   | 1 |   |
-               | 1 | 0 | 1 |
-               |   | 1 |   |
-               """
-               |> GridString.from_string()
+      assert not (area_with_last_stage_only_equidistants |> ClosestPointsArea.fully_grown?())
     end
   end
 end

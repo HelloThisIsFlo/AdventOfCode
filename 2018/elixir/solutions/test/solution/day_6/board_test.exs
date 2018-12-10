@@ -435,7 +435,7 @@ defmodule Solution.Day6.BoardTest do
 
       _grow_areas =
         areas
-        |> Enum.filter(fn %{fully_grown?: grown?} -> grown? end)
+        |> Enum.filter(&ClosestPointsArea.fully_grown?/1)
         |> IO.inspect()
 
       area_D = Enum.find(areas, fn %{grow_stages: stages} -> Enum.at(stages, 0) == [{3, 4}] end)
@@ -475,7 +475,7 @@ defmodule Solution.Day6.BoardTest do
         |> Board.grow()
 
       Map.get(grown_board, :areas)
-      |> Enum.filter(fn %{fully_grown?: grown?} -> grown? end)
+      |> Enum.filter(&ClosestPointsArea.fully_grown?/1)
       |> IO.inspect()
 
       grown_board
@@ -513,7 +513,7 @@ defmodule Solution.Day6.BoardTest do
         |> Board.grow()
 
       Map.get(grown_board, :areas)
-      |> Enum.filter(fn %{fully_grown?: grown?} -> grown? end)
+      |> Enum.filter(&ClosestPointsArea.fully_grown?/1)
       |> IO.inspect()
 
       _center_area =
