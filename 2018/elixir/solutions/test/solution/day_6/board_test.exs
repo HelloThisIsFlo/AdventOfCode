@@ -108,26 +108,26 @@ defmodule Solution.Day6.BoardTest do
     test "- 2 Areas - Equidistants Points" do
       area_1 =
         """
-        |   |   | 2 |   |   |   |   |
-        |   | 2 | 1 | 2 |   |   |   |
-        | 2 | 1 | 0 | 1 | 2 |   |   |
-        |   | 2 | 1 | 2 |   |   |   |
-        |   |   | 2 |   |   |   |   |
-        |   |   |   |   |   |   |   |
-        |   |   |   |   |   |   |   |
+        |   |   | 2  |    |    |   |   |
+        |   | 2 | 1  | 2  |    |   |   |
+        | 2 | 1 | 0  | 1  | 2. |   |   |
+        |   | 2 | 1  | 2. |    |   |   |
+        |   |   | 2. |    |    |   |   |
+        |   |   |    |    |    |   |   |
+        |   |   |    |    |    |   |   |
         """
         |> GridString.from_string()
         |> ClosestPointsArea.from_grid_string()
 
       area_2 =
         """
-        |   |   |   |   |   |   |   |
-        |   |   |   |   |   |   |   |
-        |   |   |   |   | 2 |   |   |
-        |   |   |   | 2 | 1 | 2 |   |
-        |   |   | 2 | 1 | 0 | 1 | 2 |
-        |   |   |   | 2 | 1 | 2 |   |
-        |   |   |   |   | 2 |   |   |
+        |   |   |    |    |    |   |   |
+        |   |   |    |    |    |   |   |
+        |   |   |    |    | 2. |   |   |
+        |   |   |    | 2. | 1  | 2 |   |
+        |   |   | 2. | 1  | 0  | 1 | 2 |
+        |   |   |    | 2  | 1  | 2 |   |
+        |   |   |    |    | 2  |   |   |
         """
         |> GridString.from_string()
         |> ClosestPointsArea.from_grid_string()
@@ -136,13 +136,13 @@ defmodule Solution.Day6.BoardTest do
 
       assert Board.to_grid_string(board) ==
                """
-               |   |   | 2 |   |   |   |   |
-               |   | 2 | 1 | 2 |   |   |   |
-               | 2 | 1 | 0 | 1 | . |   |   |
-               |   | 2 | 1 | . | 1 | 2 |   |
-               |   |   | . | 1 | 0 | 1 | 2 |
-               |   |   |   | 2 | 1 | 2 |   |
-               |   |   |   |   | 2 |   |   |
+               |   |   | 2  |    |    |   |   |
+               |   | 2 | 1  | 2  |    |   |   |
+               | 2 | 1 | 0  | 1  | 2. |   |   |
+               |   | 2 | 1  | 2. | 1  | 2 |   |
+               |   |   | 2. | 1  | 0  | 1 | 2 |
+               |   |   |    | 2  | 1  | 2 |   |
+               |   |   |    |    | 2  |   |   |
                """
                |> GridString.from_string()
     end
@@ -150,42 +150,42 @@ defmodule Solution.Day6.BoardTest do
     test "- Multiple Areas - With Equidistant" do
       area_1 =
         """
-        |   |   | 2 |   |   |   |   |   |   |
-        |   | 2 | 1 | 2 |   |   |   |   |   |
-        | 2 | 1 | 0 | 1 |   |   |   |   |   |
-        |   | 2 | 1 |   |   |   |   |   |   |
-        |   |   | 2 |   |   |   |   |   |   |
-        |   |   |   |   |   |   |   |   |   |
-        |   |   |   |   |   |   |   |   |   |
-        |   |   |   |   |   |   |   |   |   |
+        |   |   | 2 |   |    |    |    |   |   |
+        |   | 2 | 1 | 2 |    |    |    |   |   |
+        | 2 | 1 | 0 | 1 |    |    |    |   |   |
+        |   | 2 | 1 |   |    |    |    |   |   |
+        |   |   | 2 |   |    |    |    |   |   |
+        |   |   |   |   |    |    |    |   |   |
+        |   |   |   |   |    |    |    |   |   |
+        |   |   |   |   |    |    |    |   |   |
         """
         |> GridString.from_string()
         |> ClosestPointsArea.from_grid_string()
 
       area_2 =
         """
-        |   |   |   |   |   |   |   |   |   |
-        |   |   |   |   | 2 |   |   |   |   |
-        |   |   |   |   | 1 | 2 |   |   |   |
-        |   |   |   | 1 | 0 | 1 | 2 |   |   |
-        |   |   |   | 2 | 1 | 2 |   |   |   |
-        |   |   |   |   | 2 |   |   |   |   |
-        |   |   |   |   |   |   |   |   |   |
-        |   |   |   |   |   |   |   |   |   |
+        |   |   |   |   |    |    |    |   |   |
+        |   |   |   |   | 2  |    |    |   |   |
+        |   |   |   |   | 1  | 2  |    |   |   |
+        |   |   |   | 1 | 0  | 1  | 2. |   |   |
+        |   |   |   | 2 | 1  | 2. |    |   |   |
+        |   |   |   |   | 2. |    |    |   |   |
+        |   |   |   |   |    |    |    |   |   |
+        |   |   |   |   |    |    |    |   |   |
         """
         |> GridString.from_string()
         |> ClosestPointsArea.from_grid_string()
 
       area_3 =
         """
-        |   |   |   |   |   |   |   |   |   |
-        |   |   |   |   |   |   |   |   |   |
-        |   |   |   |   |   |   |   |   |   |
-        |   |   |   |   |   |   | 2 |   |   |
-        |   |   |   |   |   | 2 | 1 | 2 |   |
-        |   |   |   |   | 2 | 1 | 0 | 1 | 2 |
-        |   |   |   |   |   | 2 | 1 | 2 |   |
-        |   |   |   |   |   |   | 2 |   |   |
+        |   |   |   |   |    |    |    |   |   |
+        |   |   |   |   |    |    |    |   |   |
+        |   |   |   |   |    |    |    |   |   |
+        |   |   |   |   |    |    | 2. |   |   |
+        |   |   |   |   |    | 2. | 1  | 2 |   |
+        |   |   |   |   | 2. | 1  | 0  | 1 | 2 |
+        |   |   |   |   |    | 2  | 1  | 2 |   |
+        |   |   |   |   |    |    | 2  |   |   |
         """
         |> GridString.from_string()
         |> ClosestPointsArea.from_grid_string()
@@ -194,14 +194,14 @@ defmodule Solution.Day6.BoardTest do
 
       assert Board.to_grid_string(board) ==
                """
-               |   |   | 2 |   |   |   |   |   |   |
-               |   | 2 | 1 | 2 | 2 |   |   |   |   |
-               | 2 | 1 | 0 | 1 | 1 | 2 |   |   |   |
-               |   | 2 | 1 | 1 | 0 | 1 | . |   |   |
-               |   |   | 2 | 2 | 1 | . | 1 | 2 |   |
-               |   |   |   |   | . | 1 | 0 | 1 | 2 |
-               |   |   |   |   |   | 2 | 1 | 2 |   |
-               |   |   |   |   |   |   | 2 |   |   |
+               |   |   | 2 |   |    |    |    |   |   |
+               |   | 2 | 1 | 2 | 2  |    |    |   |   |
+               | 2 | 1 | 0 | 1 | 1  | 2  |    |   |   |
+               |   | 2 | 1 | 1 | 0  | 1  | 2. |   |   |
+               |   |   | 2 | 2 | 1  | 2. | 1  | 2 |   |
+               |   |   |   |   | 2. | 1  | 0  | 1 | 2 |
+               |   |   |   |   |    | 2  | 1  | 2 |   |
+               |   |   |   |   |    |    | 2  |   |   |
                """
                |> GridString.from_string()
     end
@@ -275,7 +275,6 @@ defmodule Solution.Day6.BoardTest do
                |> GridString.from_string()
     end
 
-    # @tag :only
     test "- 2 Points  - Equidistant points" do
       board =
         """
@@ -293,15 +292,13 @@ defmodule Solution.Day6.BoardTest do
         |> Board.grow()
         |> Board.grow()
 
-      # Point at {x: 4, y; 2} is equidistant from both origins, therefore it is
-      # excluded from both areas
       assert Board.to_grid_string(board_grown_2_times) ==
                """
-               |   |   | 2 |   |   |   | 2 |   |  |
-               |   | 2 | 1 | 2 |   | 2 | 1 | 2 |  |
-               | 2 | 1 | 0 | 1 | . | 1 | 0 | 1 | 2|
-               |   | 2 | 1 | 2 |   | 2 | 1 | 2 |  |
-               |   |   | 2 |   |   |   | 2 |   |  |
+               |   |   | 2 |   |    |   | 2 |   |  |
+               |   | 2 | 1 | 2 |    | 2 | 1 | 2 |  |
+               | 2 | 1 | 0 | 1 | 2. | 1 | 0 | 1 | 2|
+               |   | 2 | 1 | 2 |    | 2 | 1 | 2 |  |
+               |   |   | 2 |   |    |   | 2 |   |  |
                """
                |> GridString.from_string()
     end
@@ -388,14 +385,14 @@ defmodule Solution.Day6.BoardTest do
 
       assert Board.to_grid_string(board_grown_2_times) ==
                """
-               |   |   | 2 |   |   |   |   |   |   |
-               |   | 2 | 1 | 2 | 2 |   |   |   |   |
-               | 2 | 1 | 0 | 1 | 1 | 2 |   |   |   |
-               |   | 2 | 1 | 1 | 0 | 1 | . |   |   |
-               |   |   | 2 | 2 | 1 | . | 1 | 2 |   |
-               |   |   |   |   | . | 1 | 0 | 1 | 2 |
-               |   |   |   |   |   | 2 | 1 | 2 |   |
-               |   |   |   |   |   |   | 2 |   |   |
+               |   |   | 2 |   |    |    |    |   |   |
+               |   | 2 | 1 | 2 | 2  |    |    |   |   |
+               | 2 | 1 | 0 | 1 | 1  | 2  |    |   |   |
+               |   | 2 | 1 | 1 | 0  | 1  | 2. |   |   |
+               |   |   | 2 | 2 | 1  | 2. | 1  | 2 |   |
+               |   |   |   |   | 2. | 1  | 0  | 1 | 2 |
+               |   |   |   |   |    | 2  | 1  | 2 |   |
+               |   |   |   |   |    |    | 2  |   |   |
                """
                |> GridString.from_string()
     end
@@ -474,6 +471,12 @@ defmodule Solution.Day6.BoardTest do
         |> Board.grow()
         |> Board.grow()
 
+      _center_area =
+        grown_board
+        |> Map.get(:areas)
+        |> Enum.find(fn %{grow_stages: stages} -> Enum.at(stages, 0) == [{9, 7}] end)
+        |> IO.inspect()
+
       Map.get(grown_board, :areas)
       |> Enum.filter(&ClosestPointsArea.fully_grown?/1)
       |> IO.inspect()
@@ -519,7 +522,7 @@ defmodule Solution.Day6.BoardTest do
       _center_area =
         grown_board
         |> Map.get(:areas)
-        |> Enum.find(fn %{grow_stages: stages} -> Enum.at(stages, 0) == [{8, 5}] end)
+        |> Enum.find(fn %{grow_stages: stages} -> Enum.at(stages, 0) == [{8, 8}] end)
         |> IO.inspect()
 
       grown_board

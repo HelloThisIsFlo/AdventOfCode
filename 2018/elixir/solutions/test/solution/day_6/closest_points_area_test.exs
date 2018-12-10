@@ -7,7 +7,6 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
 
   test "Build from Origin" do
     assert ClosestPointsArea.from_origin({3, 4}) == %ClosestPointsArea{
-             fully_grown?: false,
              grow_stages: [
                [{3, 4}]
              ]
@@ -49,7 +48,6 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
         |> ClosestPointsArea.from_grid_string()
 
       assert area == %ClosestPointsArea{
-               fully_grown?: false,
                grow_stages: [[{2, 2}]]
              }
     end
@@ -73,7 +71,6 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
         |> ClosestPointsArea.from_grid_string()
 
       assert area == %ClosestPointsArea{
-               fully_grown?: false,
                grow_stages: [
                  [{2, 2}],
                  [{2, 1}, {1, 2}, {3, 2}, {2, 3}],
@@ -101,7 +98,6 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
         |> ClosestPointsArea.from_grid_string()
 
       assert area == %ClosestPointsArea{
-               fully_grown?: false,
                grow_stages: [
                  [{2, 2}],
                  [{2, 1}, {1, 2}, {3, 2}, {2, 3}],
@@ -128,7 +124,6 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
         |> ClosestPointsArea.from_grid_string()
 
       assert area == %ClosestPointsArea{
-               fully_grown?: false,
                grow_stages: [
                  [{1, 1}],
                  [{1, 0}, {0, 1}, {2, 1}, {1, 2}]
@@ -153,7 +148,6 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
         |> ClosestPointsArea.from_grid_string()
 
       assert area == %ClosestPointsArea{
-               fully_grown?: false,
                grow_stages: [
                  [{1, 1}],
                  [{1, 0}, {2, 1}],
@@ -275,21 +269,6 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
   end
 
   describe "Generate next candidate grow stage" do
-    test "- Invalid Area - Emtpy" do
-      invalid_area =
-        """
-        |   |   |   |
-        |   |   |   |
-        |   |   |   |
-        """
-        |> GridString.from_string()
-        |> ClosestPointsArea.from_grid_string()
-
-      assert_raise InvalidArea, fn ->
-        ClosestPointsArea.next_grow_stage_candidate(invalid_area)
-      end
-    end
-
     test "- At stage 0 - Only origin" do
       candidate_area_for_step_1 =
         """
@@ -416,15 +395,14 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
     test "- Fully grown -> Return last grow stage" do
       fully_grown_area =
         """
-        |   |   |   |   |   |
-        |   |   | 1 |   |   |
-        |   | 1 | 0 | 1 |   |
-        |   |   | 1 |   |   |
-        |   |   |   |   |   |
+        |   |    |    |    |   |
+        |   |    | 1. |    |   |
+        |   | 1. | 0  | 1. |   |
+        |   |    | 1. |    |   |
+        |   |    |    |    |   |
         """
         |> GridString.from_string()
         |> ClosestPointsArea.from_grid_string()
-        |> Map.replace!(:fully_grown?, true)
 
       next_grow_stage_candidate = ClosestPointsArea.next_grow_stage_candidate(fully_grown_area)
 
@@ -548,6 +526,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
       after_commit = ClosestPointsArea.commit_valid_grow_stage(area, [], [])
 
       assert after_commit |> Map.get(:grow_stages) |> List.last() == []
+
       assert after_commit
              |> ClosestPointsArea.to_grid_string() ==
                """

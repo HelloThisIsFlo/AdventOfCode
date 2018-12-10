@@ -37,7 +37,6 @@ defmodule Solution.Day6.Board do
     areas
     |> Enum.map(&ClosestPointsArea.to_grid_points/1)
     |> List.flatten()
-    |> format_equidistant_points()
     |> GridString.from_grid_points()
   end
 
@@ -62,6 +61,12 @@ defmodule Solution.Day6.Board do
     end
   end
 
+  # TODO: Redo this horrible algorithm !!!
+  # TODO: Redo this horrible algorithm !!!
+  # TODO: Redo this horrible algorithm !!!
+  # TODO: Redo this horrible algorithm !!!
+  # TODO: Redo this horrible algorithm !!!
+  # TODO: Redo this horrible algorithm !!!
   @spec validate_and_commit_grow_stages([{ClosestPointsArea.grow_stage(), ClosestPointsArea.t()}]) ::
           [ClosestPointsArea.t()]
   defp validate_and_commit_grow_stages(candidate_grow_stages_with_associated_areas) do
@@ -71,24 +76,21 @@ defmodule Solution.Day6.Board do
     all_claimed_points = Enum.flat_map(areas, &ClosestPointsArea.all_points/1)
 
     candidate_grow_stages_for_all_points
-    |> Enum.map(fn grow_stage -> grow_stage -- all_claimed_points end)
-    |> Enum.zip(areas)
-    |> Enum.map(fn {valid_next_stage, area} ->
-      ClosestPointsArea.commit_valid_grow_stage(area, valid_next_stage)
+    |> Enum.map(fn grow_stage ->
+      all_other_stages_points =
+        (candidate_grow_stages_for_all_points -- [grow_stage]) |> List.flatten() |> MapSet.new()
+
+      validated_stage = grow_stage -- all_claimed_points
+
+      equidistants =
+        MapSet.intersection(MapSet.new(validated_stage), all_other_stages_points)
+        |> MapSet.to_list()
+
+      %{validated_stage: validated_stage, equidistants: equidistants}
     end)
-  end
-
-  defp format_equidistant_points(grid_points) do
-    unique_grid_points = Enum.uniq(grid_points)
-
-    equidistant_points = grid_points -- unique_grid_points
-
-    formatted_equidistant_points =
-      equidistant_points
-      |> Enum.map(fn grid_point -> %{grid_point | value: "."} end)
-
-    unique_grid_points
-    |> Kernel.--(equidistant_points)
-    |> Kernel.++(formatted_equidistant_points)
+    |> Enum.zip(areas)
+    |> Enum.map(fn {%{validated_stage: validated_stage, equidistants: equidistants}, area} ->
+      ClosestPointsArea.commit_valid_grow_stage(area, validated_stage, equidistants)
+    end)
   end
 end

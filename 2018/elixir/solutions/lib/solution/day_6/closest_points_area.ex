@@ -6,12 +6,10 @@ defmodule Solution.Day6.ClosestPointsArea do
   @type grow_stage() :: [Board.point()]
 
   @type t :: %__MODULE__{
-          fully_grown?: boolean(),
           grow_stages: [grow_stage()],
           equidistant_points: MapSet.t(Board.point())
         }
-  defstruct fully_grown?: false,
-            grow_stages: [],
+  defstruct grow_stages: [],
             equidistant_points: MapSet.new()
 
   defmodule InvalidArea do
@@ -72,10 +70,13 @@ defmodule Solution.Day6.ClosestPointsArea do
   end
 
   @spec next_grow_stage_candidate(Solution.Day6.ClosestPointsArea.t()) :: any()
-  def next_grow_stage_candidate(%__MODULE__{grow_stages: grow_stages, fully_grown?: true}),
-    do: List.last(grow_stages)
-  def next_grow_stage_candidate(%__MODULE__{grow_stages: grow_stages}),
-    do: do_next_grow_stage_candidate(Enum.reverse(grow_stages))
+  def next_grow_stage_candidate(%__MODULE__{grow_stages: grow_stages} = area) do
+    if fully_grown?(area) do
+      List.last(grow_stages)
+    else
+      do_next_grow_stage_candidate(Enum.reverse(grow_stages))
+    end
+  end
 
   def commit_valid_grow_stage(area, grow_stage_to_commit, equidistant_points_to_commit \\ []) do
     validate_commit(area, grow_stage_to_commit, equidistant_points_to_commit)
