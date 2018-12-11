@@ -27,11 +27,11 @@ If you get stuck on a particular problem, instead of reaching for the solution t
 |      |     | 2    | X       | Elixir, Python |
 |      | 3   | 1    | X       | Elixir         |
 |      |     | 2    | X       | Elixir         |
-|      | 4   | 1    |         |                |
-|      |     | 2    |         |                |
-|      | 5   | 1    |         |                |
-|      |     | 2    |         |                |
-|      | 6   | 1    |         |                |
+|      | 4   | 1    | X       | Elixir         |
+|      |     | 2    | X       | Elixir         |
+|      | 5   | 1    | X       | Elixir         |
+|      |     | 2    | X       | Elixir         |
+|      | 6   | 1    | ...     | Elixir         |
 |      |     | 2    |         |                |
 |      | 7   | 1    |         |                |
 |      |     | 2    |         |                |
