@@ -25,7 +25,6 @@ defmodule Solution.Day6.GridString do
 
   defimpl String.Chars, for: __MODULE__ do
     alias Solution.Day6.GridString
-
     def to_string(%{grid: grid}) do
       for y <- 0..(length(grid) - 1) do
         for x <- 0..(length(GridString.get_line(grid, y)) - 1) do

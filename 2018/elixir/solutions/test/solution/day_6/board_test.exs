@@ -424,22 +424,21 @@ defmodule Solution.Day6.BoardTest do
         |> Board.grow()
         |> Board.grow()
         |> Board.grow()
-        |> Board.grow()
-        |> Board.grow()
-        |> Board.grow()
 
       areas = Map.get(grown_board, :areas)
 
-      _grow_areas =
+      grow_areas =
         areas
         |> Enum.filter(&ClosestPointsArea.fully_grown?/1)
-        |> IO.inspect()
+        |> IO.inspect(label: "Fully grown areas")
 
       area_D = Enum.find(areas, fn %{grow_stages: stages} -> Enum.at(stages, 0) == [{3, 4}] end)
       area_E = Enum.find(areas, fn %{grow_stages: stages} -> Enum.at(stages, 0) == [{5, 5}] end)
 
       IO.inspect(area_D, label: "D")
       IO.inspect(area_E, label: "E")
+
+      assert grow_areas |> Enum.sort() == [area_D, area_E] |> Enum.sort()
 
       grown_board
       |> Board.to_grid_string()
@@ -517,13 +516,13 @@ defmodule Solution.Day6.BoardTest do
 
       Map.get(grown_board, :areas)
       |> Enum.filter(&ClosestPointsArea.fully_grown?/1)
-      |> IO.inspect()
+      |> IO.inspect(label: "Fully Grown Areas")
 
       _center_area =
         grown_board
         |> Map.get(:areas)
         |> Enum.find(fn %{grow_stages: stages} -> Enum.at(stages, 0) == [{8, 8}] end)
-        |> IO.inspect()
+        |> IO.inspect(label: "Center Area")
 
       grown_board
       |> Board.to_grid_string()

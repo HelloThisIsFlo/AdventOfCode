@@ -43,9 +43,9 @@ defmodule Solution.Day6.Board do
   def grow(%__MODULE__{areas: areas} = board) do
     grown_areas =
       areas
-      |> Enum.map(&ClosestPointsArea.next_grow_stage_candidate/1)
-      |> Enum.zip(areas)
-      |> validate_and_commit_grow_stages()
+      |> generate_grow_stage_candidates()
+      |> validate_grow_stage_candidates_and_calculate_equidistants(areas)
+      |> commit_valid_grow_stages_and_equidistants(areas)
 
     %{board | areas: grown_areas}
   end
@@ -61,33 +61,45 @@ defmodule Solution.Day6.Board do
     end
   end
 
-  # TODO: Redo this horrible algorithm !!!
-  # TODO: Redo this horrible algorithm !!!
-  # TODO: Redo this horrible algorithm !!!
-  # TODO: Redo this horrible algorithm !!!
-  # TODO: Redo this horrible algorithm !!!
-  # TODO: Redo this horrible algorithm !!!
-  @spec validate_and_commit_grow_stages([{ClosestPointsArea.grow_stage(), ClosestPointsArea.t()}]) ::
-          [ClosestPointsArea.t()]
-  defp validate_and_commit_grow_stages(candidate_grow_stages_with_associated_areas) do
-    {candidate_grow_stages_for_all_points, areas} =
-      Enum.unzip(candidate_grow_stages_with_associated_areas)
+  defp generate_grow_stage_candidates(areas) do
+    areas
+    |> Enum.map(&ClosestPointsArea.next_grow_stage_candidate/1)
+  end
 
-    all_claimed_points = Enum.flat_map(areas, &ClosestPointsArea.all_points/1)
+  defp validate_grow_stage_candidates_and_calculate_equidistants(all_candidate_grow_stages, areas) do
+    points_already_claimed =
+      areas
+      |> Enum.flat_map(&ClosestPointsArea.all_points/1)
+      |> to_set()
 
-    candidate_grow_stages_for_all_points
-    |> Enum.map(fn grow_stage ->
-      all_other_stages_points =
-        (candidate_grow_stages_for_all_points -- [grow_stage]) |> List.flatten() |> MapSet.new()
+    all_candidate_grow_stages
+    |> Enum.map(fn current_grow_stage ->
+      points_of_all_other_candidate_grow_stages =
+        all_candidate_grow_stages
+        |> List.delete(current_grow_stage)
+        |> List.flatten()
+        |> to_set()
 
-      validated_stage = grow_stage -- all_claimed_points
+      validated_stage =
+        current_grow_stage
+        |> to_set()
+        |> MapSet.difference(points_already_claimed)
 
       equidistants =
-        MapSet.intersection(MapSet.new(validated_stage), all_other_stages_points)
-        |> MapSet.to_list()
+        validated_stage
+        |> MapSet.intersection(points_of_all_other_candidate_grow_stages)
 
-      %{validated_stage: validated_stage, equidistants: equidistants}
+      %{
+        validated_stage: MapSet.to_list(validated_stage),
+        equidistants: MapSet.to_list(equidistants)
+      }
     end)
+  end
+
+  defp to_set(list), do: MapSet.new(list)
+
+  defp commit_valid_grow_stages_and_equidistants(all_candidate_grow_stages, areas) do
+    all_candidate_grow_stages
     |> Enum.zip(areas)
     |> Enum.map(fn {%{validated_stage: validated_stage, equidistants: equidistants}, area} ->
       ClosestPointsArea.commit_valid_grow_stage(area, validated_stage, equidistants)
