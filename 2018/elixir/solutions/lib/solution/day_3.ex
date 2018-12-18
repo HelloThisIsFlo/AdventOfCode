@@ -91,6 +91,7 @@ defmodule Solution.Day3 do
       :height
     ]
 
+    @spec from_string(binary()) :: Solution.Day3.ClaimedArea.t()
     def from_string(claim_as_string) do
       ~r/#(\d+) @ (\d+),(\d+): (\d+)x(\d+)/
       |> Regex.run(claim_as_string, capture: :all_but_first)

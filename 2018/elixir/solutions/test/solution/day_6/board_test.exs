@@ -65,6 +65,56 @@ defmodule Solution.Day6.BoardTest do
     end
   end
 
+  describe "Build from list of origin points" do
+    test "Single origin point" do
+      board = Board.from_origin_points([{3, 2}])
+
+      assert board.areas
+             |> Enum.sort() ==
+               """
+               |   |   |   |   |   |
+               |   |   |   |   |   |
+               |   |   |   | 0 |   |
+               |   |   |   |   |   |
+               """
+               |> GridString.from_string()
+               |> Board.from_grid_string()
+               |> Map.get(:areas)
+               |> Enum.sort()
+    end
+
+    test "Multiple origin points" do
+      board = Board.from_origin_points([{0, 0}, {0, 3}, {3, 2}])
+
+      assert board.areas
+             |> Enum.sort() ==
+               """
+               | 0 |   |   |   |   |
+               |   |   |   |   |   |
+               |   |   |   | 0 |   |
+               | 0 |   |   |   |   |
+               """
+               |> GridString.from_string()
+               |> Board.from_grid_string()
+               |> Map.get(:areas)
+               |> Enum.sort()
+    end
+
+    test "No origin point" do
+      board = Board.from_origin_points([])
+
+      assert board ==
+               """
+               |   |   |   |   |   |
+               |   |   |   |   |   |
+               |   |   |   |   |   |
+               |   |   |   |   |   |
+               """
+               |> GridString.from_string()
+               |> Board.from_grid_string()
+    end
+  end
+
   describe "To Grid" do
     test "- 2 Areas - No Equidistants" do
       area_1 =

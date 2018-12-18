@@ -20,6 +20,7 @@ defmodule Solution.Day6.Board do
     end
   end
 
+  @spec from_grid_string(Solution.Day6.GridString.t()) :: Solution.Day6.Board.t()
   def from_grid_string(board_grid_string) do
     areas =
       board_grid_string
@@ -30,6 +31,10 @@ defmodule Solution.Day6.Board do
       |> Enum.map(&ClosestPointsArea.from_origin/1)
 
     %__MODULE__{areas: areas}
+  end
+
+  def from_origin_points(origin_points) do
+    %__MODULE__{areas: Enum.map(origin_points, &ClosestPointsArea.from_origin/1)}
   end
 
   @spec to_grid_string(Solution.Day6.Board.t()) :: GridString.t()
