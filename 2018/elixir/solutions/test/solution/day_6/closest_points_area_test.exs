@@ -220,7 +220,7 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
                |> ClosestPointsArea.current_grow_stage()
     end
 
-    test "Complete Area" do
+    test "Stage 2 Area" do
       assert 2 ==
                """
                |   |   | 2 |   |   |
@@ -232,6 +232,51 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
                |> GridString.from_string()
                |> ClosestPointsArea.from_grid_string()
                |> ClosestPointsArea.current_grow_stage()
+    end
+
+    test "Fully grown Area - Ignore empty stages - Current grow stage is last non-empty stage" do
+      fully_grown_area =
+        """
+        |   |   | 2 |   |   |
+        |   | 2 | 1 | 2 |   |
+        | 2 | 1 | 0 | 1 | 2 |
+        |   | 2 | 1 | 2 |   |
+        |   |   | 2 |   |   |
+        """
+        |> GridString.from_string()
+        |> ClosestPointsArea.from_grid_string()
+        |> ClosestPointsArea.commit_valid_grow_stage([], [])
+
+      assert fully_grown_area |> ClosestPointsArea.fully_grown?()
+
+      assert 2 ==
+               fully_grown_area
+               |> ClosestPointsArea.current_grow_stage()
+
+      assert 2 ==
+               fully_grown_area
+               |> ClosestPointsArea.commit_valid_grow_stage([], [])
+               |> ClosestPointsArea.current_grow_stage()
+    end
+
+    test "Fully grown Area - Ignore stages with only equidistants - Current grow stage is last stage with some non-equidistants" do
+      # Stage 1: Some equidistants
+      # Stage 2: All equidistants
+      # ==> Current stage: 1
+      fully_grown_area =
+        """
+        |    |    | 2. |    |    |
+        |    | 2. | 1. | 2. |    |
+        | 2. | 1  | 0  | 1  | 2. |
+        |    | 2. | 1  | 2. |    |
+        |    |    | 2. |    |    |
+        """
+        |> GridString.from_string()
+        |> ClosestPointsArea.from_grid_string()
+
+      assert fully_grown_area |> ClosestPointsArea.fully_grown?()
+
+      assert fully_grown_area |> ClosestPointsArea.current_grow_stage() == 1
     end
   end
 

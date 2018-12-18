@@ -97,8 +97,14 @@ defmodule Solution.Day6.ClosestPointsArea do
   end
 
   def current_grow_stage(%__MODULE__{grow_stages: []}), do: 0
-  def current_grow_stage(%__MODULE__{grow_stages: grow_stages}),
-    do: length(grow_stages) - 1
+  def current_grow_stage(%__MODULE__{grow_stages: grow_stages, equidistant_points: equidistants}),
+    do:
+      grow_stages
+      |> Enum.map(&MapSet.new/1)
+      |> Enum.reject(&(MapSet.size(&1) == 0))
+      |> Enum.reject(&MapSet.subset?(&1, equidistants))
+      |> Kernel.length()
+      |> Kernel.-(1)
 
   # ------- Private Functions -------------
   # ------- Private Functions -------------
