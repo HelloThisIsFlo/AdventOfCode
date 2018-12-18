@@ -1,6 +1,6 @@
 defmodule Solution.Day6Test do
   use ExUnit.Case, async: false
-  # alias Solution.Day6
+  alias Solution.Day6
   # alias Solution.Day6.Board
   # alias Solution.Day6.ClosestPointsArea
   # alias Solution.Day6.ClosestPointsArea.InvalidArea
@@ -10,6 +10,7 @@ defmodule Solution.Day6Test do
 
 
   describe "Part 1" do
+    # Too long -> Skipping
     @tag :skip
     test "Example from Problem Statement" do
       assert "17" ==

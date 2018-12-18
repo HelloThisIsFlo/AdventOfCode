@@ -674,4 +674,22 @@ defmodule Solution.Day6.ClosestPointsAreaTest do
       assert not (area_with_last_stage_only_equidistants |> ClosestPointsArea.fully_grown?())
     end
   end
+
+  describe "Size" do
+    test "Area with multiple stages => Amount of non-equidistant points" do
+      area =
+        """
+        |   |   | 2. |    |    |
+        |   | 2 | 1  | 2. |    |
+        | 2 | 1 | 0  | 1. | 2. |
+        |   | 2 | 1  | 2  |    |
+        |   |   | 2  |    |    |
+        """
+        |> GridString.from_string()
+        |> ClosestPointsArea.from_grid_string()
+
+      assert ClosestPointsArea.size(area) == 9
+    end
+
+  end
 end

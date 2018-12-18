@@ -106,6 +106,13 @@ defmodule Solution.Day6.ClosestPointsArea do
       |> Kernel.length()
       |> Kernel.-(1)
 
+
+  def size(%__MODULE__{grow_stages: grow_stages, equidistant_points: equidistants}) do
+    grow_stages
+    |> List.flatten()
+    |> Enum.reject(&(MapSet.member?(equidistants, &1)))
+    |> Kernel.length()
+  end
   # ------- Private Functions -------------
   # ------- Private Functions -------------
   # ------- Private Functions -------------

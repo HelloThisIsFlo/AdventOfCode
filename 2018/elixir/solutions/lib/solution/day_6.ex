@@ -1,5 +1,7 @@
 defmodule Solution.Day6 do
   require Logger
+  alias __MODULE__.Board
+  alias __MODULE__.ClosestPointsArea
 
   @moduledoc """
   --- Part One ---
@@ -74,11 +76,74 @@ defmodule Solution.Day6 do
 
   @doc """
   Solves: "What is the size of the largest area that isn't infinite?"
+
+  Basic idea:
+  - Parse points
+  - Build a board from points
+  - Grow the board
+  - Keep growing until X iterations after the last finite area stopped growing
+  - Get finite areas
+  - Calculate finite areas' sizes
+  - Find largest
   """
-  def solve_part_1(_input_as_string) do
-    ""
+  def solve_part_1(input_as_string) do
+    input_as_string
+    |> parse_list_of_origin_points()
+    |> build_board()
+    |> find_finite_areas()
+    |> Enum.map(&ClosestPointsArea.size/1)
+    |> Enum.max()
+    |> Integer.to_string()
   end
 
+  defp parse_list_of_origin_points(input_as_string) do
+    input_as_string
+    |> String.split("\n")
+    |> Enum.reject(&(&1 == ""))
+    |> Enum.map(fn coordinate_as_string ->
+      ~r/(\d+), (\d+)/
+      |> Regex.run(coordinate_as_string, capture: :all_but_first)
+      |> Enum.map(&String.to_integer/1)
+      |> to_point()
+    end)
+  end
+
+  defp build_board(points_of_origin) do
+    points_of_origin
+    |> Board.from_origin_points()
+  end
+
+  defp find_finite_areas(board) do
+    limit = 100
+    do_find_finite_areas(board, [], 0, limit)
+  end
+
+  defp do_find_finite_areas(_, finite_areas, iterations_since_last_finite_area_discovered, limit)
+       when iterations_since_last_finite_area_discovered >= limit,
+       do: finite_areas
+
+  defp do_find_finite_areas(
+         board,
+         finite_areas,
+         iterations_since_last_finite_area_discovered,
+         limit
+       ) do
+    board = Board.grow(board)
+
+    new_finite_areas =
+      board.areas
+      |> Enum.filter(&ClosestPointsArea.fully_grown?/1)
+
+    if length(new_finite_areas) > length(finite_areas) do
+      do_find_finite_areas(board, new_finite_areas, 0, limit)
+    else
+      do_find_finite_areas(board, new_finite_areas, iterations_since_last_finite_area_discovered + 1, limit)
+    end
+  end
+
+  defp to_point([x, y]) do
+    {x, y}
+  end
 
   @doc """
   Solves: ""
