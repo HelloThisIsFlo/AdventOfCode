@@ -130,6 +130,8 @@ defmodule Solution.Day6 do
        ) do
     board = Board.grow(board)
 
+
+
     new_finite_areas =
       board.areas
       |> Enum.filter(&ClosestPointsArea.fully_grown?/1)

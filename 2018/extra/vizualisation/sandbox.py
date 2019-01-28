@@ -9,7 +9,7 @@ def main():
 
 
 class Plot:
-    dimensions = (255, 255)
+    dimensions = (20, 20)
     matrix = None
 
     def __init__(self):
@@ -31,9 +31,9 @@ class Plot:
 if __name__ == "__main__":
     plot = Plot()
 
-    # plot.show()
+    plot.show()
 
-    image = matplotlib.image.imread('cat.png')
-    plt.imshow(image)
-    print(image)
-    plt.show()
+    # image = matplotlib.image.imread('cat.png')
+    # plt.imshow(image)
+    # print(image)
+    # plt.show()
