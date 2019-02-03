@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 import matplotlib.animation as animation
 import matplotlib
 from typing import NamedTuple
@@ -49,12 +50,13 @@ class Plot:
 
     _matrix_server: MatrixServer
 
-    def __init__(self):
+    def __init__(self, save_gif=False):
         # self._matrix_server = MockMatrixServer()
         self._matrix_server = HttpMatrixServer()
         self._figure, self._axes = plt.subplots()
         self._init_axes_and_displayed_matrix()
         self._init_animation()
+        self._save_gif = save_gif
 
     def _init_axes_and_displayed_matrix(self):
         self._displayed_matrix = self._axes.matshow(
@@ -72,12 +74,19 @@ class Plot:
 
         self._animation = animation.FuncAnimation(self._figure,
                                                   update,
-                                                  interval=1000)
+                                                  frames=10,
+                                                  repeat=False,
+                                                  interval=10)
+        if self._save_gif:
+            self._animation.save('result.gif', writer='imagemagick')
 
     def show(self):
         plt.show()
 
 
 if __name__ == "__main__":
+    # image = mpimg.imread('cat.png')
+    # print(type(image))
+
     plot = Plot()
     plot.show()
