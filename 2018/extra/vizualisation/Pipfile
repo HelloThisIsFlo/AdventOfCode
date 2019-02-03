@@ -12,6 +12,8 @@ pytest-watch = "*"
 [packages]
 matplotlib = "*"
 numpy = "*"
+flask = "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"
