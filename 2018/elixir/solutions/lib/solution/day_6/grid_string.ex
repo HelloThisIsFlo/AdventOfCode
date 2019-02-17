@@ -25,6 +25,7 @@ defmodule Solution.Day6.GridString do
 
   defimpl String.Chars, for: __MODULE__ do
     alias Solution.Day6.GridString
+
     def to_string(%{grid: grid}) do
       for y <- 0..(length(grid) - 1) do
         for x <- 0..(length(GridString.get_line(grid, y)) - 1) do
@@ -81,21 +82,31 @@ defmodule Solution.Day6.GridString do
     }
   end
 
-  def from_grid_points(grid_points) do
+  def from_grid_points(grid_points, options \\ []) do
     grid_width =
-      grid_points
-      |> Enum.map(fn %{point: {x, _}} -> x end)
-      |> Enum.max()
+      Keyword.get(
+        options,
+        :width,
+        grid_points
+        |> Enum.map(fn %{point: {x, _}} -> x end)
+        |> Enum.max()
+        |> Kernel.+(1)
+      )
 
     grid_height =
-      grid_points
-      |> Enum.map(fn %{point: {_, y}} -> y end)
-      |> Enum.max()
+      Keyword.get(
+        options,
+        :height,
+        grid_points
+        |> Enum.map(fn %{point: {_, y}} -> y end)
+        |> Enum.max()
+        |> Kernel.+(1)
+      )
 
     %__MODULE__{
       grid:
-        for y <- 0..grid_height do
-          for x <- 0..grid_width do
+        for y <- 0..(grid_height - 1) do
+          for x <- 0..(grid_width - 1) do
             find_value_at_coordinates(grid_points, x, y)
           end
         end
@@ -146,6 +157,6 @@ defmodule Solution.Day6.GridString do
         x_pt == x and y_pt == y
       end
     )
-    |> Map.get(:value, " ")
+    |> Map.get(:value)
   end
 end
