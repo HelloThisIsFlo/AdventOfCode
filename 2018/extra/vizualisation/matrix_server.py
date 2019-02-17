@@ -40,7 +40,7 @@ class MockMatrixGenerator():
         self.point = Point(math.floor(self.size/2), 0)
         max_x = self.dimensions[0]
         max_y = self.dimensions[1]
-        self.matrix = [[0 for x in range(max_x)] for y in range(max_y)]
+        self.matrix = [['' for x in range(max_x)] for y in range(max_y)]
         self._mark_point()
 
     def _next_step(self):
@@ -49,10 +49,10 @@ class MockMatrixGenerator():
         self._mark_point()
 
     def _mark_point(self):
-        self.matrix[self.point.x][self.point.y] = 1
+        self.matrix[self.point.x][self.point.y] = '1.'
 
     def _clear_point(self):
-        self.matrix[self.point.x][self.point.y] = 0
+        self.matrix[self.point.x][self.point.y] = '1'
 
 
 matrix_generator = MockMatrixGenerator()
