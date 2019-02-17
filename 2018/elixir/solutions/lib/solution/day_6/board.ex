@@ -46,13 +46,16 @@ defmodule Solution.Day6.Board do
   end
 
   @spec to_visualization_grid_string(Solution.Day6.Board.t()) :: Solution.Day6.GridString.t()
-  def to_visualization_grid_string(%__MODULE__{areas: areas}) do
+  def to_visualization_grid_string(
+        %__MODULE__{areas: areas},
+        grid_string_from_grid_points_options \\ []
+      ) do
     areas
     |> Enum.map(&ClosestPointsArea.to_grid_points/1)
     |> Enum.with_index(1)
     |> Enum.map(&to_visualization_representation/1)
     |> List.flatten()
-    |> GridString.from_grid_points()
+    |> GridString.from_grid_points(grid_string_from_grid_points_options)
   end
 
   defp to_visualization_representation({area_points, area_index}) do
