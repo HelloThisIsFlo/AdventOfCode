@@ -45,6 +45,27 @@ defmodule Solution.Day6.Board do
     |> GridString.from_grid_points()
   end
 
+  @spec to_visualization_grid_string(Solution.Day6.Board.t()) :: Solution.Day6.GridString.t()
+  def to_visualization_grid_string(%__MODULE__{areas: areas}) do
+    areas
+    |> Enum.map(&ClosestPointsArea.to_grid_points/1)
+    |> Enum.with_index(1)
+    |> Enum.map(&to_visualization_representation/1)
+    |> List.flatten()
+    |> GridString.from_grid_points()
+  end
+
+  defp to_visualization_representation({area_points, area_index}) do
+    area_points
+    |> Enum.map(fn %{value: val} = pt ->
+      cond do
+        String.contains?(val, ".") -> %{pt | value: "."}
+        val == "0" -> %{pt | value: "#{area_index}c"}
+        true -> %{pt | value: "#{area_index}"}
+      end
+    end)
+  end
+
   def grow(%__MODULE__{areas: areas} = board) do
     grown_areas =
       areas

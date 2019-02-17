@@ -579,4 +579,65 @@ defmodule Solution.Day6.BoardTest do
       |> IO.inspect()
     end
   end
+
+  describe "To Visualization GridString" do
+    test "- Multiple Areas - With Equidistant" do
+      area_1 =
+        """
+        |   |   | 2 |   |    |    |    |   |   |
+        |   | 2 | 1 | 2 |    |    |    |   |   |
+        | 2 | 1 | 0 | 1 |    |    |    |   |   |
+        |   | 2 | 1 |   |    |    |    |   |   |
+        |   |   | 2 |   |    |    |    |   |   |
+        |   |   |   |   |    |    |    |   |   |
+        |   |   |   |   |    |    |    |   |   |
+        |   |   |   |   |    |    |    |   |   |
+        """
+        |> GridString.from_string()
+        |> ClosestPointsArea.from_grid_string()
+
+      area_2 =
+        """
+        |   |   |   |   |    |    |    |   |   |
+        |   |   |   |   | 2  |    |    |   |   |
+        |   |   |   |   | 1  | 2  |    |   |   |
+        |   |   |   | 1 | 0  | 1  | 2. |   |   |
+        |   |   |   | 2 | 1  | 2. |    |   |   |
+        |   |   |   |   | 2. |    |    |   |   |
+        |   |   |   |   |    |    |    |   |   |
+        |   |   |   |   |    |    |    |   |   |
+        """
+        |> GridString.from_string()
+        |> ClosestPointsArea.from_grid_string()
+
+      area_3 =
+        """
+        |   |   |   |   |    |    |    |   |   |
+        |   |   |   |   |    |    |    |   |   |
+        |   |   |   |   |    |    |    |   |   |
+        |   |   |   |   |    |    | 2. |   |   |
+        |   |   |   |   |    | 2. | 1  | 2 |   |
+        |   |   |   |   | 2. | 1  | 0  | 1 | 2 |
+        |   |   |   |   |    | 2  | 1  | 2 |   |
+        |   |   |   |   |    |    | 2  |   |   |
+        """
+        |> GridString.from_string()
+        |> ClosestPointsArea.from_grid_string()
+
+      board = %Board{areas: [area_1, area_2, area_3]}
+
+      assert Board.to_visualization_grid_string(board) ==
+               """
+               |   |   | 1  |   |    |   |    |   |   |
+               |   | 1 | 1  | 1 | 2  |   |    |   |   |
+               | 1 | 1 | 1c | 1 | 2  | 2 |    |   |   |
+               |   | 1 | 1  | 2 | 2c | 2 | .  |   |   |
+               |   |   | 1  | 2 | 2  | . | 3  | 3 |   |
+               |   |   |    |   | .  | 3 | 3c | 3 | 3 |
+               |   |   |    |   |    | 3 | 3  | 3 |   |
+               |   |   |    |   |    |   | 3  |   |   |
+               """
+               |> GridString.from_string()
+    end
+  end
 end
