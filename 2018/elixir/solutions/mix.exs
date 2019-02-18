@@ -26,7 +26,8 @@ defmodule Solutions.MixProject do
   defp deps do
     [
       {:mix_test_watch, "~> 0.8", only: :dev},
-      {:dialyxir, "~> 0.5", only: [:dev], runtime: false}
+      {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
+      {:plug_cowboy, "~> 2.0"}
     ]
   end
 end
