@@ -8,7 +8,8 @@ import math
 import requests
 
 
-BASE_URL = "http://127.0.0.1:5000"
+# BASE_URL = "http://127.0.0.1:5000"
+BASE_URL = "http://127.0.0.1:4000"
 
 
 class MatrixServer(ABC):
@@ -43,9 +44,17 @@ class MockMatrixServer(MatrixServer):
 
 
 COLOR_MAPPING = {
-    '': [255, 255, 255],
+    ' ': [255, 255, 255],
     '1': [230, 181, 255],
-    '1.': [183, 40, 255]
+    '1c': [183, 40, 255],
+
+    '2': [230, 181, 255],
+    '2c': [183, 40, 255],
+
+    '3': [230, 181, 255],
+    '3c': [183, 40, 255],
+
+    '.': [0, 0, 0]
 }
 
 
