@@ -1,5 +1,6 @@
 defmodule Solution.Day6.GridString do
   alias Solution.Day6.Board
+  import Solution.Utils
 
   @type t :: %__MODULE__{
           grid: [[String.t()]]
@@ -43,6 +44,7 @@ defmodule Solution.Day6.GridString do
       do: append_spaces(cell_as_string, column_cell_max_width - String.length(cell_as_string))
 
     defp append_spaces(text, 0), do: text
+
     defp append_spaces(text, n) do
       spaces =
         1..n
@@ -104,14 +106,116 @@ defmodule Solution.Day6.GridString do
       )
 
     %__MODULE__{
-      grid:
-        for y <- 0..(grid_height - 1) do
-          for x <- 0..(grid_width - 1) do
-            find_value_at_coordinates(grid_points, x, y)
-          end
-        end
+      grid: grid(grid_points, grid_width, grid_height)
     }
   end
+
+  defp grid(grid_points, grid_width, grid_height) do
+    grid =
+      grid_points
+      |> eliminate_duplicate_points()
+      |> eliminate_points_out_of_grid(grid_height, grid_width)
+      |> group_by_y_coordinates()
+      |> add_missing_rows(grid_height)
+      |> fill_rows_with_missing_points(grid_width)
+      |> sort_by_x_coordinates()
+      |> flatten_to_grid()
+      |> map_to_value()
+
+    grid
+  end
+
+  defp old_grid(grid_points, grid_width, grid_height) do
+    old_grid =
+      for y <- 0..(grid_height - 1) do
+        for x <- 0..(grid_width - 1) do
+          find_value_at_coordinates(grid_points, x, y)
+        end
+      end
+
+    old_grid
+  end
+
+  defp eliminate_duplicate_points(grid_points) do
+    grid_points
+    |> Enum.uniq_by(&Map.get(&1, :point))
+  end
+
+  defp eliminate_points_out_of_grid(grid_points, grid_height, grid_width) do
+    grid_points
+    |> Enum.reject(fn grid_pt -> get_coordinate(grid_pt, :x) >= grid_width end)
+    |> Enum.reject(fn grid_pt -> get_coordinate(grid_pt, :x) < 0 end)
+    |> Enum.reject(fn grid_pt -> get_coordinate(grid_pt, :y) >= grid_height end)
+    |> Enum.reject(fn grid_pt -> get_coordinate(grid_pt, :y) < 0 end)
+  end
+
+  defp group_by_y_coordinates(grid_points) do
+    Enum.group_by(grid_points, &get_coordinate(&1, :y))
+  end
+
+  defp add_missing_rows(grid_points_grouped_by_rows, grid_height) do
+    existing_rows = grid_points_grouped_by_rows |> Map.keys()
+    missing_rows = Enum.to_list(0..(grid_height - 1)) -- existing_rows
+
+    missing_rows
+    |> Map.new(fn row_number ->
+      {row_number, []}
+    end)
+    |> Enum.into(grid_points_grouped_by_rows)
+  end
+
+  defp fill_rows_with_missing_points(grid_points_grouped_by_rows, grid_width) do
+    grid_points_grouped_by_rows
+    |> Enum.map(&fill_row(&1, grid_width))
+    |> Map.new()
+  end
+
+  defp fill_row({row_y_coordinate, row}, grid_width) do
+    existing_x_coordinates_in_row = Enum.map(row, &get_coordinate(&1, :x))
+
+    missing_x_coordinates_in_row =
+      Enum.to_list(0..(grid_width - 1)) -- existing_x_coordinates_in_row
+
+    row_filled_with_missing_points =
+      missing_x_coordinates_in_row
+      |> Enum.map(fn x ->
+        %GridPoint{point: {x, row_y_coordinate}, value: " "}
+      end)
+      |> Enum.into(row)
+
+    {row_y_coordinate, row_filled_with_missing_points}
+  end
+
+  defp sort_by_x_coordinates(grid_points_grouped_by_rows) do
+    grid_points_grouped_by_rows
+    |> Enum.map(fn {row_y_coordinate, row} ->
+      sorted_row =
+        row
+        |> Enum.sort(fn %GridPoint{point: {x1, _}}, %GridPoint{point: {x2, _}} ->
+          x2 > x1
+        end)
+
+      {row_y_coordinate, sorted_row}
+    end)
+  end
+
+  defp flatten_to_grid(grid_points_grouped_by_rows_with_added_missing_points) do
+    grid_points_grouped_by_rows_with_added_missing_points
+    |> Enum.sort(fn {row_y_coordinate_1, _row_1}, {row_y_coordinate_2, _row_2} ->
+      row_y_coordinate_1 < row_y_coordinate_2
+    end)
+    |> Enum.map(fn {_row_y_coordinate, row} -> row end)
+  end
+
+  defp map_to_value(grid_points_shaped_in_grid) do
+    grid_points_shaped_in_grid
+    |> Enum.map(fn row_of_grid_points ->
+      Enum.map(row_of_grid_points, &Map.get(&1, :value))
+    end)
+  end
+
+  defp get_coordinate(%GridPoint{point: {x, _y}}, :x), do: x
+  defp get_coordinate(%GridPoint{point: {_x, y}}, :y), do: y
 
   @spec to_grid_points(__MODULE__.t()) :: [__MODULE__.GridPoint.t()]
   def to_grid_points(%__MODULE__{grid: grid}) do

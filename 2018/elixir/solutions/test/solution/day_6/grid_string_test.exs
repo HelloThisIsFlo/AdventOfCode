@@ -146,7 +146,6 @@ defmodule Solution.Day6.GridStringTest do
              end)
     end
 
-    @tag :only
     test "Fixed Height / Width" do
       points = [
         %GridPoint{point: {4, 6}, value: "a"},
@@ -154,7 +153,7 @@ defmodule Solution.Day6.GridStringTest do
         %GridPoint{point: {0, 3}, value: "c"}
       ]
 
-      grid_from_points = GridString.from_grid_points(points, width: 4, height: 9)
+      grid_from_points = GridString.from_grid_points(points, width: 4, height: 33)
 
       assert grid_from_points.grid == [
                [" ", " ", " ", " "],
@@ -166,7 +165,32 @@ defmodule Solution.Day6.GridStringTest do
                [" ", "b", " ", " "],
                [" ", " ", " ", " "],
                [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
+               [" ", " ", " ", " "],
              ]
     end
+
   end
 end
