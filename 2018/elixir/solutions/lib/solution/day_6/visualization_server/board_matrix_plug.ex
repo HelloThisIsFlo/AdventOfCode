@@ -129,14 +129,8 @@ defmodule Solution.Day6.VisualizationServer.BoardMatrixPlug do
     {width, height} = Agent.get(@agents.dimensions, &(&1))
 
     board
-    |> log_and_passthrough("START - ''Board.to_visualization_grid_string(height:")
     |> Board.to_visualization_grid_string(height: height, width: width)
-    |> log_and_passthrough("END   - ''Board.to_visualization_grid_string(height:")
-    |> log_and_passthrough("START - 'Map.get(:grid)'")
     |> Map.get(:grid)
-    |> log_and_passthrough("END   - 'Map.get(:grid)'")
-    |> log_and_passthrough("START - ''Poison.encode!()")
     |> Poison.encode!()
-    |> log_and_passthrough("END   - ''Poison.encode!()")
   end
 end

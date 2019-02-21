@@ -52,21 +52,11 @@ defmodule Solution.Day6.Board do
         grid_string_from_grid_points_options \\ []
       ) do
     areas
-    |> log_and_passthrough("   START - ''Enum.map(&ClosestPointsArea.to_grid_points/1)")
     |> Enum.map(&ClosestPointsArea.to_grid_points/1)
-    |> log_and_passthrough("   END   - ''Enum.map(&ClosestPointsArea.to_grid_points/1)")
-    |> log_and_passthrough("   START - ''Enum.with_index(1)")
     |> Enum.with_index(1)
-    |> log_and_passthrough("   END   - ''Enum.with_index(1)")
-    |> log_and_passthrough("   START - ''Enum.map(&to_visualization_representation/1)")
     |> Enum.map(&to_visualization_representation/1)
-    |> log_and_passthrough("   END   - ''Enum.map(&to_visualization_representation/1)")
-    |> log_and_passthrough("   START - ''List.flatten()")
     |> List.flatten()
-    |> log_and_passthrough("   END   - ''List.flatten()")
-    |> log_and_passthrough("   START - ''GridString.from_grid_points(grid_string_from_grid_points_options)")
     |> GridString.from_grid_points(grid_string_from_grid_points_options)
-    |> log_and_passthrough("   END   - ''GridString.from_grid_points(grid_string_from_grid_points_options)")
   end
 
   defp to_visualization_representation({area_points, area_index}) do
@@ -83,15 +73,9 @@ defmodule Solution.Day6.Board do
   def grow(%__MODULE__{areas: areas} = board) do
     grown_areas =
       areas
-      |> log_and_passthrough("START - 'generate_grow_stage_candidates'")
       |> generate_grow_stage_candidates()
-      |> log_and_passthrough("END   - 'generate_grow_stage_candidates'")
-      |> log_and_passthrough("START - 'validate_grow_stage_candidates_and_calculate_equidistants'")
       |> validate_grow_stage_candidates_and_calculate_equidistants(areas)
-      |> log_and_passthrough("END   - 'validate_grow_stage_candidates_and_calculate_equidistants'")
-      |> log_and_passthrough("START - 'commit_valid_grow_stages_and_equidistants'")
       |> commit_valid_grow_stages_and_equidistants(areas)
-      |> log_and_passthrough("END   - 'commit_valid_grow_stages_and_equidistants'")
 
     %{board | areas: grown_areas}
   end
