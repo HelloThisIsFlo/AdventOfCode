@@ -1,3 +1,3 @@
 # ExUnit.configure(exclude: :test, include: :only)
 
-ExUnit.start()
+ExUnit.start(capture_log: :true)
