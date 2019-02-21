@@ -1,20 +1,40 @@
-defmodule Solution.Day6.VisualizationServer.HelloWorldPlug do
+defmodule Solution.Day6.VisualizationServer.BoardMatrixPlug do
   alias Solution.Day6.Board
+  import Solution.Utils
   use Plug.Router
 
   plug(Plug.Logger)
   plug(:match)
   plug(:dispatch)
 
-  @origin_points [
-    {700, 444},
-    {100, 322},
-    {599, 900}
-  ]
   @matrix %{
-    height: 1000,
-    width: 1000
+    height: 100,
+    width: 100
   }
+
+  def random_coordinates do
+    x = :rand.uniform(@matrix.width)
+    y = :rand.uniform(@matrix.height)
+    {x, y}
+  end
+
+  defp origin_points do
+    number_of_points = Enum.random(5..30)
+
+    for _i <- 0..number_of_points do
+      random_coordinates()
+    end
+  end
+
+  # @origin_points [
+  #   {70, 44},
+  #   {100, 32},
+  #   {59, 90}
+  # ]
+  # @matrix %{
+  #   height: 100,
+  #   width: 100
+  # }
 
   def init([]) do
     Agent.start(fn -> %Board{} end, name: __MODULE__)
@@ -54,7 +74,7 @@ defmodule Solution.Day6.VisualizationServer.HelloWorldPlug do
   ### Private functions ###
   defp reset_board do
     Agent.get_and_update(__MODULE__, fn _board ->
-      new_board = Board.from_origin_points(@origin_points)
+      new_board = Board.from_origin_points(origin_points())
       {new_board, new_board}
     end)
   end
@@ -68,8 +88,14 @@ defmodule Solution.Day6.VisualizationServer.HelloWorldPlug do
 
   defp to_json(%Board{} = board) do
     board
+    |> log_and_passthrough("START - ''Board.to_visualization_grid_string(height:")
     |> Board.to_visualization_grid_string(height: @matrix.height, width: @matrix.width)
+    |> log_and_passthrough("END   - ''Board.to_visualization_grid_string(height:")
+    |> log_and_passthrough("START - 'Map.get(:grid)'")
     |> Map.get(:grid)
+    |> log_and_passthrough("END   - 'Map.get(:grid)'")
+    |> log_and_passthrough("START - ''Poison.encode!()")
     |> Poison.encode!()
+    |> log_and_passthrough("END   - ''Poison.encode!()")
   end
 end
