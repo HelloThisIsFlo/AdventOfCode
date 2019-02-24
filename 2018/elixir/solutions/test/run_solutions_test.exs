@@ -19,6 +19,16 @@ defmodule RunSolutions do
     |> File.read!()
   end
 
+  def solve_and_print_solution({day_module, :too_long}) do
+    module_as_string =
+      day_module
+      |> Atom.to_string()
+      |> String.capitalize()
+
+    IO.puts("")
+    IO.puts("Skipping #{module_as_string}: Too long")
+  end
+
   def solve_and_print_solution(day_module) do
     module_as_string =
       day_module
@@ -33,8 +43,14 @@ defmodule RunSolutions do
     input_as_string = read_input_for(day_module)
 
     IO.puts("")
-    IO.puts( "#{module_as_string}.1: " <> apply(day_module_full_name, :solve_part_1, [input_as_string]))
-    IO.puts( "#{module_as_string}.2: " <> apply(day_module_full_name, :solve_part_2, [input_as_string]))
+
+    IO.puts(
+      "#{module_as_string}.1: " <> apply(day_module_full_name, :solve_part_1, [input_as_string])
+    )
+
+    IO.puts(
+      "#{module_as_string}.2: " <> apply(day_module_full_name, :solve_part_2, [input_as_string])
+    )
   end
 
   @tag :skip
@@ -44,8 +60,8 @@ defmodule RunSolutions do
       :day2,
       :day3,
       :day4,
-      # :day5, # Too long: Skipping
-      :day6,
+      {:day5, :too_long},
+      {:day6, :too_long}
     ]
     |> Enum.each(&solve_and_print_solution/1)
   end

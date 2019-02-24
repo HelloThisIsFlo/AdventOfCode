@@ -1,3 +1,3 @@
 #!/bin/bash
 
-mix test --include skip --trace
+mix test test/run_solutions_test.exs --include skip
