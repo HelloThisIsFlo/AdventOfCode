@@ -10,8 +10,7 @@ defmodule Solution.Day6Test do
 
 
   describe "Part 1" do
-    # Too long -> Skipping
-    @tag :skip
+    @tag skip: "too long"
     test "Example from Problem Statement" do
       assert "17" ==
                Day6.solve_part_1("""
@@ -26,17 +25,17 @@ defmodule Solution.Day6Test do
   end
 
   describe "Part 2" do
-    @tag :skip
+    # @tag :skip
     test "Example from Problem Statement" do
-      assert "?????" ==
-               Day6.solve_part_1("""
+      assert "16" ==
+               Day6.solve_part_2("""
                1, 1
                1, 6
                8, 3
                3, 4
                5, 5
                8, 9
-               """)
+               """, 32)
     end
   end
 end
