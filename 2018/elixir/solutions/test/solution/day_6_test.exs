@@ -6,8 +6,6 @@ defmodule Solution.Day6Test do
   # alias Solution.Day6.ClosestPointsArea.InvalidArea
   # import Solution.Day6.Helper, only: [to_grow_stage: 1]
 
-  @moduletag :capture_log
-
 
   describe "Part 1" do
     @tag skip: "too long"
@@ -25,17 +23,19 @@ defmodule Solution.Day6Test do
   end
 
   describe "Part 2" do
-    # @tag :skip
     test "Example from Problem Statement" do
       assert "16" ==
-               Day6.solve_part_2("""
-               1, 1
-               1, 6
-               8, 3
-               3, 4
-               5, 5
-               8, 9
-               """, 32)
+               Day6.solve_part_2(
+                 """
+                 1, 1
+                 1, 6
+                 8, 3
+                 3, 4
+                 5, 5
+                 8, 9
+                 """,
+                 32
+               )
     end
   end
 end

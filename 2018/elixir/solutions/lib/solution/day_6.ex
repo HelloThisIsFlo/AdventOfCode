@@ -200,7 +200,6 @@ defmodule Solution.Day6 do
 
     origin_points
     |> find_point_in_region(limit)
-    |> IO.inspect(label: "Found point in region")
     |> to_region()
     |> grow_until_stable(origin_points, limit)
     |> Kernel.length()
@@ -221,6 +220,7 @@ defmodule Solution.Day6 do
     }
 
     if in_region?(rand_point, origin_points, limit) do
+      Logger.info("Found point in region #{inspect(rand_point)}")
       rand_point
     else
       find_point_in_region(origin_points, limit)
