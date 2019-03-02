@@ -1,0 +1,46 @@
+@startuml Day7.2
+
+
+class Task(String)
+
+class Main {
+    1) while not complete do
+    1.1) Generate new Tasks
+    1.2) Tell Elfs to pick new Tasks
+    1.3) Tell Elfs to do work
+    2) Generate steps
+}
+
+class AvailableTasksQueue(GenServer) {
+    - available_tasks: Task[]
+    + add_tasks(newly_available_tasks: Task[]) -> None
+    + pop_task() -> Task
+}
+
+class Tasks(GenServer) {
+    - {field} tasks_with_prerequisites: Task[]
+
+    - {field} completed_tasks: Task[]
+      {field} (list of steps in reverse order)
+
+    + DONE - complete_task(task: Task) -> None
+
+    + DONE - available_for_pickup() -> Task[]
+
+    + DONE - complete?()
+    
+    + DONE - generate_steps() -> Task[] 
+      (basically reverse list of completed tasks)
+}
+
+class Elf(GenServer) {
+    {method} + handle_cast(:pick_up_new_work) => :picked_up_work
+
+    {method} + handle_cast(:do_work) => :work_done(->Main)
+    {method} (Calls add_completed_task(...) if just completed a task
+
+    - task_duration(task) -> int
+}
+
+
+@enduml

@@ -2,7 +2,7 @@ defmodule Solution.Day7Test do
   use ExUnit.Case, async: false
   alias Solution.Day7
 
-  @moduletag capture_log: false
+  # @moduletag capture_log: false
 
   describe "Part 1" do
     test "Example from Problem Statement" do
