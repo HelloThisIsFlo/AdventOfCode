@@ -7,7 +7,7 @@ defmodule Solution.Day7.Behaviours do
 
   defmodule Tasks do
     @callback available_for_pickup() :: [T.task()]
-    @callback complete?() :: boolean()
+    @callback all_complete?() :: boolean()
     @callback complete_task(T.task()) :: :ok
     @callback generate_steps() :: [T.task()]
   end

@@ -13,8 +13,8 @@ defmodule Solution.Day7.Tasks do
   end
 
   @impl true
-  def complete?() do
-    GenServer.call(__MODULE__, :complete?)
+  def all_complete?() do
+    GenServer.call(__MODULE__, :all_complete?)
   end
 
   @impl true
@@ -63,12 +63,12 @@ defmodule Solution.Day7.Tasks do
 
   @impl true
   def handle_call(
-        :complete?,
+        :all_complete?,
         _from,
         %{tasks_with_prerequisites: tasks_with_prerequisites} = state
       ) do
-    complete? = Enum.empty?(tasks_with_prerequisites)
-    {:reply, complete?, state}
+    all_complete? = Enum.empty?(tasks_with_prerequisites)
+    {:reply, all_complete?, state}
   end
 
   @impl true

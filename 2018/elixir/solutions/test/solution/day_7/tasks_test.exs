@@ -21,37 +21,37 @@ defmodule Solution.Day7.TasksTest do
     end
   end
 
-  describe "Complete?" do
+  describe "All complete?" do
     @tag tasks_with_prerequisites: %{}
     test "No tasks left => Complete" do
-      assert Tasks.complete?()
+      assert Tasks.all_complete?()
     end
 
     @tag tasks_with_prerequisites: %{"A" => []}
     test "Some tasks left => Not Complete" do
-      refute Tasks.complete?()
+      refute Tasks.all_complete?()
     end
 
     @tag tasks_with_prerequisites: %{"C" => []}
     test "When last task remaining is completed, all tasks are completed" do
-      refute Tasks.complete?()
+      refute Tasks.all_complete?()
 
       Tasks.complete_task("C")
-      assert Tasks.complete?()
+      assert Tasks.all_complete?()
     end
 
     @tag tasks_with_prerequisites: %{"C" => ["A"], "A" => [], "B" => ["A"]}
     test "When all tasks are completed, all tasks are completed" do
-      refute Tasks.complete?()
+      refute Tasks.all_complete?()
 
       Tasks.complete_task("A")
-      refute Tasks.complete?()
+      refute Tasks.all_complete?()
 
       Tasks.complete_task("C")
-      refute Tasks.complete?()
+      refute Tasks.all_complete?()
 
       Tasks.complete_task("B")
-      assert Tasks.complete?()
+      assert Tasks.all_complete?()
     end
 
   end
