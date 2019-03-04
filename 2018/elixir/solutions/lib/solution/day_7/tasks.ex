@@ -1,18 +1,23 @@
 defmodule Solution.Day7.Tasks do
   use GenServer
 
+  @behaviour Solution.Day7.Behaviours.Tasks
+
   def start_link(tasks_with_prerequisites) when is_map(tasks_with_prerequisites) do
     GenServer.start_link(__MODULE__, tasks_with_prerequisites, name: __MODULE__)
   end
 
+  @impl true
   def available_for_pickup() do
     GenServer.call(__MODULE__, :available_for_pickup)
   end
 
+  @impl true
   def complete?() do
     GenServer.call(__MODULE__, :complete?)
   end
 
+  @impl true
   def complete_task(task) do
     ensure_completable(task)
     GenServer.cast(__MODULE__, {:complete_task, task})
@@ -26,6 +31,7 @@ defmodule Solution.Day7.Tasks do
     end
   end
 
+  @impl true
   def generate_steps() do
     GenServer.call(__MODULE__, :generate_steps)
   end

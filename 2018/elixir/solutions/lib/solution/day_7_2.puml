@@ -1,8 +1,6 @@
 @startuml Day7.2
 
 
-class Task(String)
-
 class Main {
     1) while not complete do
     1.1) Generate new Tasks
@@ -13,8 +11,8 @@ class Main {
 
 class AvailableTasksQueue(GenServer) {
     - available_tasks: Task[]
-    + add_tasks(newly_available_tasks: Task[]) -> None
-    + pop_task() -> Task
+    + DONE - add_tasks(newly_available_tasks: Task[]) -> None
+    + DONE - pop_next_task_to_pickup() -> Task
 }
 
 class Tasks(GenServer) {
@@ -34,12 +32,11 @@ class Tasks(GenServer) {
 }
 
 class Elf(GenServer) {
-    {method} + handle_cast(:pick_up_new_work) => :picked_up_work
-
-    {method} + handle_cast(:do_work) => :work_done(->Main)
+    + DONE - pick_up_new_work(callback_pid)
+    + do_work(callback_pid)
     {method} (Calls add_completed_task(...) if just completed a task
 
-    - task_duration(task) -> int
+    - DONE - task_duration(task) -> int
 }
 
 
