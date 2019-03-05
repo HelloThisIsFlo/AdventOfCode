@@ -6,6 +6,7 @@ defmodule Solution.Day7.ElfTest do
   setup do
     Elf.start_link(:no_args)
     AvailableTasksQueue.start_link(:no_args)
+    Mox.stub_with(TasksMock, Solution.Day7.Tasks)
     :ok
   end
 
@@ -49,6 +50,8 @@ defmodule Solution.Day7.ElfTest do
 
   describe "Pick up new work => No current task =>" do
     setup context do
+      fake_duration = 12345
+      Mox.expect(TasksMock, :duration, 1, fn _task -> fake_duration end)
       AvailableTasksQueue.add_tasks(context[:available_tasks])
 
       callback_pid = self()
@@ -56,7 +59,10 @@ defmodule Solution.Day7.ElfTest do
       {:noreply, resulting_state} = Elf.handle_cast({:pick_up_new_work, callback_pid}, state)
 
       new_current_task = resulting_state[:current_task]
-      Map.put(context, :new_current_task, new_current_task)
+
+      context
+      |> Map.put(:new_current_task, new_current_task)
+      |> Map.put(:fake_duration, fake_duration)
     end
 
     @tag available_tasks: ["A"]
@@ -75,15 +81,12 @@ defmodule Solution.Day7.ElfTest do
     end
 
     @tag available_tasks: ["A"]
-    test "Duration is 60 + (position in the alphabet) - A", %{new_current_task: new_current_task} do
-      position_of_A_in_alphabet = 1
-      assert new_current_task[:duration] == 60 + position_of_A_in_alphabet
-    end
-
-    @tag available_tasks: ["Q"]
-    test "Duration is 60 + (position in the alphabet) - Q", %{new_current_task: new_current_task} do
-      position_of_Q_in_alphabet = 17
-      assert new_current_task[:duration] == 60 + position_of_Q_in_alphabet
+    test "Duration is given by Task module", %{
+      new_current_task: new_current_task,
+      fake_duration: fake_duration
+    } do
+      assert new_current_task[:duration] == fake_duration
+      Mox.verify!(TasksMock)
     end
 
     @tag available_tasks: []

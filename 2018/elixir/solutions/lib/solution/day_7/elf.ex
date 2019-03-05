@@ -49,7 +49,7 @@ defmodule Solution.Day7.Elf do
     new_current_task =
       case AvailableTasksQueue.pop_next_task_to_pickup() do
         :no_available_tasks -> :no_current_task
-        task -> %{task: task, complete: 0, duration: duration(task)}
+        task -> %{task: task, complete: 0, duration: @tasks.duration(task)}
       end
 
     new_current_task
@@ -78,16 +78,5 @@ defmodule Solution.Day7.Elf do
     end
   end
 
-  defp duration(task) do
-    60 + position_in_alphabet(task)
-  end
 
-  defp position_in_alphabet(letter) do
-    ?A..?Z
-    |> Enum.to_list()
-    |> List.to_string()
-    |> String.split("", trim: true)
-    |> Enum.find_index(&(&1 == String.upcase(letter)))
-    |> Kernel.+(1)
-  end
 end

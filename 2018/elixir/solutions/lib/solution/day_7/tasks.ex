@@ -36,6 +36,20 @@ defmodule Solution.Day7.Tasks do
     GenServer.call(__MODULE__, :generate_steps)
   end
 
+  @impl true
+  def duration(task) do
+    60 + position_in_alphabet(task)
+  end
+
+  defp position_in_alphabet(letter) do
+    ?A..?Z
+    |> Enum.to_list()
+    |> List.to_string()
+    |> String.split("", trim: true)
+    |> Enum.find_index(&(&1 == String.upcase(letter)))
+    |> Kernel.+(1)
+  end
+
   ## GenServer Callbacks ########################################################
   @impl true
   def init(tasks_with_prerequisites) do

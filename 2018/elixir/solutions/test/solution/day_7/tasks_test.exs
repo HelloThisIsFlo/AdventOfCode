@@ -90,4 +90,16 @@ defmodule Solution.Day7.TasksTest do
       assert Tasks.generate_steps() == ["C", "B", "E"]
     end
   end
+
+  describe "Duration is position in alphabet + 60 =>" do
+    @tag tasks_with_prerequisites: %{}
+    test "'Q' - letter 17" do
+      assert Tasks.duration("Q") == 17 + 60
+    end
+
+    @tag tasks_with_prerequisites: %{}
+    test "'A' - letter 1" do
+      assert Tasks.duration("A") == 1 + 60
+    end
+  end
 end
