@@ -1,10 +1,18 @@
 defmodule RunSolutions do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
+  import Mox
+
+  setup :set_mox_from_context
 
   setup_all do
     IO.puts("")
     IO.puts("Solutions to Advent of Code 2018")
     IO.puts("--------------------------------")
+  end
+
+  setup do
+    Mox.stub_with(TasksMock, Solution.Day7.Tasks)
+    :ok
   end
 
   def read_input_for(day_module) do

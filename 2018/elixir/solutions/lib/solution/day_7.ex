@@ -16,6 +16,13 @@ defmodule Solution.Day7 do
   @doc """
   """
   def solve_part_1(input_as_string) do
+    input_as_string
+    |> all_tasks_with_prerequisites_sorted_alphabetically()
+    |> build_list_of_steps()
+    |> Enum.join()
+  end
+
+  defp all_tasks_with_prerequisites_sorted_alphabetically(input_as_string) do
     conditions =
       input_as_string
       |> parse_conditions()
@@ -41,8 +48,6 @@ defmodule Solution.Day7 do
       |> Enum.sort_by(fn {task, _list_of_prerequisites} -> task end)
 
     all_tasks_with_prerequisites_sorted_alphabetically
-    |> build_list_of_steps()
-    |> Enum.join()
   end
 
   defp build_list_of_steps(all_tasks_with_prerequisites_sorted_alphabetically),
@@ -118,20 +123,33 @@ defmodule Solution.Day7 do
 
   @doc """
   """
-  def solve_part_2(_input_as_string) do
-    "skip"
+  def solve_part_2(input_as_string, number_of_workers \\ 5) do
+    elves_pids =
+      1..number_of_workers
+      |> Enum.map(fn _ ->
+        {:ok, elf_pid} = Elf.start_link(:no_args)
+        elf_pid
+      end)
+
+    {steps, time_to_completion} =
+      input_as_string
+      |> all_tasks_with_prerequisites_sorted_alphabetically()
+      |> Map.new()
+      |> solve_with_elves(elves_pids)
+
+    time_to_completion
+    |> Integer.to_string()
   end
 
   def solve_with_elves(tasks_with_prerequisites, elves_pids) do
     Tasks.start_link(tasks_with_prerequisites)
-
-    do_solve_with_elves(elves_pids, Tasks.all_complete?())
+    do_solve_with_elves(elves_pids, 0, Tasks.all_complete?())
   end
 
-  defp do_solve_with_elves(elves_pids, all_complete?)
-  defp do_solve_with_elves(_elves_pids, true), do: generate_steps()
+  defp do_solve_with_elves(elves_pids, current_time, all_complete?)
+  defp do_solve_with_elves(_elves_pids, current_time, true), do: {generate_steps(), current_time}
 
-  defp do_solve_with_elves(elves_pids, false) do
+  defp do_solve_with_elves(elves_pids, current_time, false) do
     number_of_elves = length(elves_pids)
 
     Enum.each(elves_pids, &Elf.pick_up_new_work(&1, self()))
@@ -140,7 +158,7 @@ defmodule Solution.Day7 do
     Enum.each(elves_pids, &Elf.do_work(&1, self()))
     receive_done(number_of_elves)
 
-    do_solve_with_elves(elves_pids, Tasks.all_complete?())
+    do_solve_with_elves(elves_pids, current_time + 1, Tasks.all_complete?())
   end
 
   defp receive_done(0), do: :ok

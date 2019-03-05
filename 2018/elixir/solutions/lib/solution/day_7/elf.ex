@@ -38,7 +38,7 @@ defmodule Solution.Day7.Elf do
   @impl GenServer
   def handle_cast({:do_work, callback_pid}, %{current_task: current_task}) do
     new_current_task = do_do_work(current_task)
-    # IO.inspect(new_current_task, label: "Do work          => New current task:")
+    # IO.inspect(new_current_task, label: "Do work #{inspect(self())}  => New current task:")
     send(callback_pid, :done)
     {:noreply, %{current_task: new_current_task}}
   end
