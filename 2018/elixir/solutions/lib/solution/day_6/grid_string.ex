@@ -181,7 +181,7 @@ defmodule Solution.Day6.GridString do
       |> Enum.map(fn x ->
         %GridPoint{point: {x, row_y_coordinate}, value: " "}
       end)
-      |> Enum.into(row)
+      |> Kernel.++(row)
 
     {row_y_coordinate, row_filled_with_missing_points}
   end

@@ -261,8 +261,7 @@ defmodule Solution.Day6 do
       |> Enum.uniq()
       |> Enum.filter(&in_region?(&1, origin_points, limit))
 
-    next_grow_stage
-    |> Enum.into(region_near_as_many_coordinates_as_possible)
+    (region_near_as_many_coordinates_as_possible ++ next_grow_stage)
     |> Enum.uniq()
 
     # |> IO.inspect()
