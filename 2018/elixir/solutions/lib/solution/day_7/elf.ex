@@ -1,6 +1,5 @@
 defmodule Solution.Day7.Elf do
   use GenServer
-  alias Solution.Day7.AvailableTasksQueue
   alias Solution.Day7.Behaviours.Elf
 
   @behaviour Elf
@@ -9,7 +8,7 @@ defmodule Solution.Day7.Elf do
 
   @spec start_link(any()) :: :ignore | {:error, any()} | {:ok, pid()}
   def start_link(_) do
-    GenServer.start_link(__MODULE__, :no_args, name: __MODULE__)
+    GenServer.start_link(__MODULE__, :no_args)
   end
 
   @impl Elf
@@ -31,7 +30,7 @@ defmodule Solution.Day7.Elf do
   @impl GenServer
   def handle_cast({:pick_up_new_work, callback_pid}, %{current_task: current_task}) do
     new_current_task = do_pick_up_new_work(current_task)
-    IO.inspect(new_current_task, label: "Pick up new work => New current task:")
+    # IO.inspect(new_current_task, label: "Pick up new work => New current task:")
     send(callback_pid, :done)
     {:noreply, %{current_task: new_current_task}}
   end
@@ -39,7 +38,7 @@ defmodule Solution.Day7.Elf do
   @impl GenServer
   def handle_cast({:do_work, callback_pid}, %{current_task: current_task}) do
     new_current_task = do_do_work(current_task)
-    IO.inspect(new_current_task, label: "Do work          => New current task:")
+    # IO.inspect(new_current_task, label: "Do work          => New current task:")
     send(callback_pid, :done)
     {:noreply, %{current_task: new_current_task}}
   end
@@ -48,8 +47,8 @@ defmodule Solution.Day7.Elf do
 
   defp do_pick_up_new_work(:no_current_task) do
     new_current_task =
-      case AvailableTasksQueue.pop_next_task_to_pickup() do
-        :no_available_tasks -> :no_current_task
+      case @tasks.pop_next_task_to_pickup() do
+        :no_more_tasks -> :no_current_task
         task -> %{task: task, complete: 0, duration: @tasks.duration(task)}
       end
 

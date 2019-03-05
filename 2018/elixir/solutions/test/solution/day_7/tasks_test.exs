@@ -9,19 +9,49 @@ defmodule Solution.Day7.TasksTest do
     :ok
   end
 
-  describe "Generate tasks available for pickup" do
+  describe "Pop next task to pickup =>" do
     @tag tasks_with_prerequisites: %{}
-    test "No tasks => No tasks available" do
-      assert Tasks.available_for_pickup() == []
+    test "No tasks => No more task to pickup" do
+      assert Tasks.pop_next_task_to_pickup() == :no_more_tasks
     end
 
-    @tag tasks_with_prerequisites: %{"A" => [], "B" => ["A", "D"], "D" => ["C"], "C" => []}
-    test "Multiple tasks some with prerequisites => All tasks without prerequisites" do
-      assert_equal_any_order(Tasks.available_for_pickup(), ["C", "A"])
+    @tag tasks_with_prerequisites: %{"A" => ["C"]}
+    test "Some tasks, all with prerequisite => Raise error" do
+      assert_raise RuntimeError, ~r/Deadlock/, fn ->
+        Tasks.pop_next_task_to_pickup()
+      end
+    end
+
+    @tag tasks_with_prerequisites: %{"C" => [], "A" => []}
+    test "Multiple available tasks => Return in alphabetical order" do
+      assert Tasks.pop_next_task_to_pickup() == "A"
+      assert Tasks.pop_next_task_to_pickup() == "C"
+      assert Tasks.pop_next_task_to_pickup() == :no_more_tasks
+    end
+
+    @tag tasks_with_prerequisites: %{"C" => [], "B" => ["C"]}
+    test "Multiple available tasks some with prerequisites => Return only those w/o prerequisites" do
+      assert Tasks.pop_next_task_to_pickup() == "C"
+      assert Tasks.pop_next_task_to_pickup() == :no_more_tasks
+    end
+
+    @tag tasks_with_prerequisites: %{"C" => [], "B" => ["C"]}
+    test "Complete task => Unlocks depending tasks" do
+      assert Tasks.pop_next_task_to_pickup() == "C"
+      assert Tasks.pop_next_task_to_pickup() == :no_more_tasks
+      Tasks.complete_task("C")
+      assert Tasks.pop_next_task_to_pickup() == "B"
+      assert Tasks.pop_next_task_to_pickup() == :no_more_tasks
+    end
+
+    @tag tasks_with_prerequisites: %{"C" => []}
+    test "Completed task can not be picked up" do
+      Tasks.complete_task("C")
+      assert Tasks.pop_next_task_to_pickup() == :no_more_tasks
     end
   end
 
-  describe "All complete?" do
+  describe "All complete? =>" do
     @tag tasks_with_prerequisites: %{}
     test "No tasks left => Complete" do
       assert Tasks.all_complete?()
@@ -53,35 +83,18 @@ defmodule Solution.Day7.TasksTest do
       Tasks.complete_task("B")
       assert Tasks.all_complete?()
     end
-
   end
 
-  describe "Complete task:" do
+  describe "Complete task: =>" do
     @tag tasks_with_prerequisites: %{"A" => ["B"], "B" => []}
     test "Task isn't completable => Raise error" do
       assert_raise RuntimeError, ~r/Can not complete task 'A'/, fn ->
         Tasks.complete_task("A")
       end
     end
-
-    @tag tasks_with_prerequisites: %{"A" => ["C"], "C" => []}
-    test "Unlock tasks depending on the completed task" do
-      refute Enum.member?(Tasks.available_for_pickup(), "A")
-      Tasks.complete_task("C")
-      assert Enum.member?(Tasks.available_for_pickup(), "A")
-    end
-
-    @tag tasks_with_prerequisites: %{"A" => ["C", "D"], "C" => [], "D" => []}
-    test "Task isn't in the list of available for pickup anymore" do
-      assert_equal_any_order Tasks.available_for_pickup(), ["C", "D"]
-      Tasks.complete_task("C")
-      assert_equal_any_order Tasks.available_for_pickup(), ["D"]
-    end
-
-
   end
 
-  describe "Generate list of steps" do
+  describe "Generate list of steps =>" do
     @tag tasks_with_prerequisites: %{"B" => [], "C" => [], "E" => []}
     test "Is list of completed tasks in order" do
       Tasks.complete_task("C")

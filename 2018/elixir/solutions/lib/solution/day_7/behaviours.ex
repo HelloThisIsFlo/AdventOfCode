@@ -6,16 +6,11 @@ defmodule Solution.Day7.Behaviours do
   alias Solution.Day7.T
 
   defmodule Tasks do
-    @callback available_for_pickup() :: [T.task()]
+    @callback pop_next_task_to_pickup() :: T.task()
     @callback all_complete?() :: boolean()
     @callback complete_task(T.task()) :: :ok
     @callback generate_steps() :: [T.task()]
     @callback duration(T.task()) :: non_neg_integer()
-  end
-
-  defmodule AvailableTasksQueue do
-    @callback add_tasks([T.task()]) :: :ok
-    @callback pop_next_task_to_pickup() :: T.task()
   end
 
   defmodule Elf do

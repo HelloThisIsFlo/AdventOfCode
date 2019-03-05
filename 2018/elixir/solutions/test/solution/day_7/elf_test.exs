@@ -1,12 +1,9 @@
 defmodule Solution.Day7.ElfTest do
   use ExUnit.Case
   alias Solution.Day7.Elf
-  alias Solution.Day7.AvailableTasksQueue
 
   setup do
     Elf.start_link(:no_args)
-    AvailableTasksQueue.start_link(:no_args)
-    Mox.stub_with(TasksMock, Solution.Day7.Tasks)
     :ok
   end
 
@@ -51,8 +48,10 @@ defmodule Solution.Day7.ElfTest do
   describe "Pick up new work => No current task =>" do
     setup context do
       fake_duration = 12345
-      Mox.expect(TasksMock, :duration, 1, fn _task -> fake_duration end)
-      AvailableTasksQueue.add_tasks(context[:available_tasks])
+
+      TasksMock
+      |> Mox.expect(:duration, 1, fn _task -> fake_duration end)
+      |> Mox.expect(:pop_next_task_to_pickup, fn -> context[:next_task_to_pickup] end)
 
       callback_pid = self()
       state = %{current_task: :no_current_task}
@@ -65,22 +64,22 @@ defmodule Solution.Day7.ElfTest do
       |> Map.put(:fake_duration, fake_duration)
     end
 
-    @tag available_tasks: ["A"]
+    @tag next_task_to_pickup: "A"
     test "Pick up available task", %{new_current_task: new_current_task} do
       assert new_current_task[:task] == "A"
     end
 
-    @tag available_tasks: ["A"]
+    @tag next_task_to_pickup: "A"
     test "Reset completion to 0", %{new_current_task: new_current_task} do
       assert new_current_task[:complete] == 0
     end
 
-    @tag available_tasks: ["A"]
+    @tag next_task_to_pickup: "A"
     test "Send :done" do
       assert_receive :done
     end
 
-    @tag available_tasks: ["A"]
+    @tag next_task_to_pickup: "A"
     test "Duration is given by Task module", %{
       new_current_task: new_current_task,
       fake_duration: fake_duration
@@ -89,12 +88,12 @@ defmodule Solution.Day7.ElfTest do
       Mox.verify!(TasksMock)
     end
 
-    @tag available_tasks: []
+    @tag next_task_to_pickup: :no_more_tasks
     test "No available tasks => Do not pick task", %{new_current_task: new_current_task} do
       assert new_current_task == :no_current_task
     end
 
-    @tag available_tasks: []
+    @tag next_task_to_pickup: :no_more_tasks
     test "No available tasks => Send :done" do
       assert_receive :done
     end

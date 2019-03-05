@@ -2,7 +2,6 @@ defmodule Solution.Day7 do
   require Logger
   alias Solution.Day7.Tasks
   alias Solution.Day7.Elf
-  alias Solution.Day7.AvailableTasksQueue
 
   @moduledoc """
   Solution to: https://adventofcode.com/2018/day/7
@@ -124,7 +123,6 @@ defmodule Solution.Day7 do
   end
 
   def solve_with_elves(tasks_with_prerequisites, elves_pids) do
-    AvailableTasksQueue.start_link(:no_args)
     Tasks.start_link(tasks_with_prerequisites)
 
     do_solve_with_elves(elves_pids, Tasks.all_complete?())
@@ -134,10 +132,6 @@ defmodule Solution.Day7 do
   defp do_solve_with_elves(_elves_pids, true), do: generate_steps()
 
   defp do_solve_with_elves(elves_pids, false) do
-    Tasks.available_for_pickup()
-    |> AvailableTasksQueue.add_tasks()
-
-
     number_of_elves = length(elves_pids)
 
     Enum.each(elves_pids, &Elf.pick_up_new_work(&1, self()))
