@@ -30,6 +30,7 @@ defmodule Solution.Day7.AvailableTasksQueue do
       (available_tasks ++ newly_available_tasks)
       |> Enum.uniq()
       |> Enum.sort()
+      |> IO.inspect(label: "Available tasks:")
 
     {:noreply, available_tasks}
   end

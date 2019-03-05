@@ -1,5 +1,8 @@
 defmodule Solution.Day7 do
   require Logger
+  alias Solution.Day7.Tasks
+  alias Solution.Day7.Elf
+  alias Solution.Day7.AvailableTasksQueue
 
   @moduledoc """
   Solution to: https://adventofcode.com/2018/day/7
@@ -45,13 +48,17 @@ defmodule Solution.Day7 do
 
   defp build_list_of_steps(all_tasks_with_prerequisites_sorted_alphabetically),
     do: do_build_list_of_steps([], nil, all_tasks_with_prerequisites_sorted_alphabetically)
+
   defp do_build_list_of_steps(steps_in_reverse_order, previous_step, tasks_with_prerequisites)
+
   defp do_build_list_of_steps(steps_in_reverse_order, previous_step, [{previous_step, []}]),
     do: Enum.reverse(steps_in_reverse_order)
+
   defp do_build_list_of_steps([], nil, tasks_with_prerequisites) do
     first_task = find_next_task(tasks_with_prerequisites)
     do_build_list_of_steps([first_task], first_task, tasks_with_prerequisites)
   end
+
   defp do_build_list_of_steps(steps_in_reverse_order, previous_step, tasks_with_prerequisites) do
     tasks_with_prerequisites_after_previous_step =
       tasks_with_prerequisites
@@ -110,15 +117,51 @@ defmodule Solution.Day7 do
     end)
   end
 
-  @spec build_list_of_prerequisites([condition()]) :: %{required(task()) => [prerequisite()]}
-  defp build_list_of_prerequisites(conditions) do
-    conditions
-  end
-
   @doc """
   """
-  def solve_part_2(input_as_string) do
-    input_as_string
+  def solve_part_2(_input_as_string) do
     "skip"
+  end
+
+  def solve_with_elves(tasks_with_prerequisites, elves_pids) do
+    AvailableTasksQueue.start_link(:no_args)
+    Tasks.start_link(tasks_with_prerequisites)
+
+    do_solve_with_elves(elves_pids, Tasks.all_complete?())
+  end
+
+  defp do_solve_with_elves(elves_pids, all_complete?)
+  defp do_solve_with_elves(_elves_pids, true), do: generate_steps()
+
+  defp do_solve_with_elves(elves_pids, false) do
+    Tasks.available_for_pickup()
+    |> AvailableTasksQueue.add_tasks()
+
+
+    number_of_elves = length(elves_pids)
+
+    Enum.each(elves_pids, &Elf.pick_up_new_work(&1, self()))
+    receive_done(number_of_elves)
+
+    Enum.each(elves_pids, &Elf.do_work(&1, self()))
+    receive_done(number_of_elves)
+
+    do_solve_with_elves(elves_pids, Tasks.all_complete?())
+  end
+
+  defp receive_done(0), do: :ok
+
+  defp receive_done(number_of_times) do
+    receive do
+      :done -> receive_done(number_of_times - 1)
+    end
+  end
+
+  defp generate_steps() do
+    if not Tasks.all_complete?() do
+      raise "Should be complete!"
+    end
+
+    Tasks.generate_steps()
   end
 end

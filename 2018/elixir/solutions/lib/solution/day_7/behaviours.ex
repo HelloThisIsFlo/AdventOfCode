@@ -20,7 +20,8 @@ defmodule Solution.Day7.Behaviours do
 
   defmodule Elf do
     @type callback_pid :: pid()
-    @callback pick_up_new_work(callback_pid()) :: :ok
-    @callback do_work(callback_pid()) :: :ok
+    @type elf_pid :: pid()
+    @callback pick_up_new_work(elf_pid(), callback_pid()) :: :ok
+    @callback do_work(elf_pid(), callback_pid()) :: :ok
   end
 end

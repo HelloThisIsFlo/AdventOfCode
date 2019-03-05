@@ -13,25 +13,25 @@ defmodule Solution.Day7.Elf do
   end
 
   @impl Elf
-  @spec pick_up_new_work(any()) :: :ok
-  def pick_up_new_work(callback_pid) do
-    GenServer.cast(__MODULE__, {:pick_up_new_work, callback_pid})
+  def pick_up_new_work(elf_pid, callback_pid) do
+    GenServer.cast(elf_pid, {:pick_up_new_work, callback_pid})
   end
 
   @impl Elf
-  def do_work(_callback_pid) do
-    :ok
+  def do_work(elf_pid, callback_pid) do
+    GenServer.cast(elf_pid, {:do_work, callback_pid})
   end
 
   ## GenServer callbacks ###################################
   @impl GenServer
   def init(:no_args) do
-    {:ok, []}
+    {:ok, %{current_task: :no_current_task}}
   end
 
   @impl GenServer
   def handle_cast({:pick_up_new_work, callback_pid}, %{current_task: current_task}) do
     new_current_task = do_pick_up_new_work(current_task)
+    IO.inspect(new_current_task, label: "Pick up new work => New current task:")
     send(callback_pid, :done)
     {:noreply, %{current_task: new_current_task}}
   end
@@ -39,6 +39,7 @@ defmodule Solution.Day7.Elf do
   @impl GenServer
   def handle_cast({:do_work, callback_pid}, %{current_task: current_task}) do
     new_current_task = do_do_work(current_task)
+    IO.inspect(new_current_task, label: "Do work          => New current task:")
     send(callback_pid, :done)
     {:noreply, %{current_task: new_current_task}}
   end
