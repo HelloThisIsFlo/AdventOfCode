@@ -33,7 +33,7 @@ class Tasks(GenServer) {
 
 class Elf(GenServer) {
     + DONE - pick_up_new_work(callback_pid)
-    + do_work(callback_pid)
+    + DONE - do_work(callback_pid)
     {method} (Calls add_completed_task(...) if just completed a task
 
     - DONE - task_duration(task) -> int
