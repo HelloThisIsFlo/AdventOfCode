@@ -2,6 +2,8 @@ defmodule Solution.Day7.ElfTest do
   use ExUnit.Case
   alias Solution.Day7.Elf
 
+  @elf_name "Frank"
+
   setup do
     Elf.start_link(:no_args)
     :ok
@@ -101,24 +103,24 @@ defmodule Solution.Day7.ElfTest do
 
   describe "Do work =>" do
     setup context do
-      if Map.get(context, :should_complete_task?, false) do
-        Mox.expect(TasksMock, :complete_task, 1, fn _task -> :ok end)
-        Mox.verify_on_exit!(context)
-      else
-        Mox.stub(TasksMock, :complete_task, fn _task -> :ok end)
-      end
+      Mox.expect(TasksMock, :complete_task, 1, fn _task -> :ok end)
+
+      Mox.stub(DBMock, :notify_current_task, fn elf_name, current_task ->
+        send(self(), {:notify_current_task_called, elf_name, current_task})
+      end)
 
       callback_pid = self()
-      state = %{current_task: context[:current_task_before_work]}
+      state = %{current_task: context[:current_task_before_work], elf_name: @elf_name}
       {:noreply, new_state} = Elf.handle_cast({:do_work, callback_pid}, state)
 
-      Map.put(context, :current_task_after_work, new_state[:current_task])
+      context
+      |> Map.put(:current_task_after_work, new_state[:current_task])
     end
 
     @tag current_task_before_work: %{task: "B", complete: 61, duration: 62}
-    @tag should_complete_task?: true
     test "Current complete after work => Complete task" do
       # See setup - Expectation set with tags
+      Mox.verify!(TasksMock)
     end
 
     @tag current_task_before_work: %{task: "B", complete: 61, duration: 62}
@@ -129,8 +131,9 @@ defmodule Solution.Day7.ElfTest do
     end
 
     @tag current_task_before_work: %{task: "B", complete: 61, duration: 62}
-    test "Current complete after work => Send :done" do
+    test "Current complete after work => Send :done & notify Diagram Builder" do
       assert_receive :done
+      assert_receive {:notify_current_task_called, @elf_name, "B"}
     end
 
     @tag current_task_before_work: %{task: "B", complete: 40, duration: 62}
@@ -142,13 +145,15 @@ defmodule Solution.Day7.ElfTest do
     end
 
     @tag current_task_before_work: %{task: "B", complete: 40, duration: 62}
-    test "Current not complete after work => Send :done" do
+    test "Current not complete after work => Send :done & notify Diagram Builder" do
       assert_receive :done
+      assert_receive {:notify_current_task_called, @elf_name, "B"}
     end
 
     @tag current_task_before_work: :no_current_task
-    test "No current task => Send :done" do
+    test "No current task => Send :done & notify Diagram Builder" do
       assert_receive :done
+      assert_receive {:notify_current_task_called, @elf_name, :no_current_task}
     end
   end
 end

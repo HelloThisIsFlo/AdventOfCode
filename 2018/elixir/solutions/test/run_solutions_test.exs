@@ -12,6 +12,7 @@ defmodule RunSolutions do
 
   setup do
     Mox.stub_with(TasksMock, Solution.Day7.Tasks)
+    Mox.stub_with(DBMock, Solution.Day7.DiagramBuilder)
     :ok
   end
 

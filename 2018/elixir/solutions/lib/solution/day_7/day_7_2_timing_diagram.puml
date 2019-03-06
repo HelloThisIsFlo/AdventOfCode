@@ -1,0 +1,14 @@
+@startuml
+concise "Elf 1" as Elf_1
+concise "Elf 2" as Elf_2
+
+@Elf_1
+0 is A
++200 is B
+
+@Elf_2
+0 is C
++100 is {hidden}
++300 is B
+
+@enduml

@@ -1,10 +1,16 @@
 defmodule Solution.Day7Test do
   use ExUnit.Case, async: false
   alias Solution.Day7
+  alias Solution.Day7.DiagramBuilder
   alias Solution.Day7.Tasks
   import Mox
 
   setup :set_mox_from_context
+
+  setup do
+    Mox.stub_with(DBMock, Day7.DiagramBuilder)
+    :ok
+  end
 
   describe "Part 1" do
     test "Example from Problem Statement" do
@@ -103,7 +109,6 @@ defmodule Solution.Day7Test do
         "F" => ["C"]
       }
 
-
       {steps, _} = Day7.solve_with_elves(conditions_from_part_1_example, elves_pids)
       assert steps == ["C", "A", "F", "B", "D", "E"]
     end
@@ -128,6 +133,29 @@ defmodule Solution.Day7Test do
                  """,
                  2
                )
+    end
+
+    @tag :skip
+    test "Write Diagram" do
+      TasksMock
+      |> Mox.stub_with(Tasks)
+      |> Mox.stub(:duration, fn task -> Tasks.duration(task) - 60 end)
+
+      Day7.solve_part_2(
+        """
+        Step C must be finished before step A can begin.
+        Step C must be finished before step F can begin.
+        Step A must be finished before step B can begin.
+        Step A must be finished before step D can begin.
+        Step B must be finished before step E can begin.
+        Step D must be finished before step E can begin.
+        Step F must be finished before step E can begin.
+        """,
+        5
+      )
+
+      diagram = DiagramBuilder.build_diagram()
+      File.write!("test.puml", diagram)
     end
   end
 end

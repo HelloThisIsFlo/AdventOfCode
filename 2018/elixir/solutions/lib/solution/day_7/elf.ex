@@ -5,10 +5,11 @@ defmodule Solution.Day7.Elf do
   @behaviour Elf
 
   @tasks Application.fetch_env!(:solutions, :tasks_module)
+  @diagram_builder Application.fetch_env!(:solutions, :diagram_builder_module)
 
   @spec start_link(any()) :: :ignore | {:error, any()} | {:ok, pid()}
-  def start_link(_) do
-    GenServer.start_link(__MODULE__, :no_args)
+  def start_link(elf_name) do
+    GenServer.start_link(__MODULE__, elf_name)
   end
 
   @impl Elf
@@ -23,24 +24,25 @@ defmodule Solution.Day7.Elf do
 
   ## GenServer callbacks ###################################
   @impl GenServer
-  def init(:no_args) do
-    {:ok, %{current_task: :no_current_task}}
+  def init(elf_name) do
+    {:ok, %{current_task: :no_current_task, elf_name: elf_name}}
   end
 
   @impl GenServer
-  def handle_cast({:pick_up_new_work, callback_pid}, %{current_task: current_task}) do
+  def handle_cast({:pick_up_new_work, callback_pid}, %{current_task: current_task} = state) do
     new_current_task = do_pick_up_new_work(current_task)
     # IO.inspect(new_current_task, label: "Pick up new work => New current task:")
     send(callback_pid, :done)
-    {:noreply, %{current_task: new_current_task}}
+    {:noreply, %{state | current_task: new_current_task}}
   end
 
   @impl GenServer
-  def handle_cast({:do_work, callback_pid}, %{current_task: current_task}) do
-    new_current_task = do_do_work(current_task)
+  def handle_cast({:do_work, callback_pid}, state) do
+    @diagram_builder.notify_current_task(state.elf_name, task_name(state.current_task))
+    new_current_task = do_do_work(state.current_task)
     # IO.inspect(new_current_task, label: "Do work #{inspect(self())}  => New current task:")
     send(callback_pid, :done)
-    {:noreply, %{current_task: new_current_task}}
+    {:noreply, %{state | current_task: new_current_task}}
   end
 
   defp do_pick_up_new_work(current_task)
@@ -78,5 +80,6 @@ defmodule Solution.Day7.Elf do
     end
   end
 
-
+  defp task_name(%{task: task}), do: task
+  defp task_name(:no_current_task), do: :no_current_task
 end

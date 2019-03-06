@@ -19,4 +19,10 @@ defmodule Solution.Day7.Behaviours do
     @callback pick_up_new_work(elf_pid(), callback_pid()) :: :ok
     @callback do_work(elf_pid(), callback_pid()) :: :ok
   end
+
+  defmodule DiagramBuilder do
+    @callback set_current_time(non_neg_integer()) :: :ok
+    @callback notify_current_task(String.t, String.t | atom()) :: :ok
+    @callback build_diagram() :: String.t
+  end
 end

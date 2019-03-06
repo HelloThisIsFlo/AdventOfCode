@@ -1,6 +1,7 @@
 defmodule Solution.Day7 do
   require Logger
   alias Solution.Day7.Tasks
+  alias Solution.Day7.DiagramBuilder
   alias Solution.Day7.Elf
 
   @moduledoc """
@@ -126,12 +127,12 @@ defmodule Solution.Day7 do
   def solve_part_2(input_as_string, number_of_workers \\ 5) do
     elves_pids =
       1..number_of_workers
-      |> Enum.map(fn _ ->
-        {:ok, elf_pid} = Elf.start_link(:no_args)
+      |> Enum.map(fn worker_id ->
+        {:ok, elf_pid} = Elf.start_link("Elf #{worker_id}")
         elf_pid
       end)
 
-    {steps, time_to_completion} =
+    {_steps, time_to_completion} =
       input_as_string
       |> all_tasks_with_prerequisites_sorted_alphabetically()
       |> Map.new()
@@ -143,6 +144,7 @@ defmodule Solution.Day7 do
 
   def solve_with_elves(tasks_with_prerequisites, elves_pids) do
     Tasks.start_link(tasks_with_prerequisites)
+    DiagramBuilder.start_link(:no_args)
     do_solve_with_elves(elves_pids, 0, Tasks.all_complete?())
   end
 
@@ -150,6 +152,8 @@ defmodule Solution.Day7 do
   defp do_solve_with_elves(_elves_pids, current_time, true), do: {generate_steps(), current_time}
 
   defp do_solve_with_elves(elves_pids, current_time, false) do
+    DiagramBuilder.set_current_time(current_time)
+
     number_of_elves = length(elves_pids)
 
     Enum.each(elves_pids, &Elf.pick_up_new_work(&1, self()))
