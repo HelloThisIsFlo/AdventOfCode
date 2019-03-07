@@ -71,7 +71,8 @@ defmodule RunSolutions do
       :day4,
       {:day5, :too_long},
       {:day6, :too_long},
-      :day7
+      :day7,
+      :day8
     ]
     |> Enum.each(&solve_and_print_solution/1)
   end
