@@ -8,18 +8,17 @@ defmodule Solution.Day9 do
               current_player: 1,
               current_round: Circle.new([0]),
               next_marble: 1,
-              scores: %{},
-              scored_marbles: MapSet.new()
+              scored_marbles: %{}
 
     @spec new(integer()) :: Solution.Day9.MarbleGame.t()
     def new(number_of_players) do
-      initial_scores =
+      initial_scored_marbles =
         1..number_of_players
-        |> Enum.map(fn player -> {player, 0} end)
+        |> Enum.map(fn player -> {player, MapSet.new()} end)
         |> Map.new()
 
       %__MODULE__{
-        scores: initial_scores,
+        scored_marbles: initial_scored_marbles,
         number_of_players: number_of_players
       }
     end
@@ -29,89 +28,72 @@ defmodule Solution.Day9 do
     end
 
     @spec play_round(MarbleGame.t()) :: MarbleGame.t()
-    def play_round(marble_game) do
+    def play_round(%{next_marble: next} = marble_game) do
+      is_next_marble_multiple_of_23? = is_multiple_of_23?(next)
+
       marble_game
-      |> log_and_passthrough("Current marble: #{MarbleGame.current_marble(marble_game)}")
-      |> log_and_passthrough("Next    marble: #{marble_game.next_marble}")
-      |> log_and_passthrough(
-        "Next is multiple of 23? => #{marble_game.next_marble |> is_multiple_of_23?()}"
-      )
-      |> log_and_passthrough("Next marble: #{marble_game.next_marble}")
-      |> update_scores()
-      |> log_and_passthrough("Update marbles - START")
-      |> update_marbles()
-      |> log_and_passthrough("Update marbles -  END ")
+      |> update_current_round(is_next_marble_multiple_of_23?)
+      |> update_next_marble(is_next_marble_multiple_of_23?)
       |> update_current_player()
     end
 
-    defp log_and_passthrough(thing, message) do
-      if false do
-        Logger.debug(message)
-      end
-
-      thing
+    @spec score(MarbleGame.t(), pos_integer()) :: non_neg_integer()
+    def score(%MarbleGame{scored_marbles: scored}, player) do
+      scored
+      |> Map.get(player)
+      |> Enum.sum()
     end
 
-    @spec update_scores(MarbleGame.t()) :: MarbleGame.t()
-    def update_scores(marble_game) do
-      %{current_player: player, scores: scores, next_marble: next_marble} = marble_game
+    #######################
+    ## Private functions ##
+    #######################
+    defp update_current_round(marble_game, next_marble_is_multiple_of_23)
 
-      if next_marble |> is_multiple_of_23?() do
-        seventh_anti_clockwise =
-          marble_game.current_round
-          |> Circle.rotate(7, :anticlockwise)
-          |> Circle.current()
-
-        %{
-          marble_game
-          | scores: Map.update!(scores, player, &(&1 + next_marble + seventh_anti_clockwise))
-        }
-      else
+    defp update_current_round(%{next_marble: next} = marble_game, false) do
+      %{
         marble_game
-      end
+        | current_round:
+            marble_game.current_round
+            |> Circle.rotate(1, :clockwise)
+            |> Circle.insert_after_current(next)
+      }
     end
 
-    @spec update_marbles(MarbleGame.t()) :: MarbleGame.t()
-    def update_marbles(marble_game) do
-      %{next_marble: next, scored_marbles: scored} = marble_game
+    defp update_current_round(%{next_marble: next} = marble_game, true) do
+      circle_on_scored_marble =
+        marble_game.current_round
+        |> Circle.rotate(7, :anticlockwise)
 
-      if marble_game.next_marble |> is_multiple_of_23?() do
-        circle_on_scored_marble =
-          marble_game.current_round
-          |> Circle.rotate(7, :anticlockwise)
+      scored = Circle.current(circle_on_scored_marble)
 
-        scored_marble =
-          circle_on_scored_marble
-          |> Circle.current()
+      scored_marbles =
+        marble_game.scored_marbles
+        |> Map.update!(marble_game.current_player, fn scored_marbles_by_player ->
+          scored_marbles_by_player
+          |> MapSet.put(next)
+          |> MapSet.put(scored)
+        end)
 
-        round =
-          circle_on_scored_marble
-          |> Circle.delete_current()
+      round =
+        circle_on_scored_marble
+        |> Circle.delete_current()
 
-        %{
-          marble_game
-          | current_round: round,
-            next_marble: next_marble(marble_game),
-            scored_marbles:
-              scored
-              |> MapSet.put(next)
-              |> MapSet.put(scored_marble)
-        }
-      else
-        round =
-          marble_game.current_round
-          |> Circle.rotate(1, :clockwise)
-          |> Circle.insert_after_current(next)
-
-        %{
-          marble_game
-          | current_round: round,
-            next_marble: next + 1
-        }
-      end
+      %{
+        marble_game
+        | current_round: round,
+          scored_marbles: scored_marbles
+      }
     end
 
-    def update_current_player(%{current_player: current, number_of_players: num} = marble_game),
+    defp update_next_marble(marble_game, next_marble_is_multiple_of_23)
+
+    defp update_next_marble(marble_game, false),
+      do: %{marble_game | next_marble: marble_game.next_marble + 1}
+
+    defp update_next_marble(marble_game, true),
+      do: %{marble_game | next_marble: next_marble(marble_game)}
+
+    defp update_current_player(%{current_player: current, number_of_players: num} = marble_game),
       do: %{marble_game | current_player: rem(current, num) + 1}
 
     defp is_multiple_of_23?(marble), do: rem(marble, 23) == 0
@@ -123,11 +105,24 @@ defmodule Solution.Day9 do
         next_marble: next
       } = marble_game
 
-      all_used_marbles =
+      all_scored =
+        scored
+        |> Map.values()
+        |> Enum.reduce(
+          MapSet.new(),
+          fn player_scored_marbles, all_scored_marbles ->
+            MapSet.union(all_scored_marbles, player_scored_marbles)
+          end
+        )
+
+      all_used_in_round =
         round
         |> Circle.to_list()
         |> MapSet.new()
-        |> MapSet.union(scored)
+
+      all_used_marbles =
+        all_used_in_round
+        |> MapSet.union(all_scored)
         |> MapSet.put(next)
 
       do_next_marble(MarbleGame.current_marble(marble_game) + 1, all_used_marbles)

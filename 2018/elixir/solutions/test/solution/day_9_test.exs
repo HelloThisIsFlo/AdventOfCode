@@ -27,12 +27,12 @@ defmodule Solution.Day9Test do
       assert new_game.next_marble == 1
     end
 
-    test "All score are initialized to 0" do
+    test "All scored marbles lists are initialized to empty set" do
       number_of_players = 100
       new_game = MarbleGame.new(number_of_players)
 
       Enum.each(1..number_of_players, fn player ->
-        assert Map.get(new_game.scores, player) == 0
+        assert Map.get(new_game.scored_marbles, player) == MapSet.new()
       end)
     end
 
@@ -44,119 +44,128 @@ defmodule Solution.Day9Test do
     end
   end
 
-
-  describe "Update players" do
+  describe "Play round => Update players" do
     test "Current player is not last player => Current player is incremented", %{game: game} do
       game = %{game | current_player: 3}
-      after_round = MarbleGame.update_current_player(game)
+      after_round = MarbleGame.play_round(game)
       assert after_round.current_player == 4
     end
 
     test "Current player is last player => Current player is reset to '1'", %{game: game} do
       game = %{game | current_player: @number_of_players}
-      after_round = MarbleGame.update_current_player(game)
+      after_round = MarbleGame.play_round(game)
       assert after_round.current_player == 1
     end
   end
 
-  describe "Update scores =>" do
-    test "'next marble' isn't a multiple of 23 => Scores stay the same", %{game: game} do
+  describe "Play round => Update scored marbles =>" do
+    test "'next marble' isn't a multiple of 23 => Scored marbles stay the same", %{game: game} do
       game = %{game | next_marble: 21}
-      game_after_update_scores = MarbleGame.update_scores(game)
-      assert game.scores == game_after_update_scores.scores
+      game_after_update_scores = MarbleGame.play_round(game)
+      assert game.scored_marbles == game_after_update_scores.scored_marbles
     end
 
     # TODO: Do not increment scores, but store scored marbles. Calculate scores at the end.
     test "'next marble' is a multiple of 23 =>
-          Current player score is incremented by 'next marble' and marble 7 marbles away anti-clockwise from 'current'",
+          Current player scored 'next marble' and the marble 7 marbles away anti-clockwise from 'current'",
          %{game: game} do
-      player = 4
-      next_marble = 3 * 23
-      s = seventh_marble_anticlockwise = 44
+      current_player = 4
+      n = next_marble = 3 * 23
+      s = _seventh_marble_anticlockwise = 44
       c = _current_marble = 55
 
       game = %{
         game
-        | current_player: player,
+        | current_player: current_player,
           current_round: Circle.new([c, 1, 1, 1, 1, 1, s, 1, 1, 1, 1, 1, 1]),
           next_marble: next_marble
       }
 
-      game_after_update_scores = MarbleGame.update_scores(game)
+      game_after_update_scores = MarbleGame.play_round(game)
 
-      assert game_after_update_scores.scores[player] ==
-               game.scores[player] + next_marble + seventh_marble_anticlockwise
+      assert game_after_update_scores.scored_marbles[current_player] == MapSet.new([n, s])
     end
   end
 
-  describe "Update marbles => Next marble isn't a multiple of 23 =>" do
+  describe "Play round => Update marbles => Next marble isn't a multiple of 23 =>" do
     test "Next 'current marble' is previous 'next marble'" do
-      game = %MarbleGame{current_round: Circle.new([3, 1, 1, 1, 1]), next_marble: 4}
-      game_after_update_marbles = MarbleGame.update_marbles(game)
+      game = %MarbleGame{
+        current_round: Circle.new([3, 1, 1, 1, 1]),
+        next_marble: 4,
+        number_of_players: 7
+      }
 
-      assert MarbleGame.current_marble(game_after_update_marbles) == game.next_marble
+      game_after_play_round = MarbleGame.play_round(game)
+
+      assert MarbleGame.current_marble(game_after_play_round) == game.next_marble
     end
 
     test "Next 'next marble' is previous 'next marble' + 1" do
-      game = %MarbleGame{current_round: Circle.new([3, 1, 1, 1, 1]), next_marble: 4}
-      game_after_update_marbles = MarbleGame.update_marbles(game)
-      assert game_after_update_marbles.next_marble == game.next_marble + 1
+      game = %MarbleGame{
+        current_round: Circle.new([3, 1, 1, 1, 1]),
+        next_marble: 4,
+        number_of_players: 7
+      }
+
+      game_after_play_round = MarbleGame.play_round(game)
+      assert game_after_play_round.next_marble == game.next_marble + 1
     end
 
     test "'next marble' is inserted after next marble clockwise from 'current marble'" do
       c = _current = 20
       n = next = 35
 
-      game = %MarbleGame{
-        current_round: Circle.new([c, 1, 1, 1, 1, 1, 1]),
-        next_marble: next
-      }
+      game =
+        MarbleGame.new(7)
+        |> Map.put(:current_round, Circle.new([c, 1, 1, 1, 1, 1, 1]))
+        |> Map.put(:next_marble, next)
 
-      game_after_update_marbles = MarbleGame.update_marbles(game)
+      game_after_play_round = MarbleGame.play_round(game)
 
-      assert game_after_update_marbles.current_round |> Circle.to_list() ==
+      assert game_after_play_round.current_round |> Circle.to_list() ==
                [n, 1, 1, 1, 1, 1, c, 1]
     end
   end
 
-  describe "Update marbles => Next marble is a multiple of 23 =>" do
+  describe "Play round => Update marbles => Next marble is a multiple of 23 =>" do
     test "7th anticlockwise from 'current marble' has been removed & current is 6th anticlockwise" do
-      c = current = 888
+      c = _current = 888
       s = _seventh_marble_anticlockwise = 999
 
-      game = %MarbleGame{
-        next_marble: 46,
-        current_round: Circle.new([c, 1, 2, 3, s, 4, 5, 6, 7, 8, 9])
-      }
+      game =
+        MarbleGame.new(7)
+        |> Map.put(:current_round, Circle.new([c, 1, 2, 3, s, 4, 5, 6, 7, 8, 9]))
+        |> Map.put(:next_marble, 46)
 
-      game_after_update_marbles = MarbleGame.update_marbles(game)
+      game_after_play_round = MarbleGame.play_round(game)
 
-      assert Circle.to_list(game_after_update_marbles.current_round) ==
+      assert Circle.to_list(game_after_play_round.current_round) ==
                [4, 5, 6, 7, 8, 9, c, 1, 2, 3]
     end
 
-    # TODO: Use refactored scores instead lf 'scored_marbles'
     test "Next 'next marble' is the lowest-numbered remaining marble" do
       # Note: This example doesn't represent a valid round, but is enough to test the 'next marble' logic
-      c = current_marble = 12
-      n = next_marble = 46
+      c = _current_marble = 12
+      _n = next_marble = 46
       r = _about_to_be_removed = 5
       current_round = Circle.new([c, 1, 2, 4, r, 6, 7, 8, 9, 10, 11])
-      scored_marbles = MapSet.new([23, 3])
+      scored_marbles_by_player_3 = MapSet.new([23, 3])
 
-      game = %MarbleGame{
-        next_marble: n,
-        current_round: current_round,
-        scored_marbles: scored_marbles
-      }
+      game =
+        MarbleGame.new(7)
+        |> Map.put(:current_round, current_round)
+        |> Map.put(:next_marble, next_marble)
+        |> Map.update!(:scored_marbles, fn scored_marbles ->
+          Map.put(scored_marbles, 3, scored_marbles_by_player_3)
+        end)
 
-      game_after_update_marbles = MarbleGame.update_marbles(game)
+      game_after_play_round = MarbleGame.play_round(game)
 
-      assert game_after_update_marbles.next_marble ==
+      assert game_after_play_round.next_marble ==
                1..100
                |> Enum.to_list()
                |> Kernel.--(current_round |> Circle.to_list())
-               |> Kernel.--(scored_marbles |> MapSet.to_list())
+               |> Kernel.--(scored_marbles_by_player_3 |> MapSet.to_list())
                |> Kernel.--([next_marble])
                |> List.first()
     end
@@ -175,10 +184,27 @@ defmodule Solution.Day9Test do
     #     scored_marbles: scored_marbles
     #   }
 
-    #   game_after_update_marbles = MarbleGame.update_marbles(game)
+    #   game_after_play_round = MarbleGame.play_round(game)
 
-    #   assert game_after_update_marbles.scored_marbles == MapSet.new([23, 3, n, r])
+    #   assert game_after_play_round.scored_marbles == MapSet.new([23, 3, n, r])
     # end
+  end
+
+  describe "Get scores =>" do
+    test "No scored marbles => Score 0" do
+      game = MarbleGame.new(7)
+      assert MarbleGame.score(game, 3) == 0
+    end
+
+    test "Some scored marbles => Score sum of scored marbles" do
+      scored_marbles_by_player_3 = MapSet.new([23, 3])
+
+      game =
+        MarbleGame.new(7)
+        |> Map.update!(:scored_marbles, &Map.put(&1, 3, scored_marbles_by_player_3))
+
+      assert MarbleGame.score(game, 3) == 23 + 3
+    end
   end
 
   describe "Play round - Example from problem statement" do
@@ -192,7 +218,10 @@ defmodule Solution.Day9Test do
       assert Circle.to_list(round_1.current_round) == [1, 0]
       assert round_1.next_marble == 2
       assert round_1.current_player == 2
-      assert Enum.all?(round_1.scores, fn {_player, score} -> score == 0 end)
+
+      assert 1..number_of_players
+             |> Enum.map(&MarbleGame.score(round_1, &1))
+             |> Enum.all?(&(&1 == 0))
     end
 
     test "Rounds 1-22" do
@@ -202,7 +231,10 @@ defmodule Solution.Day9Test do
         MarbleGame.new(number_of_players)
         |> play_rounds(1..22)
 
-      assert Enum.all?(round_22.scores, fn {_player, score} -> score == 0 end)
+      assert 1..number_of_players
+             |> Enum.map(&MarbleGame.score(round_22, &1))
+             |> Enum.all?(&(&1 == 0))
+
       assert round_22.current_player == 5
 
       assert Circle.to_list(round_22.current_round) ==
@@ -218,11 +250,13 @@ defmodule Solution.Day9Test do
         MarbleGame.new(number_of_players)
         |> play_rounds(1..23)
 
-      assert round_23.scores[player_5] == 32
+      assert MarbleGame.score(round_23, player_5) == 32
 
-      assert round_23.scores
-             |> Map.delete(player_5)
-             |> Enum.all?(fn {_player, score} -> score == 0 end)
+      assert 1..number_of_players
+             |> Enum.to_list()
+             |> Kernel.--([player_5])
+             |> Enum.map(&MarbleGame.score(round_23, &1))
+             |> Enum.all?(&(&1 == 0))
 
       assert round_23.current_player == 6
 
@@ -239,11 +273,13 @@ defmodule Solution.Day9Test do
         MarbleGame.new(number_of_players)
         |> play_rounds(1..25)
 
-      assert round_25.scores[player_5] == 32
+      assert MarbleGame.score(round_25, player_5) == 32
 
-      assert round_25.scores
-             |> Map.delete(player_5)
-             |> Enum.all?(fn {_player, score} -> score == 0 end)
+      assert 1..number_of_players
+             |> Enum.to_list()
+             |> Kernel.--([player_5])
+             |> Enum.map(&MarbleGame.score(round_25, &1))
+             |> Enum.all?(&(&1 == 0))
 
       assert round_25.current_player == 8
 
