@@ -1,12 +1,12 @@
 defmodule Solution.Day9 do
   alias Solution.Day9.MarbleGame
+  alias Solution.Day9.Circle
   require Logger
 
   defmodule MarbleGame do
     defstruct number_of_players: 0,
               current_player: 1,
-              current_round: [0],
-              current_marble: 0,
+              current_round: Circle.new([0]),
               next_marble: 1,
               scores: %{},
               scored_marbles: MapSet.new()
@@ -24,10 +24,14 @@ defmodule Solution.Day9 do
       }
     end
 
+    def current_marble(%MarbleGame{current_round: round}) do
+      Circle.current(round)
+    end
+
     @spec play_round(MarbleGame.t()) :: MarbleGame.t()
     def play_round(marble_game) do
       marble_game
-      |> log_and_passthrough("Current marble: #{marble_game.current_marble}")
+      |> log_and_passthrough("Current marble: #{MarbleGame.current_marble(marble_game)}")
       |> log_and_passthrough("Next    marble: #{marble_game.next_marble}")
       |> log_and_passthrough(
         "Next is multiple of 23? => #{marble_game.next_marble |> is_multiple_of_23?()}"
@@ -41,43 +45,12 @@ defmodule Solution.Day9 do
     end
 
     defp log_and_passthrough(thing, message) do
-      Logger.debug(message)
+      if false do
+        Logger.debug(message)
+      end
+
       thing
     end
-
-    @type direction() :: :clockwise | :anticlockwise
-    @spec index_from_current(MarbleGame.t(), non_neg_integer(), direction()) :: integer()
-    def index_from_current(marble_game, offset, :anticlockwise),
-      do: index_from_current(marble_game, -offset, :clockwise)
-
-    def index_from_current(marble_game, offset, :clockwise) do
-      %{current_round: round, current_marble: current_marble} = marble_game
-
-      round
-      |> Enum.find_index(&(&1 == current_marble))
-      |> Kernel.+(offset)
-      |> index_in_circle(length(round))
-    end
-
-    defp index_in_circle(candidate_index, current_round_length) do
-      case {candidate_index < current_round_length, candidate_index >= 0} do
-        {true, true} ->
-          candidate_index
-
-        {false, _} ->
-          index_in_circle(
-            candidate_index - current_round_length,
-            current_round_length
-          )
-
-        {_, false} ->
-          index_in_circle(
-            candidate_index + current_round_length,
-            current_round_length
-          )
-      end
-    end
-
 
     @spec update_scores(MarbleGame.t()) :: MarbleGame.t()
     def update_scores(marble_game) do
@@ -85,7 +58,9 @@ defmodule Solution.Day9 do
 
       if next_marble |> is_multiple_of_23?() do
         seventh_anti_clockwise =
-          Enum.at(marble_game.current_round, index_from_current(marble_game, 7, :anticlockwise))
+          marble_game.current_round
+          |> Circle.rotate(7, :anticlockwise)
+          |> Circle.current()
 
         %{
           marble_game
@@ -98,29 +73,39 @@ defmodule Solution.Day9 do
 
     @spec update_marbles(MarbleGame.t()) :: MarbleGame.t()
     def update_marbles(marble_game) do
-      %{current_round: round, next_marble: next, scored_marbles: scored} = marble_game
+      %{next_marble: next, scored_marbles: scored} = marble_game
 
       if marble_game.next_marble |> is_multiple_of_23?() do
-        seventh_anticlockwise_from_current = index_from_current(marble_game, 7, :anticlockwise)
-        current_marble = Enum.at(round, index_from_current(marble_game, 6, :anticlockwise))
+        circle_on_scored_marble =
+          marble_game.current_round
+          |> Circle.rotate(7, :anticlockwise)
+
+        scored_marble =
+          circle_on_scored_marble
+          |> Circle.current()
+
+        round =
+          circle_on_scored_marble
+          |> Circle.delete_current()
 
         %{
           marble_game
-          | current_round: List.delete_at(round, seventh_anticlockwise_from_current),
-            current_marble: current_marble,
+          | current_round: round,
             next_marble: next_marble(marble_game),
             scored_marbles:
               scored
               |> MapSet.put(next)
-              |> MapSet.put(Enum.at(round, seventh_anticlockwise_from_current))
+              |> MapSet.put(scored_marble)
         }
       else
-        next_clockwise_from_current = index_from_current(marble_game, 1, :clockwise)
+        round =
+          marble_game.current_round
+          |> Circle.rotate(1, :clockwise)
+          |> Circle.insert_after_current(next)
 
         %{
           marble_game
-          | current_round: insert_after(round, next, next_clockwise_from_current),
-            current_marble: next,
+          | current_round: round,
             next_marble: next + 1
         }
       end
@@ -129,27 +114,23 @@ defmodule Solution.Day9 do
     def update_current_player(%{current_player: current, number_of_players: num} = marble_game),
       do: %{marble_game | current_player: rem(current, num) + 1}
 
-    defp insert_after(round, marble, index_to_insert_after) do
-      List.insert_at(round, index_to_insert_after + 1, marble)
-    end
-
     defp is_multiple_of_23?(marble), do: rem(marble, 23) == 0
 
     defp next_marble(marble_game) do
       %{
         scored_marbles: scored,
         current_round: round,
-        current_marble: current,
         next_marble: next
       } = marble_game
 
       all_used_marbles =
         round
+        |> Circle.to_list()
         |> MapSet.new()
         |> MapSet.union(scored)
         |> MapSet.put(next)
 
-      do_next_marble(current + 1, all_used_marbles)
+      do_next_marble(MarbleGame.current_marble(marble_game) + 1, all_used_marbles)
     end
 
     defp do_next_marble(candidate_next_marble, already_used_marbles) do
@@ -184,7 +165,7 @@ defmodule Solution.Day9 do
   end
 
   def iterate_until_target_current_marble_is_reached(marble_game, target_marble) do
-    if marble_game.current_marble == target_marble do
+    if MarbleGame.current_marble(marble_game) == target_marble do
       marble_game
     else
       marble_game
