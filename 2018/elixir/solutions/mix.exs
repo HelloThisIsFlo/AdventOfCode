@@ -29,7 +29,9 @@ defmodule Solutions.MixProject do
       {:mox, "~> 0.5", only: :test},
       {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
       {:plug_cowboy, "~> 2.0"},
-      {:poison, "~> 3.1"}
+      {:poison, "~> 3.1"},
+      {:quixir, "~> 0.9", only: :test},
+      {:logger_file_backend, "~> 0.0.10"}
     ]
   end
 end
