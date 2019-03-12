@@ -303,7 +303,7 @@ defmodule Solution.Day9Test do
   describe "Debug =>" do
     setup :log_to_file
 
-    @tag timeout: 5_000
+    @tag timeout: 15_000
     @tag :skip
     test "Performance" do
       Day9.solve_part_1("""
@@ -314,7 +314,7 @@ defmodule Solution.Day9Test do
 
   describe "Part 1" do
     @tag timeout: 10_000
-    @tag :skip
+    # @tag :skip
     test "Example from Problem Statement" do
       assert "8317" ==
                Day9.solve_part_1("""

@@ -30,6 +30,7 @@ defmodule Solution.Day9 do
     @spec play_round(MarbleGame.t()) :: MarbleGame.t()
     def play_round(%{next_marble: next} = marble_game) do
       is_next_marble_multiple_of_23? = is_multiple_of_23?(next)
+      Logger.debug("#{MarbleGame.current_marble(marble_game)}")
 
       marble_game
       |> update_current_round(is_next_marble_multiple_of_23?)
@@ -150,11 +151,13 @@ defmodule Solution.Day9 do
       |> Regex.named_captures(first_line)
       |> Map.new(fn {capture, value} -> {capture, String.to_integer(value)} end)
 
-    players
-    |> MarbleGame.new()
-    |> iterate_until_target_current_marble_is_reached(target)
-    |> Map.get(:scores)
-    |> Enum.map(fn {_player, score} -> score end)
+    finished_game =
+      players
+      |> MarbleGame.new()
+      |> iterate_until_target_current_marble_is_reached(target)
+
+    1..players
+    |> Enum.map(&MarbleGame.score(finished_game, &1))
     |> Enum.max()
     |> Integer.to_string()
   end
