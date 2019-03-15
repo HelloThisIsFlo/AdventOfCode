@@ -30,7 +30,7 @@ defmodule Solution.Day9 do
     @spec play_round(MarbleGame.t()) :: MarbleGame.t()
     def play_round(%{next_marble: next} = marble_game) do
       is_next_marble_multiple_of_23? = is_multiple_of_23?(next)
-      Logger.debug("#{MarbleGame.current_marble(marble_game)}")
+      # Logger.debug("#{MarbleGame.current_marble(marble_game)}")
 
       marble_game
       |> update_current_round(is_next_marble_multiple_of_23?)

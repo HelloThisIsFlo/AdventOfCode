@@ -72,6 +72,15 @@ defmodule Solution.Day9.CircleTest do
       assert Circle.rotate(empty_circle, 123, :clockwise) == empty_circle
       assert Circle.rotate(empty_circle, 456, :anticlockwise) == empty_circle
     end
+
+    test "Rotate all around => End up at original position", %{circle: circle} do
+      circle = Circle.rotate(circle, 2, :clockwise)
+
+      size = Circle.to_list(circle) |> length()
+
+      assert circle == Circle.rotate(circle, size, :clockwise)
+      assert circle == Circle.rotate(circle, size, :anticlockwise)
+    end
   end
 
   describe "Insert element after current =>" do
@@ -81,6 +90,7 @@ defmodule Solution.Day9.CircleTest do
       assert Circle.to_list(circle) == [44]
     end
 
+    # @tag :only
     test "Not empty Circle => Insert after current and shift current to newly inserted" do
       circle = Circle.new([1, 2, 3])
       assert Circle.current(circle) == 1
@@ -91,6 +101,7 @@ defmodule Solution.Day9.CircleTest do
       assert Circle.current(circle) == 44
     end
 
+    # @tag :only
     test "Multiple insertions" do
       circle = Circle.new([1, 2, 3])
       assert Circle.current(circle) == 1

@@ -307,7 +307,7 @@ defmodule Solution.Day9Test do
     @tag :skip
     test "Performance" do
       Day9.solve_part_1("""
-      13 players; last marble is worth 100000 points
+      411 players; last marble is worth 72059 points
       """)
     end
   end
