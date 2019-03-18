@@ -29,12 +29,9 @@ defmodule Solution.Day9 do
 
     @spec play_round(MarbleGame.t()) :: MarbleGame.t()
     def play_round(%{next_marble: next} = marble_game) do
-      is_next_marble_multiple_of_23? = is_multiple_of_23?(next)
-      # Logger.debug("#{MarbleGame.current_marble(marble_game)}")
-
       marble_game
-      |> update_current_round(is_next_marble_multiple_of_23?)
-      |> update_next_marble(is_next_marble_multiple_of_23?)
+      |> update_current_round(is_multiple_of_23?(next))
+      |> update_next_marble()
       |> update_current_player()
     end
 
@@ -86,56 +83,13 @@ defmodule Solution.Day9 do
       }
     end
 
-    defp update_next_marble(marble_game, next_marble_is_multiple_of_23)
-
-    defp update_next_marble(marble_game, false),
+    defp update_next_marble(marble_game),
       do: %{marble_game | next_marble: marble_game.next_marble + 1}
-
-    defp update_next_marble(marble_game, true),
-      do: %{marble_game | next_marble: next_marble(marble_game)}
 
     defp update_current_player(%{current_player: current, number_of_players: num} = marble_game),
       do: %{marble_game | current_player: rem(current, num) + 1}
 
     defp is_multiple_of_23?(marble), do: rem(marble, 23) == 0
-
-    defp next_marble(marble_game) do
-      %{
-        scored_marbles: scored,
-        current_round: round,
-        next_marble: next
-      } = marble_game
-
-      all_scored =
-        scored
-        |> Map.values()
-        |> Enum.reduce(
-          MapSet.new(),
-          fn player_scored_marbles, all_scored_marbles ->
-            MapSet.union(all_scored_marbles, player_scored_marbles)
-          end
-        )
-
-      all_used_in_round =
-        round
-        |> Circle.to_list()
-        |> MapSet.new()
-
-      all_used_marbles =
-        all_used_in_round
-        |> MapSet.union(all_scored)
-        |> MapSet.put(next)
-
-      do_next_marble(MarbleGame.current_marble(marble_game) + 1, all_used_marbles)
-    end
-
-    defp do_next_marble(candidate_next_marble, already_used_marbles) do
-      if not Enum.member?(already_used_marbles, candidate_next_marble) do
-        candidate_next_marble
-      else
-        do_next_marble(candidate_next_marble + 1, already_used_marbles)
-      end
-    end
   end
 
   @behaviour Solution
@@ -163,7 +117,9 @@ defmodule Solution.Day9 do
   end
 
   def iterate_until_target_current_marble_is_reached(marble_game, target_marble) do
-    if MarbleGame.current_marble(marble_game) == target_marble do
+    current = MarbleGame.current_marble(marble_game)
+    # Logger.debug(current)
+    if current >= target_marble do
       marble_game
     else
       marble_game

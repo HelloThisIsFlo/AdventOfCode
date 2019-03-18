@@ -87,6 +87,17 @@ defmodule Solution.Day9Test do
     end
   end
 
+  test "Play round => Next 'next marble' is previous 'next marble' + 1" do
+    game = %MarbleGame{
+      current_round: Circle.new([3, 1, 1, 1, 1]),
+      next_marble: 4,
+      number_of_players: 7
+    }
+
+    game_after_play_round = MarbleGame.play_round(game)
+    assert game_after_play_round.next_marble == game.next_marble + 1
+  end
+
   describe "Play round => Update marbles => Next marble isn't a multiple of 23 =>" do
     test "Next 'current marble' is previous 'next marble'" do
       game = %MarbleGame{
@@ -145,52 +156,6 @@ defmodule Solution.Day9Test do
       assert Circle.to_list(game_after_play_round.current_round) ==
                [c, 1, 2, 3, si, 5, 6, 7, 8, 9]
     end
-
-    test "Next 'next marble' is the lowest-numbered remaining marble" do
-      # Note: This example doesn't represent a valid round, but is enough to test the 'next marble' logic
-      c = _current_marble = 12
-      _n = next_marble = 46
-      r = _about_to_be_removed = 5
-      current_round = Circle.new([c, 1, 2, 4, r, 6, 7, 8, 9, 10, 11])
-      scored_marbles_by_player_3 = MapSet.new([23, 3])
-
-      game =
-        MarbleGame.new(7)
-        |> Map.put(:current_round, current_round)
-        |> Map.put(:next_marble, next_marble)
-        |> Map.update!(:scored_marbles, fn scored_marbles ->
-          Map.put(scored_marbles, 3, scored_marbles_by_player_3)
-        end)
-
-      game_after_play_round = MarbleGame.play_round(game)
-
-      assert game_after_play_round.next_marble ==
-               1..100
-               |> Enum.to_list()
-               |> Kernel.--(current_round |> Circle.to_list())
-               |> Kernel.--(scored_marbles_by_player_3 |> MapSet.to_list())
-               |> Kernel.--([next_marble])
-               |> List.first()
-    end
-
-    # test "'scored_marbles' is updated with 'next_marble' and the removed marble" do
-    #   c = current_marble = 12
-    #   n = _next_marble = 46
-    #   r = _about_to_be_removed = 5
-    #   current_round_old = [1, 2, 4, r, 6, 7, 8, 9, 10, 11, c]
-    #   scored_marbles = MapSet.new([23, 3])
-
-    #   game = %MarbleGame{
-    #     next_marble: n,
-    #     current_round_old: current_round_old,
-    #     current_marble: current_marble,
-    #     scored_marbles: scored_marbles
-    #   }
-
-    #   game_after_play_round = MarbleGame.play_round(game)
-
-    #   assert game_after_play_round.scored_marbles == MapSet.new([23, 3, n, r])
-    # end
   end
 
   describe "Get scores =>" do
@@ -301,7 +266,6 @@ defmodule Solution.Day9Test do
 
     on_exit(fn ->
       Logger.remove_backend(file_backend)
-      IO.puts("oooooooooooooooookkkkkkkkkkkkkkkkkkkkkk")
     end)
   end
 
@@ -314,14 +278,10 @@ defmodule Solution.Day9Test do
       Day9.solve_part_1("""
       411 players; last marble is worth 72059 points
       """)
-
-      assert 1 == 2
     end
   end
 
   describe "Part 1" do
-    @tag timeout: 10_000
-    # @tag :skip
     test "Example from Problem Statement" do
       assert "8317" ==
                Day9.solve_part_1("""
