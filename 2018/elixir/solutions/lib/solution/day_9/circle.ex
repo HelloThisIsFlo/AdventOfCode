@@ -111,10 +111,8 @@ defmodule Solution.Day9.Circle do
   def current(%{current_and_before: []}), do: nil
 
   @impl true
-  def to_list(circle)
-
-  def to_list(%{current_and_before: [current | before]} = circle),
-    do: [current] ++ circle.after_current ++ Enum.reverse(before)
-
   def to_list(%{current_and_before: []}), do: []
+  def to_list(circle),
+    do: Enum.reverse(circle.current_and_before) ++ circle.after_current
+
 end

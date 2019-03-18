@@ -123,24 +123,27 @@ defmodule Solution.Day9Test do
       game_after_play_round = MarbleGame.play_round(game)
 
       assert game_after_play_round.current_round |> Circle.to_list() ==
-               [n, 1, 1, 1, 1, 1, c, 1]
+               [c, 1, n, 1, 1, 1, 1, 1]
     end
   end
 
   describe "Play round => Update marbles => Next marble is a multiple of 23 =>" do
     test "7th anticlockwise from 'current marble' has been removed & current is 6th anticlockwise" do
       c = _current = 888
-      s = _seventh_marble_anticlockwise = 999
+      se = _seventh_marble_anticlockwise = 777
+      si = _seventh_marble_anticlockwise = 666
 
       game =
         MarbleGame.new(7)
-        |> Map.put(:current_round, Circle.new([c, 1, 2, 3, s, 4, 5, 6, 7, 8, 9]))
+        |> Map.put(:current_round, Circle.new([c, 1, 2, 3, se, si, 5, 6, 7, 8, 9]))
         |> Map.put(:next_marble, 46)
 
       game_after_play_round = MarbleGame.play_round(game)
 
+      assert Circle.current(game_after_play_round.current_round) == si
+
       assert Circle.to_list(game_after_play_round.current_round) ==
-               [4, 5, 6, 7, 8, 9, c, 1, 2, 3]
+               [c, 1, 2, 3, si, 5, 6, 7, 8, 9]
     end
 
     test "Next 'next marble' is the lowest-numbered remaining marble" do
@@ -215,7 +218,7 @@ defmodule Solution.Day9Test do
         MarbleGame.new(number_of_players)
         |> MarbleGame.play_round()
 
-      assert Circle.to_list(round_1.current_round) == [1, 0]
+      assert Circle.to_list(round_1.current_round) == [0, 1]
       assert round_1.next_marble == 2
       assert round_1.current_player == 2
 
@@ -237,9 +240,11 @@ defmodule Solution.Day9Test do
 
       assert round_22.current_player == 5
 
+      assert Circle.current(round_22.current_round) == 22
+
       assert Circle.to_list(round_22.current_round) ==
-               [22, 11, 1, 12, 6, 13, 3, 14, 7, 15, 0, 16] ++
-                 [8, 17, 4, 18, 9, 19, 2, 20, 10, 21, 5]
+               [0, 16, 8, 17, 4, 18, 9, 19, 2, 20, 10, 21] ++
+                 [5, 22, 11, 1, 12, 6, 13, 3, 14, 7, 15]
     end
 
     test "Rounds 1-23" do
@@ -261,8 +266,8 @@ defmodule Solution.Day9Test do
       assert round_23.current_player == 6
 
       assert Circle.to_list(round_23.current_round) ==
-               [19, 2, 20, 10, 21, 5, 22, 11, 1, 12, 6, 13] ++
-                 [3, 14, 7, 15, 0, 16, 8, 17, 4, 18]
+               [0, 16, 8, 17, 4, 18, 19, 2, 20] ++
+                 [10, 21, 5, 22, 11, 1, 12, 6, 13, 3, 14, 7, 15]
     end
 
     test "Rounds 1-25" do
@@ -284,8 +289,8 @@ defmodule Solution.Day9Test do
       assert round_25.current_player == 8
 
       assert Circle.to_list(round_25.current_round) ==
-               [25, 10, 21, 5, 22, 11, 1, 12, 6, 13, 3, 14] ++
-                 [7, 15, 0, 16, 8, 17, 4, 18, 19, 2, 24, 20]
+               [0, 16, 8, 17, 4, 18, 19, 2, 24, 20] ++
+                 [25, 10, 21, 5, 22, 11, 1, 12, 6, 13, 3, 14, 7, 15]
     end
   end
 
@@ -309,6 +314,8 @@ defmodule Solution.Day9Test do
       Day9.solve_part_1("""
       411 players; last marble is worth 72059 points
       """)
+
+      assert 1 == 2
     end
   end
 

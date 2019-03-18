@@ -46,25 +46,25 @@ defmodule Solution.Day9.CircleTest do
     test "1 Clockwise", %{circle: circle} do
       rotated_circle = Circle.rotate(circle, 1, :clockwise)
       assert Circle.current(rotated_circle) == 2
-      assert Circle.to_list(rotated_circle) == [2, 3, 4, 1]
+      assert Circle.to_list(rotated_circle) == [1, 2, 3, 4]
     end
 
     test "3 Clockwise", %{circle: circle} do
       rotated_circle = Circle.rotate(circle, 3, :clockwise)
       assert Circle.current(rotated_circle) == 4
-      assert Circle.to_list(rotated_circle) == [4, 1, 2, 3]
+      assert Circle.to_list(rotated_circle) == [1, 2, 3, 4]
     end
 
     test "1 Anti-Clockwise", %{circle: circle} do
       rotated_circle = Circle.rotate(circle, 1, :anticlockwise)
       assert Circle.current(rotated_circle) == 4
-      assert Circle.to_list(rotated_circle) == [4, 1, 2, 3]
+      assert Circle.to_list(rotated_circle) == [1, 2, 3, 4]
     end
 
     test "2 Anti-Clockwise", %{circle: circle} do
       rotated_circle = Circle.rotate(circle, 2, :anticlockwise)
       assert Circle.current(rotated_circle) == 3
-      assert Circle.to_list(rotated_circle) == [3, 4, 1, 2]
+      assert Circle.to_list(rotated_circle) == [1, 2, 3, 4]
     end
 
     test "Empty" do
@@ -90,18 +90,16 @@ defmodule Solution.Day9.CircleTest do
       assert Circle.to_list(circle) == [44]
     end
 
-    # @tag :only
     test "Not empty Circle => Insert after current and shift current to newly inserted" do
       circle = Circle.new([1, 2, 3])
       assert Circle.current(circle) == 1
 
       circle = Circle.insert_after_current(circle, 44)
 
-      assert Circle.to_list(circle) == [44, 2, 3, 1]
+      assert Circle.to_list(circle) == [1, 44, 2, 3]
       assert Circle.current(circle) == 44
     end
 
-    # @tag :only
     test "Multiple insertions" do
       circle = Circle.new([1, 2, 3])
       assert Circle.current(circle) == 1
@@ -113,8 +111,8 @@ defmodule Solution.Day9.CircleTest do
         |> Circle.insert_after_current(66)
         |> Circle.insert_after_current(77)
 
-      assert Circle.to_list(circle) == [77, 2, 3, 1, 44, 55, 66]
       assert Circle.current(circle) == 77
+      assert Circle.to_list(circle) == [1, 44, 55, 66, 77, 2, 3]
     end
   end
 
