@@ -95,25 +95,35 @@ defmodule Solution.Day9 do
   @behaviour Solution
 
   def solve_part_1(input_as_string) do
-    first_line =
-      input_as_string
-      |> String.split("\n")
-      |> List.first()
+    input_as_string
+    |> parse_input()
+    |> do_solve_part_1()
+  end
 
-    %{"num_of_players" => players, "target_marble" => target} =
-      ~r/(?<num_of_players>\d+) players; last marble is worth (?<target_marble>\d+) points/
-      |> Regex.named_captures(first_line)
-      |> Map.new(fn {capture, value} -> {capture, String.to_integer(value)} end)
-
+  defp do_solve_part_1({players, last_marble}) do
     finished_game =
       players
       |> MarbleGame.new()
-      |> iterate_until_target_current_marble_is_reached(target)
+      |> iterate_until_target_current_marble_is_reached(last_marble)
 
     1..players
     |> Enum.map(&MarbleGame.score(finished_game, &1))
     |> Enum.max()
     |> Integer.to_string()
+  end
+
+  defp parse_input(input_as_string) do
+    first_line =
+      input_as_string
+      |> String.split("\n")
+      |> List.first()
+
+    %{"num_of_players" => players, "last_marble" => last_marble} =
+      ~r/(?<num_of_players>\d+) players; last marble is worth (?<last_marble>\d+) points/
+      |> Regex.named_captures(first_line)
+      |> Map.new(fn {capture, value} -> {capture, String.to_integer(value)} end)
+
+    {players, last_marble}
   end
 
   def iterate_until_target_current_marble_is_reached(marble_game, target_marble) do
@@ -128,7 +138,8 @@ defmodule Solution.Day9 do
     end
   end
 
-  def solve_part_2(_input_as_string) do
-    "TODO"
+  def solve_part_2(input_as_string) do
+    {players, last_marble} = parse_input(input_as_string)
+    do_solve_part_1({players, last_marble * 100})
   end
 end
