@@ -188,9 +188,34 @@ defmodule Solution.Day6.GridStringTest do
                [" ", " ", " ", " "],
                [" ", " ", " ", " "],
                [" ", " ", " ", " "],
-               [" ", " ", " ", " "],
+               [" ", " ", " ", " "]
              ]
     end
+  end
 
+  describe "Configure" do
+    test "To String" do
+      GridString.configure(
+        default_value: ".",
+        start: "S",
+        separator: "_",
+        end: "E",
+        padding: ""
+      )
+
+      assert GridString.from_grid_points([
+               %GridPoint{point: {1, 1}, value: "x"},
+               %GridPoint{point: {3, 4}, value: "XX"}
+             ])
+             |> String.Chars.to_string() ==
+               """
+
+               S._._._. E
+               S._x_._. E
+               S._._._. E
+               S._._._. E
+               S._._._XXE\
+               """
+    end
   end
 end

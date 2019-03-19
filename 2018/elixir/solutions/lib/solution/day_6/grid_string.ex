@@ -2,6 +2,12 @@ defmodule Solution.Day6.GridString do
   alias Solution.Day6.Board
   import Solution.Utils
 
+  @defaults default_value: " ",
+            start: "|",
+            separator: "|",
+            end: "|",
+            padding: " "
+
   @type t :: %__MODULE__{
           grid: [[String.t()]]
         }
@@ -62,7 +68,11 @@ defmodule Solution.Day6.GridString do
     end
 
     defp format_line(line_cells) when is_list(line_cells) do
-      "| " <> Enum.join(line_cells, " | ") <> " |"
+      p = GridString.get_config(:padding)
+      s = GridString.get_config(:separator)
+      st = GridString.get_config(:start)
+      e = GridString.get_config(:end)
+      st <> p <> Enum.join(line_cells, p <> s <> p) <> p <> e
     end
 
     defp prepend_newline(string), do: "\n" <> string
@@ -110,30 +120,63 @@ defmodule Solution.Day6.GridString do
     }
   end
 
-  defp grid(grid_points, grid_width, grid_height) do
-    grid =
-      grid_points
-      |> eliminate_duplicate_points()
-      |> eliminate_points_out_of_grid(grid_height, grid_width)
-      |> group_by_y_coordinates()
-      |> add_missing_rows(grid_height)
-      |> fill_rows_with_missing_points(grid_width)
-      |> sort_by_x_coordinates()
-      |> flatten_to_grid()
-      |> map_to_value()
-
-    grid
+  @spec to_grid_points(__MODULE__.t()) :: [__MODULE__.GridPoint.t()]
+  def to_grid_points(%__MODULE__{grid: grid}) do
+    for y <- 0..(length(grid) - 1) do
+      for x <- 0..(length(get_line(grid, y)) - 1) do
+        %GridPoint{
+          point: {x, y},
+          value: get_point(grid, x, y)
+        }
+      end
+    end
+    |> List.flatten()
   end
 
-  defp old_grid(grid_points, grid_width, grid_height) do
-    old_grid =
-      for y <- 0..(grid_height - 1) do
-        for x <- 0..(grid_width - 1) do
-          find_value_at_coordinates(grid_points, x, y)
-        end
+  def configure(opts \\ []) do
+    ensure_config_agent_started()
+
+    valid_options = Keyword.keys(@defaults)
+
+    Enum.each(opts, fn {key, val} ->
+      if not Enum.member?(valid_options, key) do
+        raise "Invalid option: #{key}"
       end
 
-    old_grid
+      update_config(key, val)
+    end)
+  end
+
+  defp update_config(key, val) do
+    Agent.update(__MODULE__, &Keyword.put(&1, key, val))
+  end
+
+  def get_config(key) do
+    ensure_config_agent_started()
+    Agent.get(__MODULE__, &Keyword.get(&1, key))
+  end
+
+  # ------- Private Functions -------------
+  # ------- Private Functions -------------
+  # ------- Private Functions -------------
+  defp ensure_config_agent_started() do
+    if GenServer.whereis(__MODULE__) == nil do
+      Agent.start_link(fn -> @defaults end, name: __MODULE__, timeout: 1000)
+      # Ensure agent started
+      :ok = Agent.get(__MODULE__, fn _ -> :ok end)
+    end
+  end
+
+  defp grid(grid_points, grid_width, grid_height) do
+    grid_points
+    |> eliminate_duplicate_points()
+    |> eliminate_points_out_of_grid(grid_height, grid_width)
+    |> group_by_y_coordinates()
+    |> add_missing_rows(grid_height)
+    |> fill_rows_with_missing_points(grid_width)
+    |> sort_by_x_coordinates()
+    |> flatten_to_grid()
+    |> map_to_value()
   end
 
   defp eliminate_duplicate_points(grid_points) do
@@ -173,13 +216,15 @@ defmodule Solution.Day6.GridString do
   defp fill_row({row_y_coordinate, row}, grid_width) do
     existing_x_coordinates_in_row = Enum.map(row, &get_coordinate(&1, :x))
 
+    default_value = get_config(:default_value)
+
     missing_x_coordinates_in_row =
       Enum.to_list(0..(grid_width - 1)) -- existing_x_coordinates_in_row
 
     row_filled_with_missing_points =
       missing_x_coordinates_in_row
       |> Enum.map(fn x ->
-        %GridPoint{point: {x, row_y_coordinate}, value: " "}
+        %GridPoint{point: {x, row_y_coordinate}, value: default_value}
       end)
       |> Kernel.++(row)
 
@@ -217,22 +262,6 @@ defmodule Solution.Day6.GridString do
   defp get_coordinate(%GridPoint{point: {x, _y}}, :x), do: x
   defp get_coordinate(%GridPoint{point: {_x, y}}, :y), do: y
 
-  @spec to_grid_points(__MODULE__.t()) :: [__MODULE__.GridPoint.t()]
-  def to_grid_points(%__MODULE__{grid: grid}) do
-    for y <- 0..(length(grid) - 1) do
-      for x <- 0..(length(get_line(grid, y)) - 1) do
-        %GridPoint{
-          point: {x, y},
-          value: get_point(grid, x, y)
-        }
-      end
-    end
-    |> List.flatten()
-  end
-
-  # ------- Private Functions -------------
-  # ------- Private Functions -------------
-  # ------- Private Functions -------------
   defp to_value(cell_content_as_string) do
     case String.trim(cell_content_as_string) do
       "" -> " "
@@ -249,18 +278,5 @@ defmodule Solution.Day6.GridString do
     grid
     |> get_line(y)
     |> Enum.at(x)
-  end
-
-  defp find_value_at_coordinates(grid_points, x, y) do
-    placeholder_if_not_found = " "
-
-    grid_points
-    |> Enum.find(
-      %GridPoint{value: placeholder_if_not_found},
-      fn %{point: {x_pt, y_pt}} ->
-        x_pt == x and y_pt == y
-      end
-    )
-    |> Map.get(:value)
   end
 end
