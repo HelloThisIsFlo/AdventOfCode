@@ -28,14 +28,14 @@ defmodule RunSolutions do
     |> File.read!()
   end
 
-  def solve_and_print_solution({day_module, :too_long}) do
+  def solve_and_print_solution({day_module, skip_reason}) do
     module_as_string =
       day_module
       |> Atom.to_string()
       |> String.capitalize()
 
     IO.puts("")
-    IO.puts("Skipping #{module_as_string}: Too long")
+    IO.puts("Skipping #{module_as_string}: #{skip_reason}")
   end
 
   def solve_and_print_solution(day_module) do
@@ -67,13 +67,15 @@ defmodule RunSolutions do
     [
       :day1,
       :day2,
-      {:day3, :too_long},
+      {:day3, "Too long"},
       :day4,
-      {:day5, :too_long},
-      {:day6, :too_long},
+      {:day5, "Too long"},
+      {:day6, "Too long"},
       :day7,
       :day8,
-      {:day9, :too_long},
+      {:day9, "Too long"},
+      {:day10, "Too long"},
+      :day10
     ]
     |> Enum.each(&solve_and_print_solution/1)
   end
