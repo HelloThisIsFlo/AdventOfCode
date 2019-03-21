@@ -86,13 +86,12 @@ defmodule Solution.Day11 do
   # Very first cell
   # => Build cell and add in new sum_grid
   defp do_to_sum_grid({1, 1}, [] = _sum_grid, power_grid) do
-    sum_at_1_1 = sum_of_power_in_corresponding_3_by_3_region({1, 1}, power_grid)
+    sum_on_column_at_1_1 = sum_on_column_3_by_3_region({1, 1}, power_grid)
 
     cell_at_1_1 = %SumCell{
       coordinates: {1, 1},
-      total_sum: sum_at_1_1,
-      # TODO
-      sum_on_columns: nil
+      total_sum: sum_on_column_at_1_1 |> Enum.sum(),
+      sum_on_columns: sum_on_column_at_1_1
     }
 
     do_to_sum_grid({1 + 1, 1}, [[cell_at_1_1]], power_grid)
@@ -104,14 +103,25 @@ defmodule Solution.Day11 do
   #    - add in first row
   #    - move to next cell
   defp do_to_sum_grid({i, 1}, sum_grid, power_grid) do
-    # Remember: Previous cells in row are complete at this point (for later)
-    sum_at_i_1 = sum_of_power_in_corresponding_3_by_3_region({i, 1}, power_grid)
+    previous_cell = get(sum_grid, {i - 1, 1})
+
+    third_column_sum =
+      [
+        {i + 2, 1},
+        {i + 2, 1 + 1},
+        {i + 2, 1 + 2}
+      ]
+      |> Enum.map(fn {x, y} -> get(power_grid, {x, y}) end)
+      |> Enum.sum()
+
+    first_two_column_sum = Enum.slice(previous_cell.sum_on_columns, 1..2)
+
+    sum_on_column_at_i_1 = first_two_column_sum ++ [third_column_sum]
 
     cell_at_i_1 = %SumCell{
       coordinates: {i, 1},
-      total_sum: sum_at_i_1,
-      # TODO
-      sum_on_columns: nil
+      total_sum: sum_on_column_at_i_1 |> Enum.sum(),
+      sum_on_columns: sum_on_column_at_i_1
     }
 
     sum_grid =
@@ -130,13 +140,12 @@ defmodule Solution.Day11 do
   #  - move to next cell
   defp do_to_sum_grid({1, j}, sum_grid, power_grid) do
     # Remember: Previous row is complete at this point (for later)
-    sum_at_1_j = sum_of_power_in_corresponding_3_by_3_region({1, j}, power_grid)
+    sum_on_column_at_1_j = sum_on_column_3_by_3_region({1, j}, power_grid)
 
     cell_at_1_j = %SumCell{
       coordinates: {1, j},
-      total_sum: sum_at_1_j,
-      # TODO
-      sum_on_columns: nil
+      total_sum: sum_on_column_at_1_j |> Enum.sum(),
+      sum_on_columns: sum_on_column_at_1_j
     }
 
     sum_grid = sum_grid ++ [[cell_at_1_j]]
@@ -148,13 +157,25 @@ defmodule Solution.Day11 do
   # - previous cell in current row complete
   # => Build cell and add in current row
   defp do_to_sum_grid({i, j}, sum_grid, power_grid) do
-    sum_at_i_j = sum_of_power_in_corresponding_3_by_3_region({i, j}, power_grid)
+    previous_cell = get(sum_grid, {i - 1, j})
+
+    third_column_sum =
+      [
+        {i + 2, j},
+        {i + 2, j + 1},
+        {i + 2, j + 2}
+      ]
+      |> Enum.map(fn {x, y} -> get(power_grid, {x, y}) end)
+      |> Enum.sum()
+
+    first_two_column_sum = Enum.slice(previous_cell.sum_on_columns, 1..2)
+
+    sum_on_column_at_i_j = first_two_column_sum ++ [third_column_sum]
 
     cell_at_i_j = %SumCell{
       coordinates: {i, j},
-      total_sum: sum_at_i_j,
-      # TODO
-      sum_on_columns: nil
+      total_sum: sum_on_column_at_i_j |> Enum.sum(),
+      sum_on_columns: sum_on_column_at_i_j
     }
 
     sum_grid =
@@ -165,20 +186,35 @@ defmodule Solution.Day11 do
     do_to_sum_grid({i + 1, j}, sum_grid, power_grid)
   end
 
-  defp sum_of_power_in_corresponding_3_by_3_region({x, y}, grid) do
-    [
-      {x, y},
-      {x, y + 1},
-      {x, y + 2},
-      {x + 1, y},
-      {x + 1, y + 1},
-      {x + 1, y + 2},
-      {x + 2, y},
-      {x + 2, y + 1},
-      {x + 2, y + 2}
-    ]
-    |> Enum.map(fn {x, y} -> get(grid, {x, y}) end)
-    |> Enum.sum()
+  defp sum_on_column_3_by_3_region({x, y}, grid) do
+    c1 =
+      [
+        {x, y},
+        {x, y + 1},
+        {x, y + 2}
+      ]
+      |> Enum.map(fn {x, y} -> get(grid, {x, y}) end)
+      |> Enum.sum()
+
+    c2 =
+      [
+        {x + 1, y},
+        {x + 1, y + 1},
+        {x + 1, y + 2}
+      ]
+      |> Enum.map(fn {x, y} -> get(grid, {x, y}) end)
+      |> Enum.sum()
+
+    c3 =
+      [
+        {x + 2, y},
+        {x + 2, y + 1},
+        {x + 2, y + 2}
+      ]
+      |> Enum.map(fn {x, y} -> get(grid, {x, y}) end)
+      |> Enum.sum()
+
+    [c1, c2, c3]
   end
 
   defp get(grid, {x, y}) do
