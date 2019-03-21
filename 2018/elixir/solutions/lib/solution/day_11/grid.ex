@@ -8,16 +8,30 @@ defmodule Solution.Day11.Grid do
     ensure_square(grid_as_list_of_list)
     size = length(grid_as_list_of_list)
 
+    tmp =
+      grid_as_list_of_list
+      |> Enum.map(&Enum.with_index/1)
+      |> Enum.with_index()
+      |> Enum.map(fn {row, row_index} ->
+        row
+        |> Enum.map(fn {val, col_index} ->
+          %{coordinates: {col_index, row_index}, val: val}
+        end)
+      end)
+      |> List.flatten()
+      |> Map.new(fn %{coordinates: {x, y}, val: val} ->
+        {{x, y}, val}
+      end)
+
     %__MODULE__{
-      cells: grid_as_list_of_list,
+      # cells: grid_as_list_of_list,
+      cells: tmp,
       size: size
     }
   end
 
   def current(%{cells: cells, current: {x, y}}) do
-    cells
-    |> Enum.at(y)
-    |> Enum.at(x)
+    Map.get(cells, {x, y})
   end
 
   def move(grid, direction, offset \\ 1)
@@ -49,7 +63,6 @@ defmodule Solution.Day11.Grid do
 
     all_rows_have_correct_width? =
       Enum.all?(grid_as_list_of_list, fn row -> length(row) == width end)
-
 
     if height != width or not all_rows_have_correct_width? do
       raise "Grid is not square"
