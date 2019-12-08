@@ -18,5 +18,5 @@ def test_print_intro():
     print('--------------------------------')
 
 
-# def test_solve_day_1():
-#     solve_and_print_result(Day1)
+def test_solve_day_1():
+    solve_and_print_result(Day1)

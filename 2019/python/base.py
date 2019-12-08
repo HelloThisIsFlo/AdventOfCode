@@ -7,6 +7,16 @@ class Day(metaclass=ABCMeta):
     def __init__(self, input_as_string: str):
         self.input: str = input_as_string
 
+    def input_lines(self, parsing_func=None):
+        lines = self.input.split()
+        if parsing_func:
+            lines = [parsing_func(l) for l in lines]
+        return lines
+
+    def to_output(self, list_):
+        print(list_)
+        return '\n'.join(str(val) for val in list_)
+
     @classmethod
     def from_problem_input_file(cls):
         def get_problem_input_file_name() -> str:
