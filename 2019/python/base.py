@@ -8,7 +8,11 @@ class Day(metaclass=ABCMeta):
         self.input: str = input_as_string
 
     def input_lines(self, parsing_func=None):
-        lines = self.input.split()
+        def not_empty(line):
+            return line != ''
+
+        lines = self.input.split('\n')
+        lines = filter(not_empty, lines)
         if parsing_func:
             lines = [parsing_func(l) for l in lines]
         return lines
