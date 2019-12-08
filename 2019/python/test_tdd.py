@@ -135,10 +135,9 @@ class TestDay3:
             (2, 2),
         ]
 
-    @patch('day_3.find_closest')
+    @patch('day_3.find_closest', return_value=(0, 0))
     @patch('day_3.trace_path')
     def test_call_trace_path_with_parsed_vectors_for_each_wire(self, mock_trace_path, mock_find_closest):
-        mock_find_closest.return_value = (0, 0)
         Day3(dedent("""\
         U10, D3, R192, L44
         R44, L12, D200, R2, U53
@@ -149,11 +148,10 @@ class TestDay3:
             call((0, 0), Right(44), Left(12), Down(200), Right(2), Up(53))
         ])
 
-    @patch('day_3.find_closest')
+    @patch('day_3.find_closest', return_value=(0, 0))
     @patch('day_3.intersection')
     @patch('day_3.trace_path')
     def test_find_intersection(self, mock_trace_path, mock_intersection, mock_find_closest):
-        mock_find_closest.return_value = (0, 0)
         wire1_path = Mock()
         wire2_path = Mock()
         mock_trace_path.side_effect = [wire1_path, wire2_path]
@@ -162,11 +160,10 @@ class TestDay3:
 
         mock_intersection.assert_called_once_with(wire1_path, wire2_path)
 
-    @patch('day_3.find_closest')
+    @patch('day_3.find_closest', return_value=(0, 0))
     @patch('day_3.intersection')
     @patch('day_3.trace_path')
     def test_find_closest(self, mock_trace_path, mock_intersection, mock_find_closest):
-        mock_find_closest.return_value = (0, 0)
         Day3(self.MOCK_INPUT).solve_part_1()
 
         mock_find_closest.assert_called_once_with(
