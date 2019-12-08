@@ -2,6 +2,7 @@
 
 from base import Day
 from day_1 import Day1
+from day_2 import Day2
 
 def solve_and_print_result(day_class):
     day: Day = day_class.from_problem_input_file()
@@ -20,3 +21,6 @@ def test_print_intro():
 
 def test_solve_day_1():
     solve_and_print_result(Day1)
+
+def test_solve_day_2():
+    solve_and_print_result(Day2)
