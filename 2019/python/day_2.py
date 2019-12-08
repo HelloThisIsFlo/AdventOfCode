@@ -3,74 +3,78 @@ from base import Day
 OP_SIZE = 4  # Constant (for now): 1 for code + 3 for params
 
 
-class Operation:
+class UnknownInstruction(Exception):
+    pass
+
+
+class Instruction:
+    size = OP_SIZE
+
     @staticmethod
-    def from_opcode(opcode, position, source):
-        def get_opcode_class():
+    def from_opcode(opcode, position, memory):
+        def get_instruction_class():
             if opcode == 1:
-                return AddOperation
+                return AddInstruction
             elif opcode == 2:
-                return MultiplyOperation
+                return MultiplyInstruction
             else:
-                raise NotImplementedError()
+                raise UnknownInstruction()
 
-        op_class = get_opcode_class()
-        return op_class(position, source)
+        op_class = get_instruction_class()
+        return op_class(position, memory)
 
-    def __init__(self, position, source):
-        self.source = source
-        self.positions = {
-            'input_1': self.source[position + 1],
-            'input_2': self.source[position + 2],
-            'output': self.source[position + 3],
+    def __init__(self, position, memory):
+        self.address_of = {
+            'parameter_1': memory[position + 1],
+            'parameter_2': memory[position + 2],
+            'output': memory[position + 3],
         }
-        self.input_1 = self.source[self.positions['input_1']]
-        self.input_2 = self.source[self.positions['input_2']]
+        self.memory = memory
+        self.parameter_1 = self.memory[self.address_of['parameter_1']]
+        self.parameter_2 = self.memory[self.address_of['parameter_2']]
 
     def perform(self):
         result = self._do_perform()
-        self.source[self.positions['output']] = result
+        self.memory[self.address_of['output']] = result
 
 
-class AddOperation(Operation):
+class AddInstruction(Instruction):
     def _do_perform(self):
-        return self.input_1 + self.input_2
+        return self.parameter_1 + self.parameter_2
 
 
-class MultiplyOperation(Operation):
+class MultiplyInstruction(Instruction):
     def _do_perform(self):
-        return self.input_1 * self.input_2
+        return self.parameter_1 * self.parameter_2
 
 
 class Program:
-    def __init__(self, source):
-        self.source = source
-        self.current_op_position = 0
-        self.complete = False
+    def __init__(self, memory):
+        self.memory = memory
+        self.instruction_pointer = 0
+        self.current_instruction = self.instruction_at_pointer()
 
-    def perform_operation(self):
-        opcode = self.source[self.current_op_position]
-
+    def instruction_at_pointer(self):
+        opcode = self.memory[self.instruction_pointer]
         if opcode == 99:
-            self.complete = True
-            return
+            return None
 
-        operation = Operation.from_opcode(
+        return Instruction.from_opcode(
             opcode,
-            self.current_op_position,
-            self.source
+            self.instruction_pointer,
+            self.memory
         )
-        operation.perform()
 
-    def go_to_next_operation(self):
-        self.current_op_position += OP_SIZE
+    def go_to_next_instruction(self):
+        self.instruction_pointer += self.current_instruction.size
+        self.current_instruction = self.instruction_at_pointer()
 
     def run(self):
-        while not self.complete:
-            self.perform_operation()
-            self.go_to_next_operation()
+        while self.current_instruction:
+            self.current_instruction.perform()
+            self.go_to_next_instruction()
 
-        return self.source
+        return self.memory
 
 
 class Day2(Day):
