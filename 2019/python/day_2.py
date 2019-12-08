@@ -79,11 +79,18 @@ class Program:
 
 class Day2(Day):
     def parse_input(self):
-        self.input = [int(num) for num in self.input.split(',')]
+        def replace_values_at_positions_1_and_2(parsed_input):
+            parsed_input[1] = 12
+            parsed_input[2] = 2
+            return parsed_input
+
+        return replace_values_at_positions_1_and_2(
+            [int(num) for num in self.input.split(',')]
+        )
 
     def solve_part_1(self):
-        self.parse_input()
-        program = Program(self.input)
+        parsed_input = self.parse_input()
+        program = Program(parsed_input)
         result = program.run()
         return ','.join(str(num) for num in result)
 
