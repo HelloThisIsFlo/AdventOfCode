@@ -49,8 +49,13 @@ class MultiplyInstruction(Instruction):
 
 
 class Program:
-    def __init__(self, memory):
+    def __init__(self, memory, noun=None, verb=None):
         self.memory = memory
+        if noun:
+            self.memory[1] = noun
+        if verb:
+            self.memory[2] = verb
+
         self.instruction_pointer = 0
         self.current_instruction = self.instruction_at_pointer()
 
@@ -79,18 +84,11 @@ class Program:
 
 class Day2(Day):
     def parse_input(self):
-        def replace_values_at_positions_1_and_2(parsed_input):
-            parsed_input[1] = 12
-            parsed_input[2] = 2
-            return parsed_input
-
-        return replace_values_at_positions_1_and_2(
-            [int(num) for num in self.input.split(',')]
-        )
+        return [int(num) for num in self.input.split(',')]
 
     def solve_part_1(self):
         parsed_input = self.parse_input()
-        program = Program(parsed_input)
+        program = Program(parsed_input, noun=12, verb=2)
         result = program.run()
         return str(result[0])
 

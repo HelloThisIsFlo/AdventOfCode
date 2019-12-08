@@ -66,20 +66,27 @@ class TestDay2:
                 [1, 1, 1, 4, 99, 5, 6, 0, 99]
             ).run() == [30, 1, 1, 4, 2, 5, 6, 0, 99]
 
-    class TestPart1:
-        def test_it_replaces_values_at_addresses_1_and_2(self):
-            day_2 = Day2("1,0,0,0,99")
-            assert day_2.parse_input() == [1, 12, 2, 0, 99]
+        def test_it_replaces_noun_and_verb(self):
+            noun = 4
+            verb = 5
+            program = Program([1, 2, 3, 4, 5, 6], noun=noun, verb=verb)
+            assert program.memory[1] == noun
+            assert program.memory[2] == verb
 
+    class TestPart1:
         @patch.object(Day2, 'parse_input')
         @patch('day_2.Program')
-        def test_it_runs_program_with_parsed_input(self, MockProgram, mock_parse_input):
+        def test_it_runs_program_with_correct_params(self, MockProgram, mock_parse_input):
             program = MockProgram.return_value
             program.run.return_value = [1, 0, 0, 0, 99]
 
             Day2("MOCK_INPUT").solve_part_1()
 
-            MockProgram.assert_called_once_with(mock_parse_input.return_value)
+            MockProgram.assert_called_once_with(
+                mock_parse_input.return_value,
+                noun=12,
+                verb=2
+            )
             program.run.assert_called_once()
 
         @patch.object(Day2, 'parse_input')
