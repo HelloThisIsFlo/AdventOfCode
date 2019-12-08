@@ -7,6 +7,10 @@ class UnknownInstruction(Exception):
     pass
 
 
+class UnableToSolve(Exception):
+    pass
+
+
 class Instruction:
     size = OP_SIZE
 
@@ -93,4 +97,18 @@ class Day2(Day):
         return str(result[0])
 
     def solve_part_2(self):
-        return 'todo'
+        expected_output = 19690720
+        parsed_input = self.parse_input()
+
+        for noun in range(100):
+            for verb in range(100):
+                program = Program(
+                    parsed_input.copy(),
+                    noun=noun,
+                    verb=verb
+                )
+                result = program.run()
+                if result[0] == expected_output:
+                    return 100 * noun + verb
+
+        raise UnableToSolve()
