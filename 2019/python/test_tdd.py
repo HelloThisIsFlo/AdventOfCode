@@ -86,8 +86,8 @@ class TestDay2:
         @patch('day_2.Program')
         def test_it_returns_formatted_result(self, MockProgram, mock_parse_input):
             program = MockProgram.return_value
-            program.run.return_value = [1, 0, 0, 0, 99]
-            expected_result = '1,0,0,0,99'
+            program.run.return_value = [12345, 0, 0, 0, 99]
+            expected_result = '12345'
 
             result = Day2("MOCK_INPUT").solve_part_1()
 

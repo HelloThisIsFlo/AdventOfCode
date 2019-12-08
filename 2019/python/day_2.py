@@ -92,7 +92,7 @@ class Day2(Day):
         parsed_input = self.parse_input()
         program = Program(parsed_input)
         result = program.run()
-        return ','.join(str(num) for num in result)
+        return str(result[0])
 
     def solve_part_2(self):
         return 'todo'
