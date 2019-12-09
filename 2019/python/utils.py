@@ -4,6 +4,7 @@ from math import floor, ceil
 def digitize(number):
     return [int(d) for d in str(number)]
 
+
 def slow_overengineered_digitize(number):
     def calculate_number_of_digits():
         num_digits = 0
@@ -32,8 +33,6 @@ def slow_overengineered_digitize(number):
             b = floor(number / 10**(num_digits - index)) * 10
             return a - b
 
-
-
         return version_string()
         # return version_modulo()
         # return version_substraction()
@@ -44,3 +43,18 @@ def slow_overengineered_digitize(number):
         digits.append(get_digit(idx))
 
     return digits
+
+
+class SparseList(list):
+    def __init__(self, *args, filler=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.filler = filler
+
+    def __setitem__(self, index, value):
+        """
+        Overrides list's __setitem__ to extend the list
+        if the accessed index is out of bounds.
+        """
+        sparsity = index - len(self) + 1
+        self.extend([self.filler] * sparsity)
+        list.__setitem__(self, index, value)

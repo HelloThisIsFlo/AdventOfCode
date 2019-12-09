@@ -4,7 +4,7 @@ from unittest import mock
 from unittest.mock import patch, call, Mock
 
 
-from utils import digitize
+from utils import digitize, SparseList
 from computer import Program
 
 from day_1 import Day1, full_required_all_inclusive
@@ -28,6 +28,26 @@ class TestUtils:
         assert digitize(123456) == [1, 2, 3, 4, 5, 6]
         assert digitize(876543) == [8, 7, 6, 5, 4, 3]
 
+    class TestSparseList:
+        def test_regular_list_doesnt_allow_setting_values_at_any_index(self):
+            list_ = [1, 2, 3, 4, 5, 6]
+            with pytest.raises(IndexError):
+                list_[10] = 'Hello'
+
+        def test_sparse_list_allow_setting_values_at_any_index(self):
+            sparse_list = SparseList([1, 2, 3, 4, 5, 6])
+            sparse_list[10] = 'Hello'  # Does not raise
+            assert sparse_list == [
+                1, 2, 3, 4, 5, 6, None, None, None, None, 'Hello'
+            ]
+
+        def test_allow_custom_filler(self):
+            sparse_list = SparseList([1, 2, 3, 4, 5, 6], filler=-1)
+            sparse_list[10] = 'Hello'  # Does not raise
+            assert sparse_list == [
+                1, 2, 3, 4, 5, 6, -1, -1, -1, -1, 'Hello'
+            ]
+
 
 class TestProgram:
     def test_single_instruction_add(self):
@@ -48,6 +68,37 @@ class TestProgram:
         program = Program([1, 2, 3, 4, 5, 6], noun=noun, verb=verb)
         assert program.memory[1] == noun
         assert program.memory[2] == verb
+
+    def test_it_handles_opcodes_with_modes(self):
+        # 1101: Operation 01 - Mode 110
+        #       Add: Val of input1 + Val of input2
+        #       Store: At adress of output
+        # Input1: 100
+        # Input2: -45
+        # Output: 5 (store at address 5)
+        #
+        # 100 - 45 = 55 -> Stored in memory[5]
+        assert Program(
+            [1101, 100, -45, 5, 99]
+        ).run() == [1101, 100, -45, 5, 99, 55]
+
+    def test_opcode_mode_less_than_4_digits__assume_it_starts_with_zeros(self):
+        # 101 ==> Understood as 0101
+        # 0101: Operation 01 - Mode 010
+        #       Add: Val at address of input1 + Val of input2
+        #       Store: At adress of output
+        # Input1: 2 (val at address: 30)
+        # Input2: 30
+        # Output: 5 (store at address 5)
+        #
+        # 30 + 30 = 60 -> Stored in memory[5]
+        assert Program(
+            [101, 2, 30, 5, 99]
+        ).run() == [101, 2, 30, 5, 99, 60]
+
+# TODO:
+# 1) Pass the tests
+# 2) Refactor to allow an arbitrary number of parameters
 
 
 class TestDay1:
