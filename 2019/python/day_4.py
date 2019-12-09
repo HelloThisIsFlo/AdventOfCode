@@ -27,6 +27,14 @@ class Grouper:
 
 
 def group(list_):
+    """
+    Groups by similar adjacent items.
+
+    >>> list_ = [1, 1, 2, 3, 4, 5, 5, 6]
+    >>> grouped_list = group(list_)
+    >>> grouped_list
+    [[1, 1], [2], [3], [4], [5, 5], [6]]
+    """
     return Grouper(list_).group()
 
 
