@@ -8,6 +8,7 @@ from day_1 import Day1, full_required_all_inclusive
 from day_2 import Day2, Program
 from day_3 import Day3, trace_path, Up, Down, Left, Right, manhattan_dist_metric, step_on_wire_metric, IntersectionPoint
 from day_4 import Day4, is_valid_pass, group
+from utils import digitize
 
 
 def assert_solution_part_1(day_class, given_input, expected_solution):
@@ -18,6 +19,12 @@ def assert_solution_part_1(day_class, given_input, expected_solution):
 def assert_solution_part_2(day_class, given_input, expected_solution):
     day = day_class(dedent(given_input))
     assert day.solve_part_2() == expected_solution
+
+
+class TestUtils:
+    def test_digitizer(self):
+        assert digitize(123456) == [1, 2, 3, 4, 5, 6]
+        assert digitize(876543) == [8, 7, 6, 5, 4, 3]
 
 
 class TestDay1:

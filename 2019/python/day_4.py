@@ -1,5 +1,6 @@
 from base import Day
 from math import floor
+from utils import digitize
 
 
 class Grouper:
@@ -39,7 +40,7 @@ def group(list_):
 
 
 def is_valid_pass(password, range_, strict_adjacent_rule=False):
-    digits = [int(i) for i in str(password)]
+    digits = digitize(password)
 
     def is_6_digits():
         return len(digits) >= 6
