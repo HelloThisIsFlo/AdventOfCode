@@ -4,6 +4,7 @@ from base import Day
 from day_1 import Day1
 from day_2 import Day2
 from day_3 import Day3
+from day_4 import Day4
 
 
 def solve_and_print_result(day_class):
@@ -31,3 +32,7 @@ def test_solve_day_2():
 
 def test_solve_day_3():
     solve_and_print_result(Day3)
+
+
+def test_solve_day_4():
+    solve_and_print_result(Day4)

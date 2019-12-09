@@ -7,6 +7,7 @@ from unittest.mock import patch, call, Mock
 from day_1 import Day1, full_required_all_inclusive
 from day_2 import Day2, Program
 from day_3 import Day3, trace_path, Up, Down, Left, Right, manhattan_dist_metric, step_on_wire_metric, IntersectionPoint
+from day_4 import Day4, is_valid_pass, group
 
 
 def assert_solution_part_1(day_class, given_input, expected_solution):
@@ -204,3 +205,52 @@ class TestDay3:
             """,
             expected_solution='610'
         )
+
+
+class TestDay4:
+    def test_is_valid_password(self):
+        assert is_valid_pass(111111, range(999999)) is True
+
+        # Not 6 digits
+        assert is_valid_pass(12345, range(999999)) is False
+        # Not in range
+        assert is_valid_pass(333333, range(222222)) is False
+        # Does not have 2 adjacent digits the same
+        assert is_valid_pass(123456, range(999999)) is False
+        # Decreases at the end
+        assert is_valid_pass(223450, range(999999)) is False
+
+    def test_is_valid_password_strict_adjacent_rule(self):
+        def is_strict_adj_valid(pass_):
+            return is_valid_pass(
+                pass_,
+                range(999999),
+                strict_adjacent_rule=True
+            )
+
+        assert is_strict_adj_valid(112233) is True
+        assert is_strict_adj_valid(111122) is True
+        assert is_strict_adj_valid(112333) is True
+        assert is_strict_adj_valid(111223) is True
+
+        # Too many similar adjacent digits
+        assert is_strict_adj_valid(111111) is False
+        assert is_strict_adj_valid(123444) is False
+
+    def test_group(self):
+        assert group([1, 1, 2, 3, 4, 5, 5, 6]) == [
+            [1, 1],
+            [2],
+            [3],
+            [4],
+            [5, 5],
+            [6]
+        ]
+
+    def test_does_not_raise(self):
+        Day4(dedent("""\
+            11231-11217
+            """)).solve_part_1()
+        Day4(dedent("""\
+            11231-11217
+            """)).solve_part_2()

@@ -15,7 +15,7 @@ class Day(metaclass=ABCMeta):
         lines = filter(not_empty, lines)
         if parsing_func:
             lines = [parsing_func(l) for l in lines]
-        return lines
+        return list(lines)
 
     def to_output(self, list_):
         print(list_)
