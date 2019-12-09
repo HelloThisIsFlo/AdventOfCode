@@ -1,4 +1,5 @@
 from base import Day
+from typing import NamedTuple
 
 
 class Vector:
@@ -51,15 +52,40 @@ def trace_path(origin, *vectors):
     return path
 
 
-def intersection(list1, list2):
-    return set(list1).intersection(list2)
+class IntersectionPoint(NamedTuple):
+    point: tuple
+    step_on_wire_1: int
+    step_on_wire_2: int
 
 
-def find_closest(origin, candidates):
+def intersection(wire1_path, wire2_path):
+    wire2_points = set(wire2_path)
+    return [
+        IntersectionPoint(
+            pt,
+            wire1_path.index(pt),
+            wire2_path.index(pt)
+        ) for pt in wire1_path if pt in wire2_points
+    ]
+
+
+def manhattan_dist_metric(origin: (int, int), intersection_pt: IntersectionPoint):
+    return manhattan_dist(origin, intersection_pt.point)
+
+
+def step_on_wire_metric(origin: (int, int), intersection_pt: IntersectionPoint):
+    combined_steps_on_both_wires = (
+        intersection_pt.step_on_wire_1 +
+        intersection_pt.step_on_wire_2
+    )
+    return combined_steps_on_both_wires
+
+
+def find_closest(origin, candidates, metric=manhattan_dist_metric):
     def is_better_candidate(current_closest, candidate):
-        if candidate == origin:
+        if candidate.point == origin:
             return False
-        return manhattan_dist(origin, candidate) <= manhattan_dist(origin, current_closest)
+        return metric(origin, candidate) <= metric(origin, current_closest)
 
     closest = candidates.pop()
     for candidate in candidates:
@@ -79,7 +105,7 @@ def manhattan_dist(pt1, pt2):
 class Day3(Day):
     origin = (0, 0)
 
-    def solve_part_1(self):
+    def closest_point_from_origin(self, metric):
         def parse_wire_vectors(vectors_as_string):
             vectors = []
 
@@ -110,11 +136,20 @@ class Day3(Day):
         wire2_path = trace_path(self.origin, *wire2_vectors)
 
         intersection_pts = intersection(wire1_path, wire2_path)
-        closest_intersection_pt = find_closest(self.origin, intersection_pts)
+        closest_intersection_pt = find_closest(
+            self.origin,
+            intersection_pts,
+            metric=metric
+        )
 
+        return metric(self.origin, closest_intersection_pt)
+
+    def solve_part_1(self):
         return str(
-            manhattan_dist(self.origin, closest_intersection_pt)
+            self.closest_point_from_origin(metric=manhattan_dist_metric)
         )
 
     def solve_part_2(self):
-        pass
+        return str(
+            self.closest_point_from_origin(metric=step_on_wire_metric)
+        )

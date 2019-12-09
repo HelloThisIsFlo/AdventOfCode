@@ -6,7 +6,7 @@ from unittest.mock import patch, call, Mock
 
 from day_1 import Day1, full_required_all_inclusive
 from day_2 import Day2, Program
-from day_3 import Day3, trace_path, Up, Down, Left, Right
+from day_3 import Day3, trace_path, Up, Down, Left, Right, manhattan_dist_metric, step_on_wire_metric, IntersectionPoint
 
 
 def assert_solution_part_1(day_class, given_input, expected_solution):
@@ -141,7 +141,7 @@ class TestDay3:
         Day3(dedent("""\
         U10, D3, R192, L44
         R44, L12, D200, R2, U53
-        """)).solve_part_1()
+        """)).closest_point_from_origin(metric=Mock())
 
         mock_trace_path.assert_has_calls([
             call((0, 0), Up(10), Down(3), Right(192), Left(44)),
@@ -156,7 +156,7 @@ class TestDay3:
         wire2_path = Mock()
         mock_trace_path.side_effect = [wire1_path, wire2_path]
 
-        Day3(self.MOCK_INPUT).solve_part_1()
+        Day3(self.MOCK_INPUT).closest_point_from_origin(metric=Mock())
 
         mock_intersection.assert_called_once_with(wire1_path, wire2_path)
 
@@ -164,16 +164,43 @@ class TestDay3:
     @patch('day_3.intersection')
     @patch('day_3.trace_path')
     def test_find_closest(self, mock_trace_path, mock_intersection, mock_find_closest):
-        Day3(self.MOCK_INPUT).solve_part_1()
+        metric = Mock()
+        Day3(self.MOCK_INPUT).closest_point_from_origin(metric=metric)
 
         mock_find_closest.assert_called_once_with(
             (0, 0),
-            mock_intersection.return_value
+            mock_intersection.return_value,
+            metric=metric
         )
 
     @patch('day_3.find_closest')
     @patch('day_3.intersection')
     @patch('day_3.trace_path')
-    def test_returns_manhattan_distance_to_the_closest_point(self, mock_trace_path, mock_intersection, mock_find_closest):
-        mock_find_closest.return_value = (3, 5)
-        assert Day3(self.MOCK_INPUT).solve_part_1() == '8'
+    def test_returns_value_given_by_metric_between_origin_and_closest_point(self, mock_trace_path, mock_intersection, mock_find_closest):
+        metric = Mock(name='metric')
+
+        day3 = Day3(self.MOCK_INPUT)
+        result = day3.closest_point_from_origin(metric=metric)
+
+        metric.assert_called_with(day3.origin, mock_find_closest.return_value)
+        assert result == metric.return_value
+
+    def test_part_1(self):
+        assert_solution_part_1(
+            Day3,
+            given_input="""\
+            R75,D30,R83,U83,L12,D49,R71,U7,L72
+            U62,R66,U55,R34,D71,R55,D58,R83
+            """,
+            expected_solution='159'
+        )
+
+    def test_part_2(self):
+        assert_solution_part_2(
+            Day3,
+            given_input="""\
+            R75,D30,R83,U83,L12,D49,R71,U7,L72
+            U62,R66,U55,R34,D71,R55,D58,R83
+            """,
+            expected_solution='610'
+        )
