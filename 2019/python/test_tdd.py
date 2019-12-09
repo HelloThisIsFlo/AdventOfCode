@@ -70,7 +70,7 @@ class TestProgram:
         assert program.memory[2] == verb
 
     def test_it_handles_opcodes_with_modes(self):
-        # 1101: Operation 01 - Mode 110
+        # 1101: Operation 01 - Mode 011 -> IN[1, 1] OUT[0]
         #       Add: Val of input1 + Val of input2
         #       Store: At adress of output
         # Input1: 100
@@ -82,19 +82,19 @@ class TestProgram:
             [1101, 100, -45, 5, 99]
         ).run() == [1101, 100, -45, 5, 99, 55]
 
-    def test_opcode_mode_less_than_4_digits__assume_it_starts_with_zeros(self):
-        # 1001 ==> Understood as 01001
-        # 0101: Operation 01 - Mode 010
-        #       Add: Val at address of input1 + Val of input2
+    def test_opcode_mode_with_implicit_position_mode_for_param(self):
+        # 101 ==> Understood as 00101
+        # 00101: Operation 01 - Mode 001 -> IN[1, 0] OUT[0]
+        #       Add: Val of input1 + Val at address of input2
         #       Store: At adress of output
-        # Input1: 2 (val at address: 30)
-        # Input2: 30
+        # Input1: 30
+        # Input2: 1 (val at address: 30)
         # Output: 5 (store at address 5)
         #
         # 30 + 30 = 60 -> Stored in memory[5]
         assert Program(
-            [1001, 2, 30, 5, 99]
-        ).run() == [1001, 2, 30, 5, 99, 60]
+            [101, 30, 1, 5, 99]
+        ).run() == [101, 30, 1, 5, 99, 60]
 
 
 class TestDay1:
