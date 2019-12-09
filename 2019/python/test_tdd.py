@@ -83,7 +83,7 @@ class TestProgram:
         ).run() == [1101, 100, -45, 5, 99, 55]
 
     def test_opcode_mode_less_than_4_digits__assume_it_starts_with_zeros(self):
-        # 101 ==> Understood as 0101
+        # 1001 ==> Understood as 01001
         # 0101: Operation 01 - Mode 010
         #       Add: Val at address of input1 + Val of input2
         #       Store: At adress of output
@@ -93,12 +93,8 @@ class TestProgram:
         #
         # 30 + 30 = 60 -> Stored in memory[5]
         assert Program(
-            [101, 2, 30, 5, 99]
-        ).run() == [101, 2, 30, 5, 99, 60]
-
-# TODO:
-# 1) Pass the tests
-# 2) Refactor to allow an arbitrary number of parameters
+            [1001, 2, 30, 5, 99]
+        ).run() == [1001, 2, 30, 5, 99, 60]
 
 
 class TestDay1:

@@ -4,6 +4,9 @@ OPCODE_SIZE = 2
 MODE_POSITION = 0
 MODE_IMMEDIATE = 1
 
+DEFAULT_NUM_OF_INPUT_PARAMS = 2
+DEFAULT_NUM_OF_OUTPUT_PARAMS = 1
+
 
 class UnknownInstruction(Exception):
     pass
@@ -11,6 +14,13 @@ class UnknownInstruction(Exception):
 
 class UnableToSolve(Exception):
     pass
+
+
+def _get_mode(modes, param_idx):
+    if param_idx < len(modes):
+        return modes[param_idx]
+    else:
+        return None
 
 
 class Instruction:
@@ -28,20 +38,24 @@ class Instruction:
         return op_class(modes, position, memory)
 
     def __init__(self, modes, position, memory):
+        def init_input_parameters():
+            for idx in range(self.num_of_input_params):
+                mode = _get_mode(modes, idx)
+                if mode == MODE_POSITION or mode is None:
+                    address_of_parameter = memory[position + 1 + idx]
+                    self.input_parameters[idx] = memory[address_of_parameter]
+                elif mode == MODE_IMMEDIATE:
+                    self.input_parameters[idx] = memory[position + 1 + idx]
+                else:
+                    raise RuntimeError(f"Unknown mode: '{modes[idx]}'")
+
         self.memory = memory
-        self.num_of_input_params = 2
-        self.num_of_output_params = 1
 
         address_of_output_param = position + self.num_of_input_params + 1
         self.address_of_output = memory[address_of_output_param]
 
-        self.parameter = SparseList()
-        for idx in range(self.num_of_input_params):
-            if modes[idx] == MODE_POSITION:
-                address_of_parameter = memory[position + 1 + idx]
-                self.parameter[idx] = memory[address_of_parameter]
-            elif modes[idx] == MODE_IMMEDIATE:
-                self.parameter[idx] = memory[position + 1 + idx]
+        self.input_parameters = SparseList()
+        init_input_parameters()
 
     def perform(self):
         result = self._do_perform()
@@ -52,15 +66,23 @@ class Instruction:
         # Opcode&Modes + Params
         return 1 + self.num_of_input_params + self.num_of_output_params
 
+    @property
+    def num_of_input_params(self):
+        return DEFAULT_NUM_OF_INPUT_PARAMS
+
+    @property
+    def num_of_output_params(self):
+        return DEFAULT_NUM_OF_OUTPUT_PARAMS
+
 
 class AddInstruction(Instruction):
     def _do_perform(self):
-        return self.parameter[0] + self.parameter[1]
+        return self.input_parameters[0] + self.input_parameters[1]
 
 
 class MultiplyInstruction(Instruction):
     def _do_perform(self):
-        return self.parameter[0] * self.parameter[1]
+        return self.input_parameters[0] * self.input_parameters[1]
 
 
 class Program:
@@ -75,11 +97,13 @@ class Program:
         self.current_instruction = self.instruction_at_pointer()
 
     def instruction_at_pointer(self):
-        opcode_with_modes = '{:0>4d}'.format(
+        opcode_with_modes = str(
             self.memory[self.instruction_pointer]
         )
         opcode = int(opcode_with_modes[-OPCODE_SIZE::])
         modes = [int(mode) for mode in opcode_with_modes[:-OPCODE_SIZE:]]
+        modes.reverse()
+
         if opcode == 99:
             return None
 
