@@ -4,11 +4,13 @@ from unittest import mock
 from unittest.mock import patch, call, Mock
 
 
+from utils import digitize
+from computer import Program
+
 from day_1 import Day1, full_required_all_inclusive
-from day_2 import Day2, Program
+from day_2 import Day2
 from day_3 import Day3, trace_path, Up, Down, Left, Right, manhattan_dist_metric, step_on_wire_metric, IntersectionPoint
 from day_4 import Day4, is_valid_pass, group
-from utils import digitize
 
 
 def assert_solution_part_1(day_class, given_input, expected_solution):
@@ -25,6 +27,27 @@ class TestUtils:
     def test_digitizer(self):
         assert digitize(123456) == [1, 2, 3, 4, 5, 6]
         assert digitize(876543) == [8, 7, 6, 5, 4, 3]
+
+
+class TestProgram:
+    def test_single_instruction_add(self):
+        assert Program([1, 0, 0, 0, 99]).run() == [2, 0, 0, 0, 99]
+
+    def test_single_instruction_multiply(self):
+        assert Program([2, 3, 0, 3, 99]).run() == [2, 3, 0, 6, 99]
+        assert Program([2, 4, 4, 5, 99, 0]).run() == [2, 4, 4, 5, 99, 9801]
+
+    def test_multiple_instructions(self):
+        assert Program(
+            [1, 1, 1, 4, 99, 5, 6, 0, 99]
+        ).run() == [30, 1, 1, 4, 2, 5, 6, 0, 99]
+
+    def test_it_replaces_noun_and_verb(self):
+        noun = 4
+        verb = 5
+        program = Program([1, 2, 3, 4, 5, 6], noun=noun, verb=verb)
+        assert program.memory[1] == noun
+        assert program.memory[2] == verb
 
 
 class TestDay1:
@@ -62,26 +85,6 @@ class TestDay1:
 
 
 class TestDay2:
-    class TestProgram:
-        def test_single_instruction_add(self):
-            assert Program([1, 0, 0, 0, 99]).run() == [2, 0, 0, 0, 99]
-
-        def test_single_instruction_multiply(self):
-            assert Program([2, 3, 0, 3, 99]).run() == [2, 3, 0, 6, 99]
-            assert Program([2, 4, 4, 5, 99, 0]).run() == [2, 4, 4, 5, 99, 9801]
-
-        def test_multiple_instructions(self):
-            assert Program(
-                [1, 1, 1, 4, 99, 5, 6, 0, 99]
-            ).run() == [30, 1, 1, 4, 2, 5, 6, 0, 99]
-
-        def test_it_replaces_noun_and_verb(self):
-            noun = 4
-            verb = 5
-            program = Program([1, 2, 3, 4, 5, 6], noun=noun, verb=verb)
-            assert program.memory[1] == noun
-            assert program.memory[2] == verb
-
     class TestPart1:
         @patch.object(Day2, 'parse_input')
         @patch('day_2.Program')
