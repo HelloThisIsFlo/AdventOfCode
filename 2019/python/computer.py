@@ -63,6 +63,7 @@ class Instruction:
                 else:
                     raise RuntimeError(f"Unknown mode: '{modes[idx]}'")
 
+        # Direct reference, no copy. Instructions modify the memory
         self.memory = memory
 
         address_of_output_param = (
@@ -129,11 +130,19 @@ class Program:
         self.current_instruction = self.instruction_at_pointer()
 
     def instruction_at_pointer(self):
-        opcode_with_modes = str(
-            self.memory[self.instruction_pointer]
-        )
-        opcode = int(opcode_with_modes[-OPCODE_SIZE::])
-        modes = [int(mode) for mode in opcode_with_modes[:-OPCODE_SIZE:]]
+        def extract_opcode_and_modes():
+            # opcode_with_modes: 'ABCDEF' with 'ABCD' <- mode & 'EF' <- Opcode
+            opcode_with_modes = str(
+                self.memory[self.instruction_pointer]
+            )
+            # opcode: 'ABCDEF' -> int('EF')
+            opcode = int(opcode_with_modes[-OPCODE_SIZE::])
+            # modes: 'ABCDEF' -> [a, b, c, d] where x == int(X)
+            modes = [int(mode) for mode in opcode_with_modes[:-OPCODE_SIZE:]]
+
+            return opcode, modes
+
+        opcode, modes = extract_opcode_and_modes()
 
         if opcode == 99:
             return None
