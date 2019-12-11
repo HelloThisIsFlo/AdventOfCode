@@ -5,6 +5,7 @@ from day_1 import Day1
 from day_2 import Day2
 from day_3 import Day3
 from day_4 import Day4
+from day_5 import Day5
 
 
 def solve_and_print_result(day_class):
@@ -22,17 +23,21 @@ def test_print_intro():
     print('--------------------------------')
 
 
-def test_solve_day_1():
-    solve_and_print_result(Day1)
+# def test_solve_day_1():
+#     solve_and_print_result(Day1)
 
 
-def test_solve_day_2():
-    solve_and_print_result(Day2)
+# def test_solve_day_2():
+#     solve_and_print_result(Day2)
 
 
-def test_solve_day_3():
-    solve_and_print_result(Day3)
+# def test_solve_day_3():
+#     solve_and_print_result(Day3)
 
 
-def test_solve_day_4():
-    solve_and_print_result(Day4)
+# def test_solve_day_4():
+#     solve_and_print_result(Day4)
+
+
+def test_solve_day_5():
+    solve_and_print_result(Day5)

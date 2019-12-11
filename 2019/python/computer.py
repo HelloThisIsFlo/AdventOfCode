@@ -9,7 +9,8 @@ DEFAULT_NUM_OF_OUTPUT_PARAMS = 1
 
 
 class UnknownInstruction(Exception):
-    pass
+    def __init__(self, opcode):
+        super().__init__(f'OpCode={opcode}')
 
 
 class UnableToSolve(Exception):
@@ -31,10 +32,14 @@ class Instruction:
                 return AddInstruction
             elif opcode == 2:
                 return MultiplyInstruction
+            elif opcode == 3:
+                return FakeInputInstruction
+            elif opcode == 4:
+                return FakeOutputInstruction
             elif opcode == 98:
                 return TripleAddInstruction
             else:
-                raise UnknownInstruction()
+                raise UnknownInstruction(opcode)
 
         op_class = get_instruction_class()
         return op_class(modes, position, memory)
@@ -106,6 +111,10 @@ class MultiplyInstruction(Instruction):
 
 
 class TripleAddInstruction(Instruction):
+    @property
+    def num_of_input_params(self):
+        return 3
+
     def _do_perform(self):
         return (
             self.input_parameters[0] +
@@ -113,9 +122,31 @@ class TripleAddInstruction(Instruction):
             self.input_parameters[2]
         )
 
+
+class FakeInputInstruction(Instruction):
     @property
     def num_of_input_params(self):
-        return 3
+        return 0
+
+    def _do_perform(self):
+        print(f'<<< INPUT: 1')
+        return 1
+
+
+class FakeOutputInstruction(Instruction):
+    @property
+    def num_of_input_params(self):
+        return 0
+
+    def _do_perform(self):
+        # Output doesn't have an input, but the base `Instruction`
+        # will write the return value of this function to
+        # `self.address_of_output`
+        # To prevent overriding with None, we simply return the existing
+        # value
+        output_value = self.memory[self.address_of_output]
+        print(f'>>> OUTPUT: {output_value}')
+        return output_value
 
 
 class Program:
