@@ -5,7 +5,7 @@ from unittest.mock import patch, call, Mock
 
 
 from utils import digitize, SparseList
-from computer import Program
+from computer import Program, Instruction
 
 from day_1 import Day1, full_required_all_inclusive
 from day_2 import Day2
@@ -95,6 +95,50 @@ class TestProgram:
         assert Program(
             [101, 30, 1, 5, 99]
         ).run() == [101, 30, 1, 5, 99, 60]
+
+    class TestInstruction:
+        def test_represent_modes_in_intuitive_order(self):
+            class FiveInputParamInstruction(Instruction):
+                @property
+                def num_of_input_params(self):
+                    return 5
+
+            # For an instruction with 5 input params (6 total w/ output)
+            # a mode+opcode string of '10XX' XX being the opcode is passed
+            # as [1, 0] to the `Instruction` constructor
+            # In reality what '10XX' represents for a 6 params instruction
+            # is '000010XX' with the leading zeros being omitted. In addition to
+            # that, the modes describe the parameters in reverse order, so for
+            # example 'ABCDEFXX' would mean:
+            # - 'A' <- Mode for param 6[idx=5] (output)
+            # - 'B' <- Mode for param 5[idx=4] (input)
+            # - 'C' <- Mode for param 4[idx=3] (input)
+            # - 'D' <- Mode for param 3[idx=2] (input)
+            # - 'E' <- Mode for param 2[idx=1] (input)
+            # - 'F' <- Mode for param 1[idx=0] (input)
+            #
+            # A more intuitive representation would be:
+            #     modes = [0, 1, 0, 0, 0, 0]
+            # That way modes could be access with
+            #     modes[idx_of_parameter]
+            # So the mode for param 3[idx=2] would be: `modes[2]`
+
+            # In that example, `modes = [1, 0]` passed in the constructor
+            # would mean:
+            # - Parameter 1[idx=0] is in POSITION mode
+            # - Parameter 2[idx=1] is in IMMEDIATE mode
+            # - Parameters 3[idx=2] to 6[idx=6] are in POSITION mode
+            # So `instruction.modes` should be formatted:
+            #     instruction.modes = [0, 1, 0, 0, 0, 0]
+
+            modes = [1, 0]
+            instruction = FiveInputParamInstruction(
+                modes,
+                0,
+                [0, 0, 0, 0, 0, 0, 0, 0]
+            )
+
+            assert instruction.modes == [0, 1, 0, 0, 0, 0]
 
 
 class TestDay1:

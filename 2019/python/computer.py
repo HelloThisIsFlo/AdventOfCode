@@ -38,6 +38,17 @@ class Instruction:
         return op_class(modes, position, memory)
 
     def __init__(self, modes, position, memory):
+        def format_modes(modes):
+            def set_missing_modes_to_position():
+                for param_idx in range(self.num_of_input_params + self.num_of_output_params):
+                    if param_idx >= len(formatted_modes):
+                        formatted_modes.append(MODE_POSITION)
+
+            formatted_modes = modes[:]
+            formatted_modes.reverse()
+            set_missing_modes_to_position()
+            return formatted_modes
+
         def init_input_parameters():
             for idx in range(self.num_of_input_params):
                 mode = _get_mode(modes, idx)
@@ -51,8 +62,13 @@ class Instruction:
 
         self.memory = memory
 
-        address_of_output_param = position + self.num_of_input_params + 1
+        address_of_output_param = (
+            position +
+            self.num_of_input_params +
+            self.num_of_output_params
+        )
         self.address_of_output = memory[address_of_output_param]
+        self.modes = format_modes(modes)
 
         self.input_parameters = SparseList()
         init_input_parameters()
