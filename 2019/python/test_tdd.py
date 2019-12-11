@@ -5,7 +5,7 @@ from unittest.mock import patch, call, Mock
 
 
 from utils import digitize, SparseList
-from computer import Program, Instruction
+from computer import Program, Instruction, Runtime
 
 from day_1 import Day1, full_required_all_inclusive
 from day_2 import Day2
@@ -66,8 +66,8 @@ class TestProgram:
         noun = 4
         verb = 5
         program = Program([1, 2, 3, 4, 5, 6], noun=noun, verb=verb)
-        assert program.memory[1] == noun
-        assert program.memory[2] == verb
+        assert program.runtime.memory[1] == noun
+        assert program.runtime.memory[2] == verb
 
     def test_it_handles_opcodes_with_modes(self):
         # 1101: Operation 01 - Mode 011 -> IN[1, 1] OUT[0]
@@ -147,8 +147,7 @@ class TestProgram:
             modes = [1, 0]
             instruction = FiveInputParamInstruction(
                 modes,
-                0,
-                [0, 0, 0, 0, 0, 0, 0, 0]
+                Runtime([0, 0, 0, 0, 0, 0, 0, 0])
             )
 
             assert instruction.modes == [0, 1, 0, 0, 0, 0]

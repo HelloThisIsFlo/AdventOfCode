@@ -26,7 +26,7 @@ def _get_mode(modes, param_idx):
 
 class Instruction:
     @staticmethod
-    def from_opcode(opcode, modes, position, memory):
+    def from_opcode(opcode, modes, runtime):
         def get_instruction_class():
             if opcode == 1:
                 return AddInstruction
@@ -42,9 +42,9 @@ class Instruction:
                 raise UnknownInstruction(opcode)
 
         op_class = get_instruction_class()
-        return op_class(modes, position, memory)
+        return op_class(modes, runtime)
 
-    def __init__(self, modes, position, memory):
+    def __init__(self, modes, runtime):
         def format_modes(modes):
             def set_missing_modes_to_position():
                 for param_idx in range(self.num_of_input_params + self.num_of_output_params):
@@ -59,24 +59,24 @@ class Instruction:
         def init_input_parameters():
             for idx in range(self.num_of_input_params):
                 if self.modes[idx] == MODE_POSITION:
-                    address_of_parameter = memory[position + 1 + idx]
-                    self.input_parameters[idx] = memory[address_of_parameter]
+                    address_of_parameter = runtime.memory[runtime.pointer + 1 + idx]
+                    self.input_parameters[idx] = runtime.memory[address_of_parameter]
 
                 elif self.modes[idx] == MODE_IMMEDIATE:
-                    self.input_parameters[idx] = memory[position + 1 + idx]
+                    self.input_parameters[idx] = runtime.memory[runtime.pointer + 1 + idx]
 
                 else:
                     raise RuntimeError(f"Unknown mode: '{modes[idx]}'")
 
-        # Direct reference, no copy. Instructions modify the memory
-        self.memory = memory
+        # Direct reference, no copy. Instructions modify the memory & the pointer
+        self.runtime = runtime
 
         address_of_output_param = (
-            position +
+            runtime.pointer +
             self.num_of_input_params +
             self.num_of_output_params
         )
-        self.address_of_output = memory[address_of_output_param]
+        self.address_of_output = runtime.memory[address_of_output_param]
         self.modes = format_modes(modes)
 
         self.input_parameters = SparseList()
@@ -84,12 +84,15 @@ class Instruction:
 
     def perform(self):
         result = self._do_perform()
-        self.memory[self.address_of_output] = result
+        self.runtime.memory[self.address_of_output] = result
 
     @property
     def size(self):
         # Opcode&Modes + Params
         return 1 + self.num_of_input_params + self.num_of_output_params
+
+    def move_pointer_to_next_instruction(self):
+        self.runtime.pointer += self.size
 
     @property
     def num_of_input_params(self):
@@ -149,22 +152,27 @@ class FakeOutputInstruction(Instruction):
         return output_value
 
 
+class Runtime:
+    def __init__(self, memory):
+        self.pointer = 0
+        self.memory = SparseList(memory[:])
+
+
 class Program:
     def __init__(self, memory, noun=None, verb=None):
-        self.memory = SparseList(memory[:])
+        self.runtime = Runtime(memory)
         if noun:
-            self.memory[1] = noun
+            self.runtime.memory[1] = noun
         if verb:
-            self.memory[2] = verb
+            self.runtime.memory[2] = verb
 
-        self.instruction_pointer = 0
         self.current_instruction = self.instruction_at_pointer()
 
     def instruction_at_pointer(self):
         def extract_opcode_and_modes():
             # opcode_with_modes: 'ABCDEF' with 'ABCD' <- mode & 'EF' <- Opcode
             opcode_with_modes = str(
-                self.memory[self.instruction_pointer]
+                self.runtime.memory[self.runtime.pointer]
             )
             # opcode: 'ABCDEF' -> int('EF')
             opcode = int(opcode_with_modes[-OPCODE_SIZE::])
@@ -181,12 +189,11 @@ class Program:
         return Instruction.from_opcode(
             opcode,
             modes,
-            self.instruction_pointer,
-            self.memory
+            self.runtime
         )
 
     def go_to_next_instruction(self):
-        self.instruction_pointer += self.current_instruction.size
+        self.current_instruction.move_pointer_to_next_instruction()
         self.current_instruction = self.instruction_at_pointer()
 
     def run(self):
@@ -194,4 +201,4 @@ class Program:
             self.current_instruction.perform()
             self.go_to_next_instruction()
 
-        return self.memory
+        return self.runtime.memory
