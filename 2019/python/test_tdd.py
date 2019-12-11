@@ -96,6 +96,19 @@ class TestProgram:
             [101, 30, 1, 5, 99]
         ).run() == [101, 30, 1, 5, 99, 60]
 
+    def test_operation_with_more_than_2_input_params(self):
+        # For the purpose of this feature, we will be implementing a
+        # 'TripleAdd' operation, that adds 3 numbers together
+        # Opcode for 'TripleAdd' == 98
+
+        # In this program, one operation '1098'
+        # Since 'TripleAdd' has 3 input parameter, '1098' will
+        # be interpreted as '0010[modes]98[opcode]'
+
+        assert Program(
+            [10098, 5, 0, 17, 6, 99]
+        ).run() == [10098, 5, 0, 17, 6, 99, (99 + 10098 + 17)]
+
     class TestInstruction:
         def test_represent_modes_in_intuitive_order(self):
             class FiveInputParamInstruction(Instruction):

@@ -31,6 +31,8 @@ class Instruction:
                 return AddInstruction
             elif opcode == 2:
                 return MultiplyInstruction
+            elif opcode == 98:
+                return TripleAddInstruction
             else:
                 raise UnknownInstruction()
 
@@ -51,12 +53,13 @@ class Instruction:
 
         def init_input_parameters():
             for idx in range(self.num_of_input_params):
-                mode = _get_mode(modes, idx)
-                if mode == MODE_POSITION or mode is None:
+                if self.modes[idx] == MODE_POSITION:
                     address_of_parameter = memory[position + 1 + idx]
                     self.input_parameters[idx] = memory[address_of_parameter]
-                elif mode == MODE_IMMEDIATE:
+
+                elif self.modes[idx] == MODE_IMMEDIATE:
                     self.input_parameters[idx] = memory[position + 1 + idx]
+
                 else:
                     raise RuntimeError(f"Unknown mode: '{modes[idx]}'")
 
@@ -101,6 +104,19 @@ class MultiplyInstruction(Instruction):
         return self.input_parameters[0] * self.input_parameters[1]
 
 
+class TripleAddInstruction(Instruction):
+    def _do_perform(self):
+        return (
+            self.input_parameters[0] +
+            self.input_parameters[1] +
+            self.input_parameters[2]
+        )
+
+    @property
+    def num_of_input_params(self):
+        return 3
+
+
 class Program:
     def __init__(self, memory, noun=None, verb=None):
         self.memory = SparseList(memory[:])
@@ -118,7 +134,6 @@ class Program:
         )
         opcode = int(opcode_with_modes[-OPCODE_SIZE::])
         modes = [int(mode) for mode in opcode_with_modes[:-OPCODE_SIZE:]]
-        modes.reverse()
 
         if opcode == 99:
             return None
