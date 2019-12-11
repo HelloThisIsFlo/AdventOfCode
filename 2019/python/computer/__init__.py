@@ -147,7 +147,7 @@ class FakeOutputInstruction(Instruction):
         # `self.address_of_output`
         # To prevent overriding with None, we simply return the existing
         # value
-        output_value = self.memory[self.address_of_output]
+        output_value = self.runtime.memory[self.address_of_output]
         print(f'>>> OUTPUT: {output_value}')
         return output_value
 
