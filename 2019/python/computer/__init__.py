@@ -1,4 +1,5 @@
 from utils import SparseList
+from . import io
 OPCODE_SIZE = 2
 
 MODE_POSITION = 0
@@ -28,18 +29,16 @@ class Instruction:
     @staticmethod
     def from_opcode(opcode, modes, runtime):
         def get_instruction_class():
-            if opcode == 1:
-                return AddInstruction
-            elif opcode == 2:
-                return MultiplyInstruction
-            elif opcode == 3:
-                return FakeInputInstruction
-            elif opcode == 4:
-                return FakeOutputInstruction
-            elif opcode == 98:
-                return TripleAddInstruction
-            else:
+            class_ = {
+                1: AddInstruction,
+                2: MultiplyInstruction,
+                3: InputInstruction,
+                4: OutputInstruction,
+                98: TripleAddInstruction
+            }.get(opcode)
+            if not class_:
                 raise UnknownInstruction(opcode)
+            return class_
 
         op_class = get_instruction_class()
         return op_class(modes, runtime)
@@ -126,17 +125,16 @@ class TripleAddInstruction(Instruction):
         )
 
 
-class FakeInputInstruction(Instruction):
+class InputInstruction(Instruction):
     @property
     def num_of_input_params(self):
         return 0
 
     def _do_perform(self):
-        print(f'<<< INPUT: 1')
-        return 1
+        return io.prompt_user_for_input()
 
 
-class FakeOutputInstruction(Instruction):
+class OutputInstruction(Instruction):
     @property
     def num_of_input_params(self):
         return 0
@@ -148,7 +146,7 @@ class FakeOutputInstruction(Instruction):
         # To prevent overriding with None, we simply return the existing
         # value
         output_value = self.runtime.memory[self.address_of_output]
-        print(f'>>> OUTPUT: {output_value}')
+        io.display_output_to_user(output_value)
         return output_value
 
 

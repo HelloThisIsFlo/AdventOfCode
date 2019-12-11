@@ -107,7 +107,32 @@ class TestProgram:
 
         assert Program(
             [10098, 5, 0, 17, 6, 99]
-        ).run() == [10098, 5, 0, 17, 6, 99, (99 + 10098 + 17)]
+        ).run() == \
+            [10098, 5, 0, 17, 6, 99, (99 + 10098 + 17)]
+
+    @patch('computer.io.prompt_user_for_input')
+    @patch('computer.io.display_output_to_user')
+    def test_it_handles_user_input(
+        self,
+        mock_display_output_to_user,
+        mock_prompt_user_for_input
+    ):
+        mock_prompt_user_for_input.side_effect = [111, 222]
+
+        # The following intcode will:
+        # 1. Request for user input [mock_value=111] & save @ 11
+        # 2. Request for user input [mock_value=222] & save @ 12
+        # 3. Add values at 11 & 12 (so the 2 inputted values) & save @ 13
+        #    -> 111 + 222 == 333
+        # 4. Output the result (value stored @ 13)
+        # 5. End
+        assert Program(
+            [3, 11, 3, 12, 1, 11, 12, 13, 4, 13, 99]
+        ).run() == \
+            [3, 11, 3, 12, 1, 11, 12, 13, 4, 13, 99, 111, 222, 333]
+
+        assert mock_prompt_user_for_input.call_count == 2
+        mock_display_output_to_user.assert_called_once_with(333)
 
     class TestInstruction:
         def test_represent_modes_in_intuitive_order(self):
