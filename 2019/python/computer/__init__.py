@@ -32,6 +32,7 @@ class Instruction:
                 3: InputInstruction,
                 4: OutputInstruction,
                 5: JumpIfTrueInstruction,
+                6: JumpIfFalseInstruction,
                 98: TripleAddInstruction
             }.get(opcode)
             if not class_:
@@ -159,6 +160,17 @@ class JumpIfTrueInstruction(Instruction):
 
     def _do_perform(self):
         if self.input_parameters[0] != 0:
+            self.runtime.pointer = self.input_parameters[1]
+            self.pointer_moved_by_perform_phase = True
+
+
+class JumpIfFalseInstruction(Instruction):
+    @property
+    def has_output_param(self):
+        return False
+
+    def _do_perform(self):
+        if self.input_parameters[0] == 0:
             self.runtime.pointer = self.input_parameters[1]
             self.pointer_moved_by_perform_phase = True
 

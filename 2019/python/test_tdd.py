@@ -189,6 +189,33 @@ class TestProgram:
                 expected_output=[1]
             )
 
+    class TestItHandlesJumpIfFalse:
+        # Uses Jump-if-true to display 0 if the input was 0, or 1 otherwise
+        ZERO_IF_ZERO_INTCODE = [
+            3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9
+        ]
+
+        def test_it_does_not_jump(self, assert_program):
+            assert_program(
+                self.ZERO_IF_ZERO_INTCODE,
+                given_input=[0],
+                expected_output=[0]
+            )
+
+        def test_it_jumps(self, assert_program):
+            assert_program(
+                self.ZERO_IF_ZERO_INTCODE,
+                given_input=[1],
+                expected_output=[1]
+            )
+
+        def test_it_jumps_2(self, assert_program):
+            assert_program(
+                self.ZERO_IF_ZERO_INTCODE,
+                given_input=[1234],
+                expected_output=[1]
+            )
+
     class TestInstruction:
         def test_represent_modes_in_intuitive_order(self):
             class FiveInputParamInstruction(Instruction):
