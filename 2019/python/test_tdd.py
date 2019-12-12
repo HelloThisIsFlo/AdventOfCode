@@ -162,26 +162,32 @@ class TestProgram:
             expected_output=[333]
         )
 
-    @pytest.mark.skip
-    def test_it_handles_jump_if_true(self, assert_program):
+    class TestItHandlesJumpIfTrue:
         # Uses Jump-if-true to display 0 if the input was 0, or 1 otherwise
-        ZERO_IF_ZERO = [3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1]
+        ZERO_IF_ZERO_INTCODE = [
+            3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1
+        ]
 
-        assert_program(
-            ZERO_IF_ZERO,
-            given_input=[0],
-            expected_output=[0]
-        )
-        assert_program(
-            ZERO_IF_ZERO,
-            given_input=[1],
-            expected_output=[1]
-        )
-        assert_program(
-            ZERO_IF_ZERO,
-            given_input=[1234],
-            expected_output=[1]
-        )
+        def test_it_does_not_jump(self, assert_program):
+            assert_program(
+                self.ZERO_IF_ZERO_INTCODE,
+                given_input=[0],
+                expected_output=[0]
+            )
+
+        def test_it_jumps(self, assert_program):
+            assert_program(
+                self.ZERO_IF_ZERO_INTCODE,
+                given_input=[1],
+                expected_output=[1]
+            )
+
+        def test_it_jumps_2(self, assert_program):
+            assert_program(
+                self.ZERO_IF_ZERO_INTCODE,
+                given_input=[1234],
+                expected_output=[1]
+            )
 
     class TestInstruction:
         def test_represent_modes_in_intuitive_order(self):

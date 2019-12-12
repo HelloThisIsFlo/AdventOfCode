@@ -31,6 +31,7 @@ class Instruction:
                 2: MultiplyInstruction,
                 3: InputInstruction,
                 4: OutputInstruction,
+                5: JumpIfTrueInstruction,
                 98: TripleAddInstruction
             }.get(opcode)
             if not class_:
@@ -66,6 +67,7 @@ class Instruction:
 
         # Direct reference, no copy. Instructions modify the memory & the pointer
         self.runtime = runtime
+        self.pointer_moved_by_perform_phase = False
 
         if self.has_output_param:
             address_of_output_param = (
@@ -93,7 +95,8 @@ class Instruction:
         return 1 + self.num_of_input_params + self.has_output_param
 
     def move_pointer_to_next_instruction(self):
-        self.runtime.pointer += self.size
+        if not self.pointer_moved_by_perform_phase:
+            self.runtime.pointer += self.size
 
     @property
     def num_of_input_params(self):
@@ -147,6 +150,17 @@ class OutputInstruction(Instruction):
 
     def _do_perform(self):
         io.display_output_to_user(self.input_parameters[0])
+
+
+class JumpIfTrueInstruction(Instruction):
+    @property
+    def has_output_param(self):
+        return False
+
+    def _do_perform(self):
+        if self.input_parameters[0] != 0:
+            self.runtime.pointer = self.input_parameters[1]
+            self.pointer_moved_by_perform_phase = True
 
 
 class Runtime:
