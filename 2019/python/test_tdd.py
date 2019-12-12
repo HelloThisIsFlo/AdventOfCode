@@ -110,15 +110,27 @@ class TestProgram:
         ).run() == \
             [10098, 5, 0, 17, 6, 99, (99 + 10098 + 17)]
 
-    @patch('computer.io.prompt_user_for_input')
-    @patch('computer.io.display_output_to_user')
-    def test_it_handles_user_input(
-        self,
-        mock_display_output_to_user,
-        mock_prompt_user_for_input
-    ):
-        mock_prompt_user_for_input.side_effect = [111, 222]
+    @pytest.fixture
+    def assert_program(self):
+        def do_assert_program(intcode, given_input, expected_output):
+            def all_outputted_values():
+                def outputted_value(call_args):
+                    ((outputted_value,), _) = call_args
+                    return outputted_value
 
+                return [outputted_value(call_args)
+                        for call_args
+                        in mock_display_output_to_user.call_args_list]
+
+            mock_prompt_user_for_input.side_effect = given_input
+            Program(intcode).run()
+            assert all_outputted_values() == expected_output
+
+        with patch('computer.io.prompt_user_for_input') as mock_prompt_user_for_input:
+            with patch('computer.io.display_output_to_user') as mock_display_output_to_user:
+                yield do_assert_program
+
+    def test_it_handles_user_input(self, assert_program):
         # The following intcode will:
         # 1. Request for user input [mock_value=111] & save @ 11
         # 2. Request for user input [mock_value=222] & save @ 12
@@ -126,13 +138,13 @@ class TestProgram:
         #    -> 111 + 222 == 333
         # 4. Output the result (value stored @ 13)
         # 5. End
-        assert Program(
-            [3, 11, 3, 12, 1, 11, 12, 13, 4, 13, 99]
-        ).run() == \
-            [3, 11, 3, 12, 1, 11, 12, 13, 4, 13, 99, 111, 222, 333]
+        ADD_2_NUMBERS_INTCODE = [3, 11, 3, 12, 1, 11, 12, 13, 4, 13, 99]
 
-        assert mock_prompt_user_for_input.call_count == 2
-        mock_display_output_to_user.assert_called_once_with(333)
+        assert_program(
+            ADD_2_NUMBERS_INTCODE,
+            given_input=[111, 222],
+            expected_output=[333]
+        )
 
     class TestInstruction:
         def test_represent_modes_in_intuitive_order(self):
