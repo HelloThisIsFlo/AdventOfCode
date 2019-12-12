@@ -68,5 +68,5 @@ def test_solve_day_5():
     solve_and_print_result(
         Day5,
         step_1_user_input=[1],
-        step_2_user_input=None
+        step_2_user_input=[5],
     )

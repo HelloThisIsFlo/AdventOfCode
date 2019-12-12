@@ -33,6 +33,8 @@ class Instruction:
                 4: OutputInstruction,
                 5: JumpIfTrueInstruction,
                 6: JumpIfFalseInstruction,
+                7: LessThanInstruction,
+                8: EqualsInstruction,
                 98: TripleAddInstruction
             }.get(opcode)
             if not class_:
@@ -175,11 +177,22 @@ class JumpIfFalseInstruction(Instruction):
             self.pointer_moved_by_perform_phase = True
 
 
+class LessThanInstruction(Instruction):
+    def _do_perform(self):
+        return int(self.input_parameters[0] < self.input_parameters[1])
+
+
+class EqualsInstruction(Instruction):
+    def _do_perform(self):
+        return int(self.input_parameters[0] == self.input_parameters[1])
+
+
 class Runtime:
     def __init__(self, memory):
         self.pointer = 0
         self.memory = SparseList(memory[:])
 
+3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99
 
 class Program:
     def __init__(self, memory, noun=None, verb=None):

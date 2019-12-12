@@ -190,7 +190,7 @@ class TestProgram:
             )
 
     class TestItHandlesJumpIfFalse:
-        # Uses Jump-if-true to display 0 if the input was 0, or 1 otherwise
+        # Uses Jump-if-false to display 0 if the input was 0, or 1 otherwise
         ZERO_IF_ZERO_INTCODE = [
             3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9
         ]
@@ -214,6 +214,48 @@ class TestProgram:
                 self.ZERO_IF_ZERO_INTCODE,
                 given_input=[1234],
                 expected_output=[1]
+            )
+
+    class TestItHandlesEquals:
+        # Uses 'Equals' to output 1 if input is equal to 8, 0 otherwise
+        IS_EQUAL_TO_8_INTCODE = [
+            3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8
+        ]
+
+        def test_it_is_equal(self, assert_program):
+            assert_program(
+                self.IS_EQUAL_TO_8_INTCODE,
+                given_input=[8],
+                expected_output=[1]
+            )
+
+        def test_it_is_not_equal(self, assert_program):
+            pass
+            assert_program(
+                self.IS_EQUAL_TO_8_INTCODE,
+                given_input=[9],
+                expected_output=[0]
+            )
+
+    class TestItHandlesLessThan:
+        # Uses 'Less Than' to output 1 if input is less than 8, 0 otherwise
+        IS_LESS_THAN_8_INTCODE = [
+            3, 3, 1107, -1, 8, 3, 4, 3, 99
+        ]
+
+        def test_it_is_equal(self, assert_program):
+            assert_program(
+                self.IS_LESS_THAN_8_INTCODE,
+                given_input=[3],
+                expected_output=[1]
+            )
+
+        def test_it_is_not_equal(self, assert_program):
+            pass
+            assert_program(
+                self.IS_LESS_THAN_8_INTCODE,
+                given_input=[8],
+                expected_output=[0]
             )
 
     class TestInstruction:
