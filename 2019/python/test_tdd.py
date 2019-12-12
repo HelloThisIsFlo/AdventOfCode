@@ -130,6 +130,22 @@ class TestProgram:
             with patch('computer.io.display_output_to_user') as mock_display_output_to_user:
                 yield do_assert_program
 
+    def test_operation_with_no_output_param_position(self, assert_program):
+        PRINT_NUMBER_12345_POSITION = [4, 3, 99, 12345]
+        assert_program(
+            PRINT_NUMBER_12345_POSITION,
+            given_input=RuntimeError,
+            expected_output=[12345]
+        )
+
+    def test_operation_with_no_output_param_immediate(self, assert_program):
+        PRINT_NUMBER_12345_IMMEDIATE = [104, 12345, 99]
+        assert_program(
+            PRINT_NUMBER_12345_IMMEDIATE,
+            given_input=RuntimeError,
+            expected_output=[12345]
+        )
+
     def test_it_handles_user_input(self, assert_program):
         # The following intcode will:
         # 1. Request for user input [mock_value=111] & save @ 11
@@ -144,6 +160,27 @@ class TestProgram:
             ADD_2_NUMBERS_INTCODE,
             given_input=[111, 222],
             expected_output=[333]
+        )
+
+    @pytest.mark.skip
+    def test_it_handles_jump_if_true(self, assert_program):
+        # Uses Jump-if-true to display 0 if the input was 0, or 1 otherwise
+        ZERO_IF_ZERO = [3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1]
+
+        assert_program(
+            ZERO_IF_ZERO,
+            given_input=[0],
+            expected_output=[0]
+        )
+        assert_program(
+            ZERO_IF_ZERO,
+            given_input=[1],
+            expected_output=[1]
+        )
+        assert_program(
+            ZERO_IF_ZERO,
+            given_input=[1234],
+            expected_output=[1]
         )
 
     class TestInstruction:

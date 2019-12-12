@@ -5,9 +5,6 @@ OPCODE_SIZE = 2
 MODE_POSITION = 0
 MODE_IMMEDIATE = 1
 
-DEFAULT_NUM_OF_INPUT_PARAMS = 2
-DEFAULT_NUM_OF_OUTPUT_PARAMS = 1
-
 
 class UnknownInstruction(Exception):
     def __init__(self, opcode):
@@ -46,7 +43,7 @@ class Instruction:
     def __init__(self, modes, runtime):
         def format_modes(modes):
             def set_missing_modes_to_position():
-                for param_idx in range(self.num_of_input_params + self.num_of_output_params):
+                for param_idx in range(self.num_of_input_params + self.has_output_param):
                     if param_idx >= len(formatted_modes):
                         formatted_modes.append(MODE_POSITION)
 
@@ -70,12 +67,16 @@ class Instruction:
         # Direct reference, no copy. Instructions modify the memory & the pointer
         self.runtime = runtime
 
-        address_of_output_param = (
-            runtime.pointer +
-            self.num_of_input_params +
-            self.num_of_output_params
-        )
-        self.address_of_output = runtime.memory[address_of_output_param]
+        if self.has_output_param:
+            address_of_output_param = (
+                runtime.pointer +
+                self.num_of_input_params +
+                self.has_output_param
+            )
+            self.address_of_output = runtime.memory[address_of_output_param]
+        else:
+            self.address_of_output = None
+
         self.modes = format_modes(modes)
 
         self.input_parameters = SparseList()
@@ -83,23 +84,24 @@ class Instruction:
 
     def perform(self):
         result = self._do_perform()
-        self.runtime.memory[self.address_of_output] = result
+        if self.has_output_param:
+            self.runtime.memory[self.address_of_output] = result
 
     @property
     def size(self):
         # Opcode&Modes + Params
-        return 1 + self.num_of_input_params + self.num_of_output_params
+        return 1 + self.num_of_input_params + self.has_output_param
 
     def move_pointer_to_next_instruction(self):
         self.runtime.pointer += self.size
 
     @property
     def num_of_input_params(self):
-        return DEFAULT_NUM_OF_INPUT_PARAMS
+        return 2
 
     @property
-    def num_of_output_params(self):
-        return DEFAULT_NUM_OF_OUTPUT_PARAMS
+    def has_output_param(self):
+        return True
 
 
 class AddInstruction(Instruction):
@@ -137,17 +139,14 @@ class InputInstruction(Instruction):
 class OutputInstruction(Instruction):
     @property
     def num_of_input_params(self):
-        return 0
+        return 1
+
+    @property
+    def has_output_param(self):
+        return False
 
     def _do_perform(self):
-        # Output doesn't have an input, but the base `Instruction`
-        # will write the return value of this function to
-        # `self.address_of_output`
-        # To prevent overriding with None, we simply return the existing
-        # value
-        output_value = self.runtime.memory[self.address_of_output]
-        io.display_output_to_user(output_value)
-        return output_value
+        io.display_output_to_user(self.input_parameters[0])
 
 
 class Runtime:
