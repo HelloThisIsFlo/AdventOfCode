@@ -624,3 +624,6 @@ class TestDay6:
             ]
 
             assert min_orbital_transfers(orbits) == 4
+
+class TestDay7:
+    pass

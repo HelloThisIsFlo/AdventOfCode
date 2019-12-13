@@ -104,8 +104,6 @@ class Planet:
         path.append(self.orbits_around)
         return path
 
-        # return [self]
-
 
 class IndirectOrbitsCounter:
     def __init__(self, orbits):
