@@ -12,6 +12,7 @@ from day_1 import Day1, full_required_all_inclusive
 from day_2 import Day2
 from day_3 import Day3, trace_path, Up, Down, Left, Right, manhattan_dist_metric, step_on_wire_metric, IntersectionPoint
 from day_4 import Day4, is_valid_pass, group
+from day_6 import Orbit, orbit_count_checksum, Planet
 
 
 def assert_solution_part_1(day_class, given_input, expected_solution):
@@ -517,3 +518,88 @@ class TestDay4:
         Day4(dedent("""\
             11231-11217
             """)).solve_part_2()
+
+
+class TestDay6:
+    def test_only_direct_orbits(self):
+        orbits = [
+            Orbit('COM', 'A'),
+            Orbit('COM', 'B'),
+            Orbit('COM', 'C'),
+            Orbit('COM', 'D')
+        ]
+        assert orbit_count_checksum(orbits) == 4
+
+    def test_simple_indirect_orbit(self):
+        # COM -> A -> B -> C
+        # Direct orbits: 3 (1 orbit is exactly 1 direct orbit)
+        # Indirect orbits: 3
+        # - C: A, COM
+        # - B: COM
+        orbits = [
+            Orbit('COM', 'A'),
+            Orbit('A', 'B'),
+            Orbit('B', 'C')
+        ]
+        assert orbit_count_checksum(orbits) == 3 + 3
+
+    def test_from_example(self):
+        # See: https://adventofcode.com/2019/day/6
+        orbits = [
+            Orbit('COM', 'B'),
+            Orbit('B', 'C'),
+            Orbit('C', 'D'),
+            Orbit('D', 'E'),
+            Orbit('E', 'F'),
+            Orbit('B', 'G'),
+            Orbit('G', 'H'),
+            Orbit('D', 'I'),
+            Orbit('E', 'J'),
+            Orbit('J', 'K'),
+            Orbit('K', 'L'),
+        ]
+        assert orbit_count_checksum(orbits) == 42
+
+    class TestPlanet:
+        def test_equality(self):
+            com = Planet('COM', orbits_around=None)
+            com_bis = Planet('COM', orbits_around=None)
+            a = Planet('A', orbits_around=com)
+            b = Planet('B', orbits_around=com)
+            a_bis = Planet('A', orbits_around=com)
+            not_a = Planet('A', orbits_around=b)
+
+            assert a == a_bis
+            assert com == com_bis
+            assert a != not_a
+            assert a != b
+
+        class TestBuildAllFromOrbits:
+            def test_valid_orbits(self):
+                com = Planet('COM', orbits_around=None)
+                planet_a = Planet('A', orbits_around=com)
+                planet_b = Planet('B', orbits_around=com)
+                planet_c = Planet('C', orbits_around=planet_a)
+                planet_d = Planet('D', orbits_around=planet_b)
+
+                assert Planet.build_all_from_orbits([
+                    Orbit('COM', 'A'),
+                    Orbit('COM', 'B'),
+                    Orbit('A', 'C'),
+                    Orbit('B', 'D')
+                ]) == {
+                    com,
+                    planet_a,
+                    planet_b,
+                    planet_c,
+                    planet_d
+                }
+
+            def test_can_not_orbit_2_planets(self):
+                with pytest.raises(ValueError):
+                    # B orbits 'A' and 'COM' => Impossible
+                    Planet.build_all_from_orbits([
+                        Orbit('COM', 'A'),
+                        Orbit('A', 'B'),
+                        Orbit('COM', 'B')
+                    ])

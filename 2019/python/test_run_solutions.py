@@ -6,6 +6,7 @@ from day_2 import Day2
 from day_3 import Day3
 from day_4 import Day4
 from day_5 import Day5
+from day_6 import Day6
 
 
 @patch('computer.io.prompt_user_for_input')
@@ -70,3 +71,7 @@ def test_solve_day_5():
         step_1_user_input=[1],
         step_2_user_input=[5],
     )
+
+
+def test_solve_day_6():
+    solve_and_print_result(Day6)
