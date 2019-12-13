@@ -20,6 +20,26 @@ class Runtime:
     def __init__(self, memory):
         self.pointer = 0
         self.memory = SparseList(memory[:])
+        self._hardcoded_input = None
+        self._hardcoded_input_gen = None
+        self.capture_output = False
+        self.captured_output = []
+
+    @property
+    def hardcoded_input(self):
+        return self._hardcoded_input
+
+    @hardcoded_input.setter
+    def hardcoded_input(self, hardcoded_input):
+        def hardcoded_input_gen():
+            for input_ in self._hardcoded_input:
+                yield input_
+
+        self._hardcoded_input = hardcoded_input
+        self._hardcoded_input_gen = hardcoded_input_gen()
+
+    def next_hardcoded_input(self):
+        return self._hardcoded_input_gen.__next__()
 
 
 3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31, 1106, 0, 36, 98, 0, 0, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104, 999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99
@@ -63,7 +83,9 @@ class Program:
         self.current_instruction.move_pointer_to_next_instruction()
         self.current_instruction = self.instruction_at_pointer()
 
-    def run(self):
+    def run(self, hardcoded_input=None, capture_output=False):
+        self.runtime.hardcoded_input = hardcoded_input
+        self.runtime.capture_output = capture_output
         while self.current_instruction:
             self.current_instruction.perform()
             self.go_to_next_instruction()

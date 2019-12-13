@@ -127,6 +127,9 @@ class InputInstruction(Instruction):
         return 0
 
     def _do_perform(self):
+        if self.runtime.hardcoded_input:
+            return self.runtime.next_hardcoded_input()
+
         return io.prompt_user_for_input()
 
 
@@ -140,7 +143,12 @@ class OutputInstruction(Instruction):
         return False
 
     def _do_perform(self):
-        io.display_output_to_user(self.input_parameters[0])
+        to_output = self.input_parameters[0]
+
+        if self.runtime.capture_output:
+            self.runtime.captured_output.append(to_output)
+        else:
+            io.display_output_to_user(to_output)
 
 
 class JumpIfTrueInstruction(Instruction):

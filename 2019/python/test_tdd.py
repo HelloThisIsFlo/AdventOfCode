@@ -175,10 +175,11 @@ class TestProgram:
             expected_output=[333]
         )
 
-    @pytest.mark.skip
     def test_it_allows_to_hardcode_user_input(self):
         ADD_2_NUMBERS_INTCODE = [3, 11, 3, 12, 1, 11, 12, 13, 4, 13, 99]
-        assert Program(ADD_2_NUMBERS_INTCODE).run(input=[222, 333]) == 555
+        program = Program(ADD_2_NUMBERS_INTCODE)
+        program.run(hardcoded_input=[222, 333], capture_output=True)
+        assert program.runtime.captured_output == [555]
 
     class TestItHandlesJumpIfTrue:
         # Uses Jump-if-true to display 0 if the input was 0, or 1 otherwise
