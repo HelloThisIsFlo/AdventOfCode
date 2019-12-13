@@ -12,7 +12,7 @@ from day_1 import Day1, full_required_all_inclusive
 from day_2 import Day2
 from day_3 import Day3, trace_path, Up, Down, Left, Right, manhattan_dist_metric, step_on_wire_metric, IntersectionPoint
 from day_4 import Day4, is_valid_pass, group
-from day_6 import Orbit, orbit_count_checksum, Planet
+from day_6 import Orbit, orbit_count_checksum, Planet, min_orbital_transfers
 
 
 def assert_solution_part_1(day_class, given_input, expected_solution):
@@ -521,44 +521,45 @@ class TestDay4:
 
 
 class TestDay6:
-    def test_only_direct_orbits(self):
-        orbits = [
-            Orbit('COM', 'A'),
-            Orbit('COM', 'B'),
-            Orbit('COM', 'C'),
-            Orbit('COM', 'D')
-        ]
-        assert orbit_count_checksum(orbits) == 4
+    class TestCheckSum:
+        def test_only_direct_orbits(self):
+            orbits = [
+                Orbit('COM', 'A'),
+                Orbit('COM', 'B'),
+                Orbit('COM', 'C'),
+                Orbit('COM', 'D')
+            ]
+            assert orbit_count_checksum(orbits) == 4
 
-    def test_simple_indirect_orbit(self):
-        # COM -> A -> B -> C
-        # Direct orbits: 3 (1 orbit is exactly 1 direct orbit)
-        # Indirect orbits: 3
-        # - C: A, COM
-        # - B: COM
-        orbits = [
-            Orbit('COM', 'A'),
-            Orbit('A', 'B'),
-            Orbit('B', 'C')
-        ]
-        assert orbit_count_checksum(orbits) == 3 + 3
+        def test_simple_indirect_orbit(self):
+            # COM -> A -> B -> C
+            # Direct orbits: 3 (1 orbit is exactly 1 direct orbit)
+            # Indirect orbits: 3
+            # - C: A, COM
+            # - B: COM
+            orbits = [
+                Orbit('COM', 'A'),
+                Orbit('A', 'B'),
+                Orbit('B', 'C')
+            ]
+            assert orbit_count_checksum(orbits) == 3 + 3
 
-    def test_from_example(self):
-        # See: https://adventofcode.com/2019/day/6
-        orbits = [
-            Orbit('COM', 'B'),
-            Orbit('B', 'C'),
-            Orbit('C', 'D'),
-            Orbit('D', 'E'),
-            Orbit('E', 'F'),
-            Orbit('B', 'G'),
-            Orbit('G', 'H'),
-            Orbit('D', 'I'),
-            Orbit('E', 'J'),
-            Orbit('J', 'K'),
-            Orbit('K', 'L'),
-        ]
-        assert orbit_count_checksum(orbits) == 42
+        def test_from_example(self):
+            # See: https://adventofcode.com/2019/day/6
+            orbits = [
+                Orbit('COM', 'B'),
+                Orbit('B', 'C'),
+                Orbit('C', 'D'),
+                Orbit('D', 'E'),
+                Orbit('E', 'F'),
+                Orbit('B', 'G'),
+                Orbit('G', 'H'),
+                Orbit('D', 'I'),
+                Orbit('E', 'J'),
+                Orbit('J', 'K'),
+                Orbit('K', 'L'),
+            ]
+            assert orbit_count_checksum(orbits) == 42
 
     class TestPlanet:
         def test_equality(self):
@@ -603,3 +604,23 @@ class TestDay6:
                         Orbit('A', 'B'),
                         Orbit('COM', 'B')
                     ])
+
+    class TestMinOrbitalTransfers:
+        def test_from_example(self):
+            orbits = [
+                Orbit('COM', 'B'),
+                Orbit('B', 'C'),
+                Orbit('C', 'D'),
+                Orbit('D', 'E'),
+                Orbit('E', 'F'),
+                Orbit('B', 'G'),
+                Orbit('G', 'H'),
+                Orbit('D', 'I'),
+                Orbit('E', 'J'),
+                Orbit('J', 'K'),
+                Orbit('K', 'L'),
+                Orbit('K', 'YOU'),
+                Orbit('I', 'SAN')
+            ]
+
+            assert min_orbital_transfers(orbits) == 4
