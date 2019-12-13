@@ -53,16 +53,16 @@ def test_solve_day_1():
     solve_and_print_result(Day1)
 
 
-# def test_solve_day_2():
-#     solve_and_print_result(Day2)
+def test_solve_day_2():
+    solve_and_print_result(Day2)
 
 
 def test_solve_day_3():
     solve_and_print_result(Day3)
 
 
-# def test_solve_day_4():
-#     solve_and_print_result(Day4)
+def test_solve_day_4():
+    solve_and_print_result(Day4)
 
 
 def test_solve_day_5():

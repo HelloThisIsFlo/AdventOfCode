@@ -68,4 +68,4 @@ class Program:
             self.current_instruction.perform()
             self.go_to_next_instruction()
 
-        return self.runtime.memory
+        return None

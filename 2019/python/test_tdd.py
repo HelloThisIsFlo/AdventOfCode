@@ -1,3 +1,4 @@
+from day_7 import max_thruster_signal
 from textwrap import dedent
 import pytest
 from unittest import mock
@@ -53,16 +54,23 @@ class TestUtils:
 
 class TestProgram:
     def test_single_instruction_add(self):
-        assert Program([1, 0, 0, 0, 99]).run() == [2, 0, 0, 0, 99]
+        program = Program([1, 0, 0, 0, 99])
+        program.run()
+        assert program.runtime.memory == [2, 0, 0, 0, 99]
 
     def test_single_instruction_multiply(self):
-        assert Program([2, 3, 0, 3, 99]).run() == [2, 3, 0, 6, 99]
-        assert Program([2, 4, 4, 5, 99, 0]).run() == [2, 4, 4, 5, 99, 9801]
+        program1 = Program([2, 3, 0, 3, 99])
+        program1.run()
+        assert program1.runtime.memory == [2, 3, 0, 6, 99]
+
+        program2 = Program([2, 4, 4, 5, 99, 0])
+        program2.run()
+        assert program2.runtime.memory == [2, 4, 4, 5, 99, 9801]
 
     def test_multiple_instructions(self):
-        assert Program(
-            [1, 1, 1, 4, 99, 5, 6, 0, 99]
-        ).run() == [30, 1, 1, 4, 2, 5, 6, 0, 99]
+        program = Program([1, 1, 1, 4, 99, 5, 6, 0, 99])
+        program.run()
+        assert program.runtime.memory == [30, 1, 1, 4, 2, 5, 6, 0, 99]
 
     def test_it_replaces_noun_and_verb(self):
         noun = 4
@@ -80,9 +88,11 @@ class TestProgram:
         # Output: 5 (store at address 5)
         #
         # 100 - 45 = 55 -> Stored in memory[5]
-        assert Program(
-            [1101, 100, -45, 5, 99]
-        ).run() == [1101, 100, -45, 5, 99, 55]
+        program = Program([1101, 100, -45, 5, 99])
+        program.run()
+        assert program.runtime.memory == [
+            1101, 100, -45, 5, 99, 55
+        ]
 
     def test_opcode_mode_with_implicit_position_mode_for_param(self):
         # 101 ==> Understood as 00101
@@ -94,9 +104,9 @@ class TestProgram:
         # Output: 5 (store at address 5)
         #
         # 30 + 30 = 60 -> Stored in memory[5]
-        assert Program(
-            [101, 30, 1, 5, 99]
-        ).run() == [101, 30, 1, 5, 99, 60]
+        program = Program([101, 30, 1, 5, 99])
+        program.run()
+        assert program.runtime.memory == [101, 30, 1, 5, 99, 60]
 
     def test_operation_with_more_than_2_input_params(self):
         # For the purpose of this feature, we will be implementing a
@@ -107,10 +117,11 @@ class TestProgram:
         # Since 'TripleAdd' has 3 input parameter, '1098' will
         # be interpreted as '0010[modes]98[opcode]'
 
-        assert Program(
-            [10098, 5, 0, 17, 6, 99]
-        ).run() == \
-            [10098, 5, 0, 17, 6, 99, (99 + 10098 + 17)]
+        program = Program([10098, 5, 0, 17, 6, 99])
+        program.run()
+        assert program.runtime.memory == [
+            10098, 5, 0, 17, 6, 99, (99 + 10098 + 17)
+        ]
 
     @pytest.fixture
     def assert_program(self):
@@ -163,6 +174,11 @@ class TestProgram:
             given_input=[111, 222],
             expected_output=[333]
         )
+
+    @pytest.mark.skip
+    def test_it_allows_to_hardcode_user_input(self):
+        ADD_2_NUMBERS_INTCODE = [3, 11, 3, 12, 1, 11, 12, 13, 4, 13, 99]
+        assert Program(ADD_2_NUMBERS_INTCODE).run(input=[222, 333]) == 555
 
     class TestItHandlesJumpIfTrue:
         # Uses Jump-if-true to display 0 if the input was 0, or 1 otherwise
@@ -359,7 +375,7 @@ class TestDay2:
         @patch('day_2.Program')
         def test_it_returns_formatted_result(self, MockProgram, mock_parse_input):
             program = MockProgram.return_value
-            program.run.return_value = [12345, 0, 0, 0, 99]
+            program.runtime.memory = [12345, 0, 0, 0, 99]
             expected_result = '12345'
 
             result = Day2("MOCK_INPUT").solve_part_1()
@@ -625,5 +641,19 @@ class TestDay6:
 
             assert min_orbital_transfers(orbits) == 4
 
+
+@pytest.mark.skip
 class TestDay7:
-    pass
+    class TestPart1:
+        def test_from_examples(self):
+            assert max_thruster_signal(
+                [3, 15, 3, 16, 1002, 16, 10, 16, 1, 16, 15, 15, 4, 15, 99, 0, 0]
+            ) == 43210
+            assert max_thruster_signal(
+                [3, 23, 3, 24, 1002, 24, 10, 24, 1002, 23, -1, 23,
+                    101, 5, 23, 23, 1, 24, 23, 23, 4, 23, 99, 0, 0]
+            ) == 54321
+            assert max_thruster_signal(
+                [3, 31, 3, 32, 1002, 32, 10, 32, 1001, 31, -2, 31, 1007, 31, 0, 33,
+                    1002, 33, 7, 33, 1, 33, 31, 31, 1, 32, 31, 31, 4, 31, 99, 0, 0, 0]
+            ) == 65210
