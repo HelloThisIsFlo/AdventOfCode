@@ -5,7 +5,8 @@ from unittest.mock import patch, call, Mock
 
 
 from utils import digitize, SparseList
-from computer import Program, Instruction, Runtime
+from computer import Program, Runtime
+from computer.instruction import Instruction
 
 from day_1 import Day1, full_required_all_inclusive
 from day_2 import Day2
