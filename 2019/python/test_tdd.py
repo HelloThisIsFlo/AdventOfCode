@@ -195,6 +195,37 @@ class TestProgram:
             add_2_numbers_program.input(3)
             assert add_2_numbers_program.runtime.captured_output == [4]
 
+        def test_it_can_capture_outputs_in_programatic_mode(self):
+            OUTPUT_THE_INPUT_3_TIMES_AND_STOP = [
+                3, 13, 4, 13, 3, 13, 4, 13, 3, 13, 4, 13, 99
+            ]
+            program = Program(OUTPUT_THE_INPUT_3_TIMES_AND_STOP)
+            program.run(
+                interactive_mode=False,
+                capture_output=True
+            )
+
+            assert program.runtime.captured_output == []
+
+            program.input(111)
+            assert program.runtime.captured_output == [111]
+
+            program.input(222)
+            assert program.runtime.captured_output == [111, 222]
+
+            program.input(333)
+            assert program.runtime.captured_output == [111, 222, 333]
+            assert program.is_complete() is True
+
+        def test_input_can_be_zero(self, add_2_numbers_program: Program):
+            add_2_numbers_program.run(
+                interactive_mode=False,
+                capture_output=True
+            )
+            add_2_numbers_program.input(0)
+            add_2_numbers_program.input(3)
+            assert add_2_numbers_program.runtime.captured_output == [3]
+
         def test_it_indicates_if_complete(self, add_2_numbers_program: Program):
             add_2_numbers_program.run(
                 interactive_mode=False,

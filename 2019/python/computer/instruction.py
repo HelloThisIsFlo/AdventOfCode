@@ -133,7 +133,7 @@ class InputInstruction(Instruction):
         if self.runtime.hardcoded_input:
             return self.runtime.next_hardcoded_input()
 
-        if self.runtime.next_input:
+        if self.runtime.next_input is not None:
             input_ = self.runtime.next_input
             self.runtime.next_input = None
             return input_
