@@ -148,31 +148,40 @@ class TestProgram:
             expected_output=[12345]
         )
 
-    @patch('computer.io.display_output_to_user')
-    @patch('computer.io.prompt_user_for_input')
-    def test_it_handles_user_input(self, mock_prompt_user_for_input, mock_display_output_to_user):
-        # The following intcode will:
-        # 1. Request for user input [mock_value=111] & save @ 11
-        # 2. Request for user input [mock_value=222] & save @ 12
-        # 3. Add values at 11 & 12 (so the 2 inputted values) & save @ 13
-        #    -> 111 + 222 == 333
-        # 4. Output the result (value stored @ 13)
-        # 5. End
-        ADD_2_NUMBERS_INTCODE = [3, 11, 3, 12, 1, 11, 12, 13, 4, 13, 99]
+    class TestInputOutput:
+        @pytest.fixture
+        def add_2_numbers_program(self):
+            # The following intcode will:
+            # 1. Request for user input [mock_value=111] & save @ 11
+            # 2. Request for user input [mock_value=222] & save @ 12
+            # 3. Add values at 11 & 12 (so the 2 inputted values) & save @ 13
+            #    -> 111 + 222 == 333
+            # 4. Output the result (value stored @ 13)
+            # 5. End
+            ADD_2_NUMBERS_INTCODE = [3, 11, 3, 12, 1, 11, 12, 13, 4, 13, 99]
+            return Program(ADD_2_NUMBERS_INTCODE)
 
-        def last_outputted_value():
-            ((outputted_value,), _) = mock_display_output_to_user.call_args
-            return outputted_value
+        @patch('computer.io.display_output_to_user')
+        @patch('computer.io.prompt_user_for_input')
+        def test_it_handles_user_input(self, mock_prompt_user_for_input, mock_display_output_to_user, add_2_numbers_program):
+            def last_outputted_value():
+                ((outputted_value,), _) = mock_display_output_to_user.call_args
+                return outputted_value
 
-        mock_prompt_user_for_input.side_effect = [111, 222]
-        Program(ADD_2_NUMBERS_INTCODE).run()
-        assert last_outputted_value() == 333
+            mock_prompt_user_for_input.side_effect = [111, 222]
+            add_2_numbers_program.run()
+            assert last_outputted_value() == 333
 
-    def test_it_allows_to_hardcode_user_input(self):
-        ADD_2_NUMBERS_INTCODE = [3, 11, 3, 12, 1, 11, 12, 13, 4, 13, 99]
-        program = Program(ADD_2_NUMBERS_INTCODE)
-        program.run(hardcoded_input=[222, 333], capture_output=True)
-        assert program.runtime.captured_output == [555]
+        def test_it_allows_to_hardcode_user_input(self, add_2_numbers_program):
+            add_2_numbers_program.run(
+                hardcoded_input=[222, 333],
+                capture_output=True
+            )
+            assert add_2_numbers_program.runtime.captured_output == [555]
+
+        class TestInteractiveMode:
+            def test_it_cannot_be_used_with_hardcoded_input(self, add_2_numbers_program):
+                pass
 
     class TestItHandlesJumpIfTrue:
         # Uses Jump-if-true to display 0 if the input was 0, or 1 otherwise
