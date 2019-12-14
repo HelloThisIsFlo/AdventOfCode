@@ -44,3 +44,9 @@ class Day(metaclass=ABCMeta):
     @abstractmethod
     def solve_part_2(self):
         pass
+
+
+class IntcodeDay(Day):
+    @property
+    def intcode(self):
+        return [int(num) for num in self.input.split(',')]

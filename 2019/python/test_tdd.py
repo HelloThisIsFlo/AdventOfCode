@@ -350,24 +350,24 @@ class TestDay1:
 
 class TestDay2:
     class TestPart1:
-        @patch.object(Day2, 'parse_input')
+        @patch.object(Day2, 'intcode')
         @patch('day_2.Program')
-        def test_it_runs_program_with_correct_params(self, MockProgram, mock_parse_input):
+        def test_it_runs_program_with_correct_params(self, MockProgram, mock_intcode):
             program = MockProgram.return_value
             program.run.return_value = [1, 0, 0, 0, 99]
 
             Day2("MOCK_INPUT").solve_part_1()
 
             MockProgram.assert_called_once_with(
-                mock_parse_input.return_value,
+                mock_intcode,
                 noun=12,
                 verb=2
             )
             program.run.assert_called_once()
 
-        @patch.object(Day2, 'parse_input')
+        @patch.object(Day2, 'intcode')
         @patch('day_2.Program')
-        def test_it_returns_formatted_result(self, MockProgram, mock_parse_input):
+        def test_it_returns_formatted_result(self, MockProgram, mock_intcode):
             program = MockProgram.return_value
             program.runtime.memory = [12345, 0, 0, 0, 99]
             expected_result = '12345'
@@ -636,17 +636,16 @@ class TestDay6:
             assert min_orbital_transfers(orbits) == 4
 
 
-@pytest.mark.skip
 class TestDay7:
     class TestPart1:
         def test_from_examples(self):
             assert max_thruster_signal(
-                [3, 15, 3, 16, 1002, 16, 10, 16, 1, 16, 15, 15, 4, 15, 99, 0, 0]
-            ) == 43210
-            assert max_thruster_signal(
                 [3, 23, 3, 24, 1002, 24, 10, 24, 1002, 23, -1, 23,
                     101, 5, 23, 23, 1, 24, 23, 23, 4, 23, 99, 0, 0]
             ) == 54321
+            assert max_thruster_signal(
+                [3, 15, 3, 16, 1002, 16, 10, 16, 1, 16, 15, 15, 4, 15, 99, 0, 0]
+            ) == 43210
             assert max_thruster_signal(
                 [3, 31, 3, 32, 1002, 32, 10, 32, 1001, 31, -2, 31, 1007, 31, 0, 33,
                     1002, 33, 7, 33, 1, 33, 31, 31, 1, 32, 31, 31, 4, 31, 99, 0, 0, 0]
