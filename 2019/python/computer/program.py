@@ -113,3 +113,6 @@ class Program:
         while self.current_instruction and not self.runtime.waiting_for_input:
             self.current_instruction.perform()
             self.go_to_next_instruction()
+
+    def is_complete(self):
+        return not self.runtime.waiting_for_input

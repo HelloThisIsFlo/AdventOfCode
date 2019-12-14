@@ -187,10 +187,26 @@ class TestProgram:
                 )
 
         def test_it_allows_to_programatically_provide_input(self, add_2_numbers_program: Program):
-            add_2_numbers_program.run(interactive_mode=False, capture_output=True)
+            add_2_numbers_program.run(
+                interactive_mode=False,
+                capture_output=True
+            )
             add_2_numbers_program.input(1)
             add_2_numbers_program.input(3)
             assert add_2_numbers_program.runtime.captured_output == [4]
+
+        def test_it_indicates_if_complete(self, add_2_numbers_program: Program):
+            add_2_numbers_program.run(
+                interactive_mode=False,
+                capture_output=True
+            )
+            assert add_2_numbers_program.is_complete() is False
+
+            add_2_numbers_program.input(1)
+            assert add_2_numbers_program.is_complete() is False
+
+            add_2_numbers_program.input(3)
+            assert add_2_numbers_program.is_complete() is True
 
     class TestItHandlesJumpIfTrue:
         # Uses Jump-if-true to display 0 if the input was 0, or 1 otherwise
