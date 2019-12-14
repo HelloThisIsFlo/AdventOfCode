@@ -83,7 +83,13 @@ class Program:
         self.current_instruction.move_pointer_to_next_instruction()
         self.current_instruction = self.instruction_at_pointer()
 
-    def run(self, hardcoded_input=None, capture_output=False):
+    def run(self, interactive_mode=False, hardcoded_input=None, capture_output=False, ):
+        if interactive_mode and hardcoded_input:
+            raise ValueError(
+                "Interactive mode can not be used with hardcoded input"
+            )
+
+        self.runtime.interactive_mode = interactive_mode
         self.runtime.hardcoded_input = hardcoded_input
         self.runtime.capture_output = capture_output
         while self.current_instruction:

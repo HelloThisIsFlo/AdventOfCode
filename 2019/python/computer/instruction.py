@@ -127,10 +127,13 @@ class InputInstruction(Instruction):
         return 0
 
     def _do_perform(self):
+        if self.runtime.interactive_mode:
+            return io.prompt_user_for_input()
+
         if self.runtime.hardcoded_input:
             return self.runtime.next_hardcoded_input()
 
-        return io.prompt_user_for_input()
+        raise ValueError('No input provided!')
 
 
 class OutputInstruction(Instruction):
@@ -147,7 +150,8 @@ class OutputInstruction(Instruction):
 
         if self.runtime.capture_output:
             self.runtime.captured_output.append(to_output)
-        else:
+
+        if self.runtime.interactive_mode:
             io.display_output_to_user(to_output)
 
 

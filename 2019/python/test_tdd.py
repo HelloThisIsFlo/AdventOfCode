@@ -163,13 +163,13 @@ class TestProgram:
 
         @patch('computer.io.display_output_to_user')
         @patch('computer.io.prompt_user_for_input')
-        def test_it_handles_user_input(self, mock_prompt_user_for_input, mock_display_output_to_user, add_2_numbers_program):
+        def test_it_handles_user_input_in_interactive_mode(self, mock_prompt_user_for_input, mock_display_output_to_user, add_2_numbers_program: Program):
             def last_outputted_value():
                 ((outputted_value,), _) = mock_display_output_to_user.call_args
                 return outputted_value
 
             mock_prompt_user_for_input.side_effect = [111, 222]
-            add_2_numbers_program.run()
+            add_2_numbers_program.run(interactive_mode=True)
             assert last_outputted_value() == 333
 
         def test_it_allows_to_hardcode_user_input(self, add_2_numbers_program):
@@ -179,9 +179,19 @@ class TestProgram:
             )
             assert add_2_numbers_program.runtime.captured_output == [555]
 
-        class TestInteractiveMode:
-            def test_it_cannot_be_used_with_hardcoded_input(self, add_2_numbers_program):
-                pass
+        def test_interactive_mode_can_not_be_used_with_hardcoded_input(self, add_2_numbers_program: Program):
+            with pytest.raises(ValueError):
+                add_2_numbers_program.run(
+                    hardcoded_input=[1, 2],
+                    interactive_mode=True
+                )
+
+        @pytest.mark.skip
+        def test_it_allows_to_programatically_provide_input(self, add_2_numbers_program: Program):
+            add_2_numbers_program.run(interactive_mode=False, capture_output=True)
+            add_2_numbers_program.input(1)
+            add_2_numbers_program.input(3)
+            assert add_2_numbers_program.runtime.captured_output == [4]
 
     class TestItHandlesJumpIfTrue:
         # Uses Jump-if-true to display 0 if the input was 0, or 1 otherwise
