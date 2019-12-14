@@ -45,7 +45,7 @@ class AmplifierPipeline:
             )
 
 
-def max_thruster_signal(intcode):
+def max_thruster_signal(intcode, feedback_loop_mode=False):
     pipeline = AmplifierPipeline(intcode)
     max_output = -1
     for candidate in permutations([0, 1, 2, 3, 4]):
