@@ -1,4 +1,3 @@
-from day_7 import max_thruster_signal
 from textwrap import dedent
 import pytest
 from unittest import mock
@@ -14,6 +13,7 @@ from day_2 import Day2
 from day_3 import Day3, trace_path, Up, Down, Left, Right, manhattan_dist_metric, step_on_wire_metric, IntersectionPoint
 from day_4 import Day4, is_valid_pass, group
 from day_6 import Orbit, orbit_count_checksum, Planet, min_orbital_transfers
+from day_7 import max_thruster_signal
 
 
 def assert_solution_part_1(day_class, given_input, expected_solution):

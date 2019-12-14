@@ -11,12 +11,16 @@ class Amplifier:
         self.program = Program(intcode[:])
         self.phase = phase
 
-    def run(self, input_):
-        self.program.run(
-            hardcoded_input=[self.phase, input_],
-            capture_output=True
-        )
-        return self.program.runtime.captured_output[0]
+    def start(self):
+        self.program.run(interactive_mode=False, capture_output=True)
+        self.program.input(self.phase)
+
+    def signal(self, signal_in):
+        self.program.input(signal_in)
+        return self.program.runtime.captured_output[-1]
+
+    def is_halted(self):
+        pass
 
 
 class AmplifierPipeline:
@@ -33,12 +37,18 @@ class AmplifierPipeline:
         amp_3 = self.new_amplifier(phase_3)
         amp_4 = self.new_amplifier(phase_4)
 
+        amp_0.start()
+        amp_1.start()
+        amp_2.start()
+        amp_3.start()
+        amp_4.start()
+
         return \
-            amp_4.run(
-                amp_3.run(
-                    amp_2.run(
-                        amp_1.run(
-                            amp_0.run(INITIAL_INPUT)
+            amp_4.signal(
+                amp_3.signal(
+                    amp_2.signal(
+                        amp_1.signal(
+                            amp_0.signal(INITIAL_INPUT)
                         )
                     )
                 )
@@ -46,6 +56,9 @@ class AmplifierPipeline:
 
 
 def max_thruster_signal(intcode, feedback_loop_mode=False):
+    if feedback_loop_mode:
+        return temp_rename(intcode)
+
     pipeline = AmplifierPipeline(intcode)
     max_output = -1
     for candidate in permutations([0, 1, 2, 3, 4]):
@@ -53,6 +66,18 @@ def max_thruster_signal(intcode, feedback_loop_mode=False):
         if candidate_res > max_output:
             max_output = candidate_res
     return max_output
+
+
+def temp_rename(intcode):
+    pipeline = AmplifierPipeline(intcode)
+
+    amp_0 = pipeline.new_amplifier(9)
+    amp_1 = pipeline.new_amplifier(8)
+    amp_2 = pipeline.new_amplifier(7)
+    amp_3 = pipeline.new_amplifier(6)
+    amp_4 = pipeline.new_amplifier(5)
+
+    pass
 
 
 class Day7(IntcodeDay):
