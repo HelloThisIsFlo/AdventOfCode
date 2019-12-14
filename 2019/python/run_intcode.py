@@ -38,4 +38,4 @@ def get_intcode():
     return [int(num) for num in intcode_str.split(',')]
 
 
-Program(get_intcode()).run()
+Program(get_intcode()).run(interactive_mode=True)
