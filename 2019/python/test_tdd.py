@@ -186,7 +186,6 @@ class TestProgram:
                     interactive_mode=True
                 )
 
-        @pytest.mark.skip
         def test_it_allows_to_programatically_provide_input(self, add_2_numbers_program: Program):
             add_2_numbers_program.run(interactive_mode=False, capture_output=True)
             add_2_numbers_program.input(1)

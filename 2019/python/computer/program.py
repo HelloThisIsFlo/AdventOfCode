@@ -22,6 +22,8 @@ class Runtime:
         self.memory = SparseList(memory[:])
         self._hardcoded_input = None
         self._hardcoded_input_gen = None
+        self._next_input = None
+        self.waiting_for_input = False
         self.capture_output = False
         self.captured_output = []
 
@@ -37,6 +39,15 @@ class Runtime:
 
         self._hardcoded_input = hardcoded_input
         self._hardcoded_input_gen = hardcoded_input_gen()
+
+    @property
+    def next_input(self):
+        return self._next_input
+
+    @next_input.setter
+    def next_input(self, input_):
+        self._next_input = input_
+        self.waiting_for_input = False
 
     def next_hardcoded_input(self):
         return self._hardcoded_input_gen.__next__()
@@ -89,8 +100,16 @@ class Program:
         self.runtime.interactive_mode = interactive_mode
         self.runtime.hardcoded_input = hardcoded_input
         self.runtime.capture_output = capture_output
-        while self.current_instruction:
-            self.current_instruction.perform()
-            self.go_to_next_instruction()
+
+        self._do_run()
 
         return None
+
+    def input(self, input_):
+        self.runtime.next_input = input_
+        self._do_run()
+
+    def _do_run(self):
+        while self.current_instruction and not self.runtime.waiting_for_input:
+            self.current_instruction.perform()
+            self.go_to_next_instruction()

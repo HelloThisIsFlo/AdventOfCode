@@ -133,7 +133,15 @@ class InputInstruction(Instruction):
         if self.runtime.hardcoded_input:
             return self.runtime.next_hardcoded_input()
 
-        raise ValueError('No input provided!')
+        if self.runtime.next_input:
+            input_ = self.runtime.next_input
+            self.runtime.next_input = None
+            return input_
+        else:
+            def prevent_pointer_from_moving_to_next_instruction():
+                self.pointer_moved_by_perform_phase = True
+            self.runtime.waiting_for_input = True
+            prevent_pointer_from_moving_to_next_instruction()
 
 
 class OutputInstruction(Instruction):
