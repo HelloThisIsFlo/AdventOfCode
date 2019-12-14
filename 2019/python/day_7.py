@@ -20,7 +20,7 @@ class Amplifier:
         return self.program.runtime.captured_output[-1]
 
     def is_halted(self):
-        pass
+        return self.program.is_complete()
 
 
 class AmplifierPipeline:
@@ -43,41 +43,37 @@ class AmplifierPipeline:
         amp_3.start()
         amp_4.start()
 
-        return \
-            amp_4.signal(
-                amp_3.signal(
-                    amp_2.signal(
-                        amp_1.signal(
-                            amp_0.signal(INITIAL_INPUT)
-                        )
-                    )
-                )
-            )
+        signal = INITIAL_INPUT
+        while not amp_0.is_halted():
+            signal = amp_0.signal(signal)
+            signal = amp_1.signal(signal)
+            signal = amp_2.signal(signal)
+            signal = amp_3.signal(signal)
+            signal = amp_4.signal(signal)
+
+        assert amp_1.is_halted()
+        assert amp_2.is_halted()
+        assert amp_3.is_halted()
+        assert amp_4.is_halted()
+        return signal
 
 
 def max_thruster_signal(intcode, feedback_loop_mode=False):
+    def try_all_permutations_and_find_max_output():
+        pipeline = AmplifierPipeline(intcode)
+        max_output = -1
+        for candidate in permutations(phases):
+            candidate_res = pipeline.run(*candidate)
+            if candidate_res > max_output:
+                max_output = candidate_res
+        return max_output
+
     if feedback_loop_mode:
-        return temp_rename(intcode)
+        phases = [5, 6, 7, 8, 9]
+    else:
+        phases = [0, 1, 2, 3, 4]
 
-    pipeline = AmplifierPipeline(intcode)
-    max_output = -1
-    for candidate in permutations([0, 1, 2, 3, 4]):
-        candidate_res = pipeline.run(*candidate)
-        if candidate_res > max_output:
-            max_output = candidate_res
-    return max_output
-
-
-def temp_rename(intcode):
-    pipeline = AmplifierPipeline(intcode)
-
-    amp_0 = pipeline.new_amplifier(9)
-    amp_1 = pipeline.new_amplifier(8)
-    amp_2 = pipeline.new_amplifier(7)
-    amp_3 = pipeline.new_amplifier(6)
-    amp_4 = pipeline.new_amplifier(5)
-
-    pass
+    return try_all_permutations_and_find_max_output()
 
 
 class Day7(IntcodeDay):
@@ -85,4 +81,4 @@ class Day7(IntcodeDay):
         return str(max_thruster_signal(self.intcode))
 
     def solve_part_2(self):
-        pass
+        return str(max_thruster_signal(self.intcode, feedback_loop_mode=True))

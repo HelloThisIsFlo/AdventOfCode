@@ -717,7 +717,6 @@ class TestDay7:
             ) == 65210
 
     class TestPart2:
-        @pytest.mark.skip
         def test_from_examples(self):
             assert max_thruster_signal(
                 [3, 26, 1001, 26, -4, 26, 3, 27, 1002, 27, 2, 27, 1, 27, 26,
