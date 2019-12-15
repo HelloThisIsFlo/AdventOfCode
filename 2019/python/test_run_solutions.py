@@ -8,6 +8,7 @@ from day_4 import Day4
 from day_5 import Day5
 from day_6 import Day6
 from day_7 import Day7
+from day_8 import Day8
 
 
 @patch('computer.io.prompt_user_for_input')
@@ -50,32 +51,35 @@ def test_print_intro():
     print('--------------------------------')
 
 
-def test_solve_day_1():
-    solve_and_print_result(Day1)
+# def test_solve_day_1():
+#     solve_and_print_result(Day1)
 
 
-def test_solve_day_2():
-    solve_and_print_result(Day2)
+# def test_solve_day_2():
+#     solve_and_print_result(Day2)
 
 
-def test_solve_day_3():
-    solve_and_print_result(Day3)
+# def test_solve_day_3():
+#     solve_and_print_result(Day3)
 
 
-def test_solve_day_4():
-    solve_and_print_result(Day4)
+# def test_solve_day_4():
+#     solve_and_print_result(Day4)
 
 
-def test_solve_day_5():
-    solve_and_print_result(
-        Day5,
-        step_1_user_input=[1],
-        step_2_user_input=[5],
-    )
+# def test_solve_day_5():
+#     solve_and_print_result(
+#         Day5,
+#         step_1_user_input=[1],
+#         step_2_user_input=[5],
+#     )
 
 
-def test_solve_day_6():
-    solve_and_print_result(Day6)
+# def test_solve_day_6():
+#     solve_and_print_result(Day6)
 
-def test_solve_day_7():
-    solve_and_print_result(Day7)
+# def test_solve_day_7():
+#     solve_and_print_result(Day7)
+
+def test_solve_day_8():
+    solve_and_print_result(Day8)

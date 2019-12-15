@@ -1,4 +1,5 @@
 from textwrap import dedent
+import numpy as np
 import pytest
 from unittest import mock
 from unittest.mock import patch, call, Mock
@@ -14,6 +15,7 @@ from day_3 import Day3, trace_path, Up, Down, Left, Right, manhattan_dist_metric
 from day_4 import Day4, is_valid_pass, group
 from day_6 import Orbit, orbit_count_checksum, Planet, min_orbital_transfers
 from day_7 import max_thruster_signal
+from day_8 import split_layers, img_checksum, layer_checksum, find_layer_with_fewest_zeros
 
 
 def assert_solution_part_1(day_class, given_input, expected_solution):
@@ -701,6 +703,7 @@ class TestDay6:
             assert min_orbital_transfers(orbits) == 4
 
 
+@pytest.mark.skip('Too slow')
 class TestDay7:
     class TestPart1:
         def test_from_examples(self):
@@ -729,3 +732,91 @@ class TestDay7:
                     53, 1001, 56, -1, 56, 1005, 56, 6, 99, 0, 0, 0, 0, 10],
                 feedback_loop_mode=True
             ) == 18216
+
+
+class TestDay8:
+    def test_split_layers(self):
+        expected_layer_1 = [
+            [1, 2, 3],
+            [4, 5, 6]
+        ]
+        expected_layer_2 = [
+            [7, 8, 9],
+            [0, 1, 2]
+        ]
+        assert np.array_equal(
+            split_layers('123456789012', width=3, height=2),
+            [
+                expected_layer_1,
+                expected_layer_2
+            ]
+        )
+
+    def test_split_layers_wrong_dimensions_raises_error(self):
+        with pytest.raises(ValueError):
+            split_layers('123456789012', width=3, height=3)
+
+    @patch('day_8.layer_checksum')
+    @patch('day_8.find_layer_with_fewest_zeros')
+    @patch('day_8.split_layers')
+    def test_img_checksum(
+            self,
+            mock_split_layers,
+            mock_find_layer_with_fewest_zeros,
+            mock_layer_checksum):
+
+        IMG = '123456789012'
+        height=2
+        width=3
+        layers = mock_split_layers.return_value
+
+        res = img_checksum(IMG, width=width, height=height)
+
+        mock_split_layers.assert_called_once_with(IMG, width, height)
+        mock_find_layer_with_fewest_zeros.assert_called_once_with(
+            layers
+        )
+        mock_layer_checksum.assert_called_once_with(
+            mock_find_layer_with_fewest_zeros.return_value
+        )
+        assert res == mock_layer_checksum.return_value
+
+    def test_layer_checksum(self):
+        layer = np.array(
+            [
+                [1, 2, 3],
+                [2, 1, 2]
+            ]
+        )
+        num_of_1_digits = 2
+        num_of_2_digits = 3
+        assert layer_checksum(layer) == num_of_1_digits * num_of_2_digits
+
+    def test_find_layer_with_fewest_zeros(self):
+        res = find_layer_with_fewest_zeros(np.array(
+            [
+                # Layer 1
+                [
+                    [1, 0, 0],
+                    [0, 0, 0]
+                ],
+                # Layer 2
+                [
+                    [0, 1, 0],
+                    [0, 1, 0]
+                ],
+                # Layer 3
+                [
+                    [0, 0, 1],
+                    [0, 1, 1]
+                ]
+            ]
+        ))
+
+        assert np.array_equal(
+            res,
+            [
+                [0, 0, 1],
+                [0, 1, 1]
+            ]
+        )
