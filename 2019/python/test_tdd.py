@@ -78,6 +78,17 @@ class TestProgram:
         program.run()
         assert program.runtime.memory == [30, 1, 1, 4, 2, 5, 6, 0, 99]
 
+    def test_accessing_an_address_not_set_in_memory_returns_0(self):
+        # This program will try to add the value at address 100 with the
+        # number 1234
+        # Address 100 isn't set in the memory yet so it should return 0
+        # The end result should be 1234 + 0 = 0
+        # The result is outputted
+
+        program = Program([1001, 100, 1234, 100, 4, 100, 99])
+        program.run(capture_output=True)
+        assert program.runtime.captured_output == [1234]
+
     def test_it_replaces_noun_and_verb(self):
         noun = 4
         verb = 5

@@ -19,7 +19,7 @@ def _get_mode(modes, param_idx):
 class Runtime:
     def __init__(self, memory):
         self.pointer = 0
-        self.memory = SparseList(memory[:])
+        self.memory = SparseList(memory[:], filler=0)
         self._hardcoded_input = None
         self._hardcoded_input_gen = None
         self._next_input = None
