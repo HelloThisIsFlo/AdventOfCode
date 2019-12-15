@@ -9,6 +9,7 @@ from day_5 import Day5
 from day_6 import Day6
 from day_7 import Day7
 from day_8 import Day8
+from day_9 import Day9
 
 
 @patch('computer.io.prompt_user_for_input')
@@ -83,3 +84,7 @@ def test_print_intro():
 
 def test_solve_day_8():
     solve_and_print_result(Day8)
+
+
+def test_solve_day_9():
+    solve_and_print_result(Day9)
