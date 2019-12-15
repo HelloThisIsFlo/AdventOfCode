@@ -16,6 +16,7 @@ from day_4 import Day4, is_valid_pass, group
 from day_6 import Orbit, orbit_count_checksum, Planet, min_orbital_transfers
 from day_7 import max_thruster_signal
 from day_8 import split_layers, img_checksum, layer_checksum, find_layer_with_fewest_zeros, compute_img
+from day_15 import MazeDrone, MOVED, DIDNT_MOVE, MOVED_AND_FOUND_OXYGEN, MAZE_DRONE, MAZE_OXYGEN
 
 
 def assert_solution_part_1(day_class, given_input, expected_solution):
@@ -896,3 +897,35 @@ class TestDay8:
                 [1, 1, 0]
             ]
         )
+
+
+class TestDay15:
+    class TestMazeDrone:
+        def test_drone_can_navigate_the_maze(self):
+            # Maze legend
+            D = MAZE_DRONE
+            O = MAZE_OXYGEN
+            drone = MazeDrone(maze=[
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, D, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, O, 0, 0, 0, 0, 0, 0, 0],
+            ])
+
+            # It first tries to go north, it is successful
+            assert drone.north() == MOVED
+            # It tries to go north again, but hits a wall
+            assert drone.north() == DIDNT_MOVE
+
+            # Now it navigates to the oxygen tank and find it
+            assert drone.east() == MOVED
+            assert drone.south() == MOVED
+            assert drone.south() == MOVED
+            assert drone.south() == MOVED
+            assert drone.south() == MOVED
+            assert drone.west() == MOVED
+            assert drone.west() == MOVED
+            assert drone.west() == MOVED
+            assert drone.west() == MOVED
+            assert drone.west() == MOVED_AND_FOUND_OXYGEN
