@@ -96,20 +96,31 @@ class TestProgram:
         assert program.runtime.memory[1] == noun
         assert program.runtime.memory[2] == verb
 
-    def test_it_handles_opcodes_with_modes(self):
-        # 1101: Operation 01 - Mode 011 -> IN[1, 1] OUT[0]
-        #       Add: Val of input1 + Val of input2
-        #       Store: At adress of output
-        # Input1: 100
-        # Input2: -45
-        # Output: 5 (store at address 5)
-        #
-        # 100 - 45 = 55 -> Stored in memory[5]
-        program = Program([1101, 100, -45, 5, 99])
-        program.run()
-        assert program.runtime.memory == [
-            1101, 100, -45, 5, 99, 55
-        ]
+    class TestOpcodeWithModes:
+        def test_it_handles_immediate_mode(self):
+            # 1101: Operation 01 - Mode 011 -> IN[1, 1] OUT[0]
+            #       Add: Val of input1 + Val of input2
+            #       Store: At adress of output
+            # Input1: 100
+            # Input2: -45
+            # Output: 5 (store at address 5)
+            #
+            # 100 - 45 = 55 -> Stored in memory[5]
+            program = Program([1101, 100, -45, 5, 99])
+            program.run()
+            assert program.runtime.memory == [
+                1101, 100, -45, 5, 99, 55
+            ]
+
+        def test_it_handles_relative_mode(self):
+            # This program uses relative mode & 'AdjustRelativeBase' instruction
+            # to output a copy of itself
+            REPLICATE_ITSELF_INTCODE = [
+                109, 1, 204, -1, 1001, 100, 1, 100, 1008, 100, 16, 101, 1006, 101, 0, 99
+            ]
+            program = Program(REPLICATE_ITSELF_INTCODE)
+            program.run(capture_output=True)
+            assert program.runtime.captured_output == REPLICATE_ITSELF_INTCODE
 
     def test_opcode_mode_with_implicit_position_mode_for_param(self):
         # 101 ==> Understood as 00101

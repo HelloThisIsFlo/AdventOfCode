@@ -26,6 +26,7 @@ class Runtime:
         self.waiting_for_input = False
         self.capture_output = False
         self.captured_output = []
+        self.relative_base = 0
 
     @property
     def hardcoded_input(self):

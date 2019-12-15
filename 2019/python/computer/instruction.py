@@ -3,6 +3,7 @@ from . import io
 
 MODE_POSITION = 0
 MODE_IMMEDIATE = 1
+MODE_RELATIVE = 2
 
 
 class UnknownInstruction(Exception):
@@ -23,6 +24,7 @@ class Instruction:
                 6: JumpIfFalseInstruction,
                 7: LessThanInstruction,
                 8: EqualsInstruction,
+                9: AdjustRelativeBaseInstruction,
                 98: TripleAddInstruction
             }.get(opcode)
             if not class_:
@@ -52,6 +54,11 @@ class Instruction:
 
                 elif self.modes[idx] == MODE_IMMEDIATE:
                     self.input_parameters[idx] = runtime.memory[runtime.pointer + 1 + idx]
+
+                elif self.modes[idx] == MODE_RELATIVE:
+                    address_of_parameter = (runtime.memory[runtime.pointer + 1 + idx]
+                                            + self.runtime.relative_base)
+                    self.input_parameters[idx] = runtime.memory[address_of_parameter]
 
                 else:
                     raise RuntimeError(f"Unknown mode: '{modes[idx]}'")
@@ -193,3 +200,16 @@ class LessThanInstruction(Instruction):
 class EqualsInstruction(Instruction):
     def _do_perform(self):
         return int(self.input_parameters[0] == self.input_parameters[1])
+
+
+class AdjustRelativeBaseInstruction(Instruction):
+    @property
+    def num_of_input_params(self):
+        return 1
+
+    @property
+    def has_output_param(self):
+        return False
+
+    def _do_perform(self):
+        self.runtime.relative_base += self.input_parameters[0]
