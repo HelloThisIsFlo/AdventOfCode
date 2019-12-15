@@ -16,7 +16,7 @@ from day_4 import Day4, is_valid_pass, group
 from day_6 import Orbit, orbit_count_checksum, Planet, min_orbital_transfers
 from day_7 import max_thruster_signal
 from day_8 import split_layers, img_checksum, layer_checksum, find_layer_with_fewest_zeros, compute_img
-from day_15 import MazeDrone, MOVED, DIDNT_MOVE, MOVED_AND_FOUND_OXYGEN, MAZE_DRONE, MAZE_OXYGEN, MAZE_FREE, MAZE_WALL, IntcodeDrone
+from day_15 import MazeDrone, MOVED, DIDNT_MOVE, MOVED_AND_FOUND_OXYGEN, MAZE_DRONE, MAZE_OXYGEN, MAZE_FREE, MAZE_WALL, IntcodeDrone, Coordinates
 
 
 def assert_solution_part_1(day_class, given_input, expected_solution):
@@ -986,3 +986,75 @@ class TestDay15:
             status = drone.east()
             assert last_submitted_input_to_program() == 4
             assert status == 4444
+
+    class TestSolveMaze:
+        @pytest.fixture
+        def drone(self):
+            # Maze legend
+            D = MAZE_DRONE
+            O = MAZE_OXYGEN
+            _ = MAZE_FREE
+            x = MAZE_WALL
+            return MazeDrone(maze=[
+                [_, _, _, x, _, _, _, _],
+                [_, x, x, x, D, _, _, _],
+                [_, _, _, x, x, x, _, _],
+                [_, O, _, _, _, _, _, _],
+            ])
+
+        def test_it_updates_relative_position(self, drone):
+            assert drone.relative_position == Coordinates(0, 0)
+
+            drone.north()
+            assert drone.relative_position == Coordinates(0, -1)
+
+            drone.east()
+            drone.east()
+            assert drone.relative_position == Coordinates(2, -1)
+
+            drone.south()
+            drone.south()
+            drone.south()
+            assert drone.relative_position == Coordinates(2, 2)
+
+            drone.west()
+            drone.west()
+            drone.west()
+            assert drone.relative_position == Coordinates(-1, 2)
+
+        def test_it_can_revert_its_last_move(self, drone):
+            drone.north()
+            drone.east()
+            drone.east()
+            assert drone.relative_position == Coordinates(2, -1)
+
+            drone.south()
+            assert drone.relative_position == Coordinates(2, 0)
+            drone.revert_last_move()
+            assert drone.relative_position == Coordinates(2, -1)
+
+        def test_it_doesnt_revert_failed_moves(self, drone):
+            drone.north()
+            drone.east()
+            drone.east()
+            assert drone.relative_position == Coordinates(2, -1)
+
+            assert drone.north() == DIDNT_MOVE
+            assert drone.relative_position == Coordinates(2, -1)
+            drone.revert_last_move()
+            assert drone.relative_position == Coordinates(2, -1)
+
+        def test_solve_simple_maze(self):
+            # Maze legend
+            D = MAZE_DRONE
+            O = MAZE_OXYGEN
+            _ = MAZE_FREE
+            x = MAZE_WALL
+            drone = MazeDrone(maze=[
+                [_, x, x, x, D],
+                [_, O, _, _, _],
+            ])
+            assert drone.shortest_distance_to_oxygen() == 4
+
+        def test_solve_maze(self, drone):
+            assert drone.shortest_distance_to_oxygen() == 9

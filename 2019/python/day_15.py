@@ -11,24 +11,129 @@ DIDNT_MOVE = 0
 MOVED = 1
 MOVED_AND_FOUND_OXYGEN = 2
 
+INFINITE = 10000000000000000
+
 
 class Drone:
+    def __init__(self):
+        self.relative_position = Coordinates(0, 0)
+        self.visited_relative_positions = [self.relative_position]
+        self.performed_moves = []
+
+    def _move_and_update_relative_position(self, direction, record_move=True):
+        def update_relative_position():
+            if direction == 'N':
+                self.relative_position = Coordinates(
+                    self.relative_position.x,
+                    self.relative_position.y - 1,
+                )
+            elif direction == 'S':
+                self.relative_position = Coordinates(
+                    self.relative_position.x,
+                    self.relative_position.y + 1,
+                )
+            elif direction == 'W':
+                self.relative_position = Coordinates(
+                    self.relative_position.x - 1,
+                    self.relative_position.y,
+                )
+            elif direction == 'E':
+                self.relative_position = Coordinates(
+                    self.relative_position.x + 1,
+                    self.relative_position.y,
+                )
+
+        status = self._move(direction)
+        if status != DIDNT_MOVE:
+            update_relative_position()
+            performed_move = direction
+        else:
+            performed_move = None
+
+        if record_move:
+            self.performed_moves.append(performed_move)
+
+        return status
+
     def north(self):
-        raise NotImplementedError()
+        return self._move_and_update_relative_position('N')
 
     def south(self):
-        raise NotImplementedError()
+        return self._move_and_update_relative_position('S')
 
     def west(self):
-        raise NotImplementedError()
+        return self._move_and_update_relative_position('W')
 
     def east(self):
-        raise NotImplementedError()
+        return self._move_and_update_relative_position('E')
+
+    def revert_last_move(self):
+        if not self.performed_moves:
+            return
+
+        last_performed_move = self.performed_moves.pop()
+        if last_performed_move is None:
+            pass
+        elif last_performed_move == 'N':
+            self._move_and_update_relative_position('S', record_move=False)
+        elif last_performed_move == 'S':
+            self._move_and_update_relative_position('N', record_move=False)
+        elif last_performed_move == 'W':
+            self._move_and_update_relative_position('E', record_move=False)
+        elif last_performed_move == 'E':
+            self._move_and_update_relative_position('W', record_move=False)
+
+    def shortest_distance_to_oxygen(self):
+        def shortest_distance_when_trying(direction):
+            def already_visited_current_position():
+                return self.relative_position in self.visited_relative_positions
+
+            status = self._move_and_update_relative_position(direction)
+
+            if status == DIDNT_MOVE:
+                distance_when_going_this_direction = INFINITE
+
+            elif status == MOVED_AND_FOUND_OXYGEN:
+                distance_when_going_this_direction = len(
+                    self.visited_relative_positions
+                )
+                distance_when_going_this_direction = 1
+
+            elif status == MOVED and already_visited_current_position():
+                distance_when_going_this_direction = INFINITE
+
+            elif status == MOVED and not already_visited_current_position():
+                self.visited_relative_positions.append(
+                    self.relative_position
+                )
+                distance_when_going_this_direction = self.shortest_distance_to_oxygen() + 1
+                self.visited_relative_positions.pop()
+
+            else:
+                raise ValueError('Should not end up here')
+
+            self.revert_last_move()
+            return distance_when_going_this_direction
+
+        dist_when_going_north = shortest_distance_when_trying('N')
+        dist_when_going_south = shortest_distance_when_trying('S')
+        dist_when_going_west = shortest_distance_when_trying('W')
+        dist_when_going_east = shortest_distance_when_trying('E')
+
+        return min(
+            dist_when_going_north,
+            dist_when_going_south,
+            dist_when_going_west,
+            dist_when_going_east,
+        )
 
 
 class Coordinates(NamedTuple):
     x: int
     y: int
+
+    def __repr__(self):
+        return f'({self.x},{self.y})'
 
 
 class MazeDrone(Drone):
@@ -40,6 +145,7 @@ class MazeDrone(Drone):
                         return Coordinates(x, y)
             raise ValueError("Coordinates for {maze_val} couldn't be found!")
 
+        super().__init__()
         self.maze = maze
         self.maze_width = len(maze[0])
         self.maze_height = len(maze)
@@ -48,12 +154,16 @@ class MazeDrone(Drone):
 
     def _move(self, direction):
         def valid_position(coord):
-            out_of_bounds = (
-                coord.x not in range(self.maze_width)
-                or coord.y not in range(self.maze_height)
-            )
-            is_wall = self.maze[coord.y][coord.x] == MAZE_WALL
-            return not out_of_bounds and not is_wall
+            def out_of_bounds():
+                return (
+                    coord.x not in range(self.maze_width)
+                    or coord.y not in range(self.maze_height)
+                )
+
+            def is_wall():
+                return self.maze[coord.y][coord.x] == MAZE_WALL
+
+            return not out_of_bounds() and not is_wall()
 
         if direction == 'N':
             candidate_position = Coordinates(
@@ -85,39 +195,26 @@ class MazeDrone(Drone):
         else:
             return MOVED
 
-    def north(self):
-        return self._move('N')
-
-    def south(self):
-        return self._move('S')
-
-    def west(self):
-        return self._move('W')
-
-    def east(self):
-        return self._move('E')
-
 
 class IntcodeDrone(Drone):
     def __init__(self, intcode):
+        super().__init__()
         self.program = Program(intcode)
         self.program.run(capture_output=True)
 
-    def _move(self, move_cmd):
-        self.program.input(move_cmd)
+    def _move(self, direction):
+        def move_cmd():
+            if direction == 'N':
+                return 1
+            if direction == 'S':
+                return 2
+            if direction == 'W':
+                return 3
+            if direction == 'E':
+                return 4
+
+        self.program.input(move_cmd())
         return self.program.runtime.captured_output[-1]
-
-    def north(self):
-        return self._move(1)
-
-    def south(self):
-        return self._move(2)
-
-    def west(self):
-        return self._move(3)
-
-    def east(self):
-        return self._move(4)
 
 
 class Day15(IntcodeDay):
@@ -128,7 +225,10 @@ class Day15(IntcodeDay):
             return Program(self.intcode)
 
     def solve_part_1(self):
-        pass
+        drone = IntcodeDrone(self.intcode)
+        return str(
+            drone.shortest_distance_to_oxygen()
+        )
 
     def solve_part_2(self):
         pass
