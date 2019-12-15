@@ -58,3 +58,8 @@ class SparseList(list):
         sparsity = index - len(self) + 1
         self.extend([self.filler] * sparsity)
         list.__setitem__(self, index, value)
+
+    def __getitem__(self, index):
+        if index < len(self):
+            return super().__getitem__(index)
+        return self.filler

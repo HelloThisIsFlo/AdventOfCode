@@ -53,6 +53,10 @@ class TestUtils:
                 1, 2, 3, 4, 5, 6, -1, -1, -1, -1, 'Hello'
             ]
 
+        def test_getting_value_that_doesnt_exist_returns_filler(self):
+            sparse_list = SparseList([1, 2, 3, 4], filler='frank')
+            assert sparse_list[100] == 'frank'
+
 
 class TestProgram:
     def test_single_instruction_add(self):
