@@ -16,7 +16,7 @@ from day_4 import Day4, is_valid_pass, group
 from day_6 import Orbit, orbit_count_checksum, Planet, min_orbital_transfers
 from day_7 import max_thruster_signal
 from day_8 import split_layers, img_checksum, layer_checksum, find_layer_with_fewest_zeros, compute_img
-from day_15 import MazeDrone, MOVED, DIDNT_MOVE, MOVED_AND_FOUND_OXYGEN, MAZE_DRONE, MAZE_OXYGEN, IntcodeDrone
+from day_15 import MazeDrone, MOVED, DIDNT_MOVE, MOVED_AND_FOUND_OXYGEN, MAZE_DRONE, MAZE_OXYGEN, MAZE_FREE, MAZE_WALL, IntcodeDrone
 
 
 def assert_solution_part_1(day_class, given_input, expected_solution):
@@ -905,33 +905,40 @@ class TestDay15:
             # Maze legend
             D = MAZE_DRONE
             O = MAZE_OXYGEN
+            _ = MAZE_FREE
+            x = MAZE_WALL
             drone = MazeDrone(maze=[
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, D, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, O, 0, 0, 0, 0, 0, 0, 0],
+                [_, _, _, _, _, x, _, _, _, _],
+                [_, _, x, x, x, x, D, _, _, _],
+                [_, _, _, _, _, x, _, _, _, _],
+                [_, _, _, _, _, x, x, x, _, _],
+                [_, _, O, _, _, _, _, _, _, _],
             ])
 
             # It first tries to go north, it is successful
             assert drone.north() == MOVED
-
-            # It tries to go north again, but hits a wall
+            # It tries to go north again, but hits the edge of the maze
             assert drone.north() == DIDNT_MOVE
+
+            # It goes back to its origin position
+            assert drone.south() == MOVED
+
+            # It tries to go south, it is successful
+            assert drone.south() == MOVED
+            # It tries to go south again, but hits a wall
+            assert drone.south() == DIDNT_MOVE
 
             # Now it navigates to the oxygen tank and find it
             assert drone.east() == MOVED
+            assert drone.east() == MOVED
             assert drone.south() == MOVED
             assert drone.south() == MOVED
-            assert drone.south() == MOVED
-            assert drone.south() == MOVED
+            assert drone.west() == MOVED
             assert drone.west() == MOVED
             assert drone.west() == MOVED
             assert drone.west() == MOVED
             assert drone.west() == MOVED
             assert drone.west() == MOVED_AND_FOUND_OXYGEN
-
-        # TODO: Add support for WALLS (and not just boudaries of the maze!)
 
     class TestIntcodeDrone:
         @patch('day_15.Program')

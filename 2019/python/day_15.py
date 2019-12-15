@@ -4,6 +4,8 @@ from typing import NamedTuple
 
 MAZE_DRONE = 8
 MAZE_OXYGEN = 9
+MAZE_FREE = 0
+MAZE_WALL = 1
 
 DIDNT_MOVE = 0
 MOVED = 1
@@ -38,6 +40,7 @@ class MazeDrone(Drone):
                         return Coordinates(x, y)
             raise ValueError("Coordinates for {maze_val} couldn't be found!")
 
+        self.maze = maze
         self.maze_width = len(maze[0])
         self.maze_height = len(maze)
         self.position = find_coordinates_of(MAZE_DRONE)
@@ -45,8 +48,12 @@ class MazeDrone(Drone):
 
     def _move(self, direction):
         def valid_position(coord):
-            return (coord.x in range(self.maze_width)
-                    and coord.y in range(self.maze_height))
+            out_of_bounds = (
+                coord.x not in range(self.maze_width)
+                or coord.y not in range(self.maze_height)
+            )
+            is_wall = self.maze[coord.y][coord.x] == MAZE_WALL
+            return not out_of_bounds and not is_wall
 
         if direction == 'N':
             candidate_position = Coordinates(
