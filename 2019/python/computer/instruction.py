@@ -66,6 +66,7 @@ class Instruction:
         # Direct reference, no copy. Instructions modify the memory & the pointer
         self.runtime = runtime
         self.pointer_moved_by_perform_phase = False
+        self.modes = format_modes(modes)
 
         if self.has_output_param:
             address_of_output_param = (
@@ -73,11 +74,22 @@ class Instruction:
                 self.num_of_input_params +
                 self.has_output_param
             )
-            self.address_of_output = runtime.memory[address_of_output_param]
+
+            output_mode = self.modes[-1]
+            if output_mode == MODE_POSITION:
+                self.address_of_output = runtime.memory[address_of_output_param]
+            elif output_mode == MODE_RELATIVE:
+                self.address_of_output = (
+                    runtime.memory[address_of_output_param]
+                    + self.runtime.relative_base
+                )
+            elif output_mode == MODE_IMMEDIATE:
+                raise RuntimeError('Output can NOT be in immediate mode!')
+            else:
+                raise RuntimeError(f"Unknown mode: '{output_mode}'")
+
         else:
             self.address_of_output = None
-
-        self.modes = format_modes(modes)
 
         self.input_parameters = SparseList()
         init_input_parameters()

@@ -7,7 +7,7 @@ from unittest.mock import patch, call, Mock
 
 from utils import digitize, SparseList
 from computer import Program, Runtime
-from computer.instruction import Instruction
+from computer.instruction import Instruction, InputInstruction
 
 from day_1 import Day1, full_required_all_inclusive
 from day_2 import Day2
@@ -405,6 +405,18 @@ class TestProgram:
             )
 
             assert instruction.modes == [0, 1, 0, 0, 0, 0]
+
+        def test_output_can_be_in_relative_mode(self):
+            runtime = Mock()
+            runtime.relative_base = 3
+            runtime.pointer = 0
+            fake_opcode_and_modes = -1
+            runtime.memory = [fake_opcode_and_modes, 111, 99]
+
+            modes = [2]
+            instruction = InputInstruction(modes, runtime)
+
+            assert instruction.address_of_output == 3 + 111
 
 
 class TestDay1:
