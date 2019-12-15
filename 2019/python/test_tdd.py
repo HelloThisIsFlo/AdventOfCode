@@ -15,7 +15,7 @@ from day_3 import Day3, trace_path, Up, Down, Left, Right, manhattan_dist_metric
 from day_4 import Day4, is_valid_pass, group
 from day_6 import Orbit, orbit_count_checksum, Planet, min_orbital_transfers
 from day_7 import max_thruster_signal
-from day_8 import split_layers, img_checksum, layer_checksum, find_layer_with_fewest_zeros
+from day_8 import split_layers, img_checksum, layer_checksum, find_layer_with_fewest_zeros, compute_img
 
 
 def assert_solution_part_1(day_class, given_input, expected_solution):
@@ -766,8 +766,8 @@ class TestDay8:
             mock_layer_checksum):
 
         IMG = '123456789012'
-        height=2
-        width=3
+        height = 2
+        width = 3
         layers = mock_split_layers.return_value
 
         res = img_checksum(IMG, width=width, height=height)
@@ -818,5 +818,43 @@ class TestDay8:
             [
                 [0, 0, 1],
                 [0, 1, 1]
+            ]
+        )
+
+    def test_compute_square_img(self):
+        img = compute_img('0222112222120000', width=2, height=2)
+
+        assert np.array_equal(
+            img,
+            [
+                [0, 1],
+                [1, 0]
+            ]
+        )
+
+    def test_compute_non_square_img(self):
+        img_layers = np.array([
+            [
+                [0, 1, 2],
+                [1, 2, 0]
+            ],
+            [
+                [0, 0, 2],
+                [0, 1, 0]
+            ],
+            [
+                [1, 1, 0],
+                [1, 1, 1]
+            ],
+        ])
+        encoded_img = ''.join(str(val) for val in img_layers.flatten())
+
+        img = compute_img(encoded_img, width=3, height=2)
+
+        assert np.array_equal(
+            img,
+            [
+                [0, 1, 0],
+                [1, 1, 0]
             ]
         )

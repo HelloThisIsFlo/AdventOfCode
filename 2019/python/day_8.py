@@ -48,10 +48,39 @@ def img_checksum(encoded_img, width, height):
     )
 
 
+def compute_img(encoded_img, width, height):
+    def pixel(coordinates, layer_idx):
+        (x, y) = coordinates
+        return layers[layer_idx][y][x]
+
+    layers = split_layers(encoded_img, width, height)
+    img = np.empty((height, width), dtype=int)
+    for x in range(width):
+        for y in range(height):
+            for layer_idx in range(len(layers)):
+                p = pixel((x, y), layer_idx)
+                if p == 0 or p == 1:
+                    img[y][x] = p
+                    break
+
+    return img
+
+
 class Day8(Day):
     def solve_part_1(self):
         encoded_img = self.input_lines()[0]
         return str(img_checksum(encoded_img, width=25, height=6))
 
     def solve_part_2(self):
-        pass
+        def to_cli_pixel(pixel):
+            if pixel == 0:
+                return ' '
+            else:
+                return 'X'
+
+        to_cli_pixel_vec = np.vectorize(to_cli_pixel)
+
+        encoded_img = self.input_lines()[0]
+        img = compute_img(encoded_img, width=25, height=6)
+        cli_img_lines = to_cli_pixel_vec(img)
+        return '\n' + '\n'.join([''.join(l) for l in cli_img_lines])
