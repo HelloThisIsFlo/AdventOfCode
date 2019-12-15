@@ -16,7 +16,7 @@ from day_4 import Day4, is_valid_pass, group
 from day_6 import Orbit, orbit_count_checksum, Planet, min_orbital_transfers
 from day_7 import max_thruster_signal
 from day_8 import split_layers, img_checksum, layer_checksum, find_layer_with_fewest_zeros, compute_img
-from day_15 import MazeDrone, MOVED, DIDNT_MOVE, MOVED_AND_FOUND_OXYGEN, MAZE_DRONE, MAZE_OXYGEN
+from day_15 import MazeDrone, MOVED, DIDNT_MOVE, MOVED_AND_FOUND_OXYGEN, MAZE_DRONE, MAZE_OXYGEN, IntcodeDrone
 
 
 def assert_solution_part_1(day_class, given_input, expected_solution):
@@ -901,7 +901,7 @@ class TestDay8:
 
 class TestDay15:
     class TestMazeDrone:
-        def test_drone_can_navigate_the_maze(self):
+        def test_it_can_navigate_the_maze(self):
             # Maze legend
             D = MAZE_DRONE
             O = MAZE_OXYGEN
@@ -915,6 +915,7 @@ class TestDay15:
 
             # It first tries to go north, it is successful
             assert drone.north() == MOVED
+
             # It tries to go north again, but hits a wall
             assert drone.north() == DIDNT_MOVE
 
@@ -929,3 +930,52 @@ class TestDay15:
             assert drone.west() == MOVED
             assert drone.west() == MOVED
             assert drone.west() == MOVED_AND_FOUND_OXYGEN
+
+        # TODO: Add support for WALLS (and not just boudaries of the maze!)
+
+    class TestIntcodeDrone:
+        @patch('day_15.Program')
+        def test_it_creates_a_program_and_starts_it_capturing_the_output(self, MockProgram):
+            INTCODE = SparseList([], filler=0)
+            drone = IntcodeDrone(INTCODE)
+
+            MockProgram.assert_called_once_with(INTCODE)
+
+            program = MockProgram.return_value
+            program.run.assert_called_once_with(capture_output=True)
+
+        @patch('day_15.Program')
+        def test_it_navigates_the_maze_by_submitting_inputs_to_program(self, MockProgram):
+            program = MockProgram.return_value
+
+            def last_submitted_input_to_program():
+                ((last_submitted_input_to_program,), _) = program.input.call_args
+                return last_submitted_input_to_program
+
+            def mock_last_captured_output(mock_val):
+                program.runtime.captured_output = [
+                    1, 2, 3, mock_val
+                ]
+
+            INTCODE = SparseList([], filler=0)
+            drone = IntcodeDrone(INTCODE)
+
+            mock_last_captured_output(1111)
+            status = drone.north()
+            assert last_submitted_input_to_program() == 1
+            assert status == 1111
+
+            mock_last_captured_output(2222)
+            status = drone.south()
+            assert last_submitted_input_to_program() == 2
+            assert status == 2222
+
+            mock_last_captured_output(3333)
+            status = drone.west()
+            assert last_submitted_input_to_program() == 3
+            assert status == 3333
+
+            mock_last_captured_output(4444)
+            status = drone.east()
+            assert last_submitted_input_to_program() == 4
+            assert status == 4444

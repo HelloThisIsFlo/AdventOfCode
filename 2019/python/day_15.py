@@ -10,12 +10,26 @@ MOVED = 1
 MOVED_AND_FOUND_OXYGEN = 2
 
 
+class Drone:
+    def north(self):
+        raise NotImplementedError()
+
+    def south(self):
+        raise NotImplementedError()
+
+    def west(self):
+        raise NotImplementedError()
+
+    def east(self):
+        raise NotImplementedError()
+
+
 class Coordinates(NamedTuple):
     x: int
     y: int
 
 
-class MazeDrone:
+class MazeDrone(Drone):
     def __init__(self, maze):
         def find_coordinates_of(maze_val):
             for x in range(self.maze_width):
@@ -44,14 +58,14 @@ class MazeDrone:
                 self.position.x,
                 self.position.y + 1
             )
-        elif direction == 'E':
-            candidate_position = Coordinates(
-                self.position.x + 1,
-                self.position.y
-            )
         elif direction == 'W':
             candidate_position = Coordinates(
                 self.position.x - 1,
+                self.position.y
+            )
+        elif direction == 'E':
+            candidate_position = Coordinates(
+                self.position.x + 1,
                 self.position.y
             )
 
@@ -70,11 +84,33 @@ class MazeDrone:
     def south(self):
         return self._move('S')
 
+    def west(self):
+        return self._move('W')
+
     def east(self):
         return self._move('E')
 
+
+class IntcodeDrone(Drone):
+    def __init__(self, intcode):
+        self.program = Program(intcode)
+        self.program.run(capture_output=True)
+
+    def _move(self, move_cmd):
+        self.program.input(move_cmd)
+        return self.program.runtime.captured_output[-1]
+
+    def north(self):
+        return self._move(1)
+
+    def south(self):
+        return self._move(2)
+
     def west(self):
-        return self._move('W')
+        return self._move(3)
+
+    def east(self):
+        return self._move(4)
 
 
 class Day15(IntcodeDay):
