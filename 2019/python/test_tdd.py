@@ -1054,10 +1054,10 @@ class TestDay15:
                 [_, x, x, x, D],
                 [_, O, _, _, _],
             ])
-            assert drone.shortest_distance_to_oxygen() == 4
+            assert drone.shortest_distance_to_oxygen_from_current_position() == 4
 
         def test_solve_maze(self, drone):
-            assert drone.shortest_distance_to_oxygen() == 9
+            assert drone.shortest_distance_to_oxygen_from_current_position() == 9
 
         @patch.object(Drone, 'go_to_oxygen_tank')
         @patch.object(Drone, 'compute_furthest_distance_reacheable_from_current_position')

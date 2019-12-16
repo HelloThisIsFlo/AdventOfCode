@@ -17,7 +17,7 @@ INFINITE = 10000000000000000
 class Drone:
     def __init__(self):
         self.relative_position = Coordinates(0, 0)
-        self.visited_relative_positions = [self.relative_position]
+        self.previously_visited_relative_positions = [self.relative_position]
         self.performed_moves = []
 
     def _move_and_update_relative_position(self, direction, record_move=True):
@@ -83,36 +83,39 @@ class Drone:
         elif last_performed_move == 'E':
             self._move_and_update_relative_position('W', record_move=False)
 
-    def shortest_distance_to_oxygen(self):
+    def shortest_distance_to_oxygen_from_current_position(self):
         def shortest_distance_when_trying(direction):
             def already_visited_current_position():
-                return self.relative_position in self.visited_relative_positions
+                return self.relative_position in self.previously_visited_relative_positions
 
+            def add_current_position_to_previously_visited_positions():
+                self.previously_visited_relative_positions.append(
+                    self.relative_position
+                )
+
+            def remove_current_position_from_previously_visited_positions():
+                self.previously_visited_relative_positions.pop()
+
+            add_current_position_to_previously_visited_positions()
             status = self._move_and_update_relative_position(direction)
 
             if status == DIDNT_MOVE:
                 distance_when_going_this_direction = INFINITE
 
             elif status == MOVED_AND_FOUND_OXYGEN:
-                distance_when_going_this_direction = len(
-                    self.visited_relative_positions
-                )
                 distance_when_going_this_direction = 1
 
             elif status == MOVED and already_visited_current_position():
                 distance_when_going_this_direction = INFINITE
 
             elif status == MOVED and not already_visited_current_position():
-                self.visited_relative_positions.append(
-                    self.relative_position
-                )
-                distance_when_going_this_direction = self.shortest_distance_to_oxygen() + 1
-                self.visited_relative_positions.pop()
+                distance_when_going_this_direction = self.shortest_distance_to_oxygen_from_current_position() + 1
 
             else:
                 raise ValueError('Should not end up here')
 
             self.revert_last_move()
+            remove_current_position_from_previously_visited_positions()
             return distance_when_going_this_direction
 
         dist_when_going_north = shortest_distance_when_trying('N')
@@ -141,7 +144,6 @@ class Drone:
 
     def go_back_to_original_position(self):
         pass
-
 
 
 class Coordinates(NamedTuple):
