@@ -132,15 +132,72 @@ class Drone:
 
     def compute_time_to_fill(self):
         self.go_to_oxygen_tank()
-        time_to_fill = self.compute_furthest_distance_reacheable_from_current_position()
+        time_to_fill = self.compute_furthest_distance_reachable_from_current_position()
         self.go_back_to_original_position()
         return time_to_fill
 
     def go_to_oxygen_tank(self):
         pass
 
-    def compute_furthest_distance_reacheable_from_current_position(self):
-        return None
+    def compute_furthest_distance_reachable_from_current_position(self):
+        def do_compute_furthest_distance_reachable_from_current_position(dist_already_travelled):
+            def furthest_distance_reachable_when_trying(direction):
+                def already_visited_current_position():
+                    return self.relative_position in self.previously_visited_relative_positions
+
+                def add_current_position_to_previously_visited_positions():
+                    self.previously_visited_relative_positions.append(
+                        self.relative_position
+                    )
+
+                def remove_current_position_from_previously_visited_positions():
+                    self.previously_visited_relative_positions.pop()
+
+                def didnt_move():
+                    return status == DIDNT_MOVE
+
+                def moved():
+                    return status == MOVED or status == MOVED_AND_FOUND_OXYGEN
+
+                add_current_position_to_previously_visited_positions()
+                status = self._move_and_update_relative_position(direction)
+
+                if didnt_move():
+                    furthest_distance_when_going_this_direction = 0
+
+                elif moved() and already_visited_current_position():
+                    furthest_distance_when_going_this_direction = 0
+
+                elif moved() and not already_visited_current_position():
+                    furthest_distance_when_going_this_direction = \
+                        do_compute_furthest_distance_reachable_from_current_position(
+                            dist_already_travelled + 1)
+
+                else:
+                    raise ValueError('Should not end up here')
+
+                self.revert_last_move()
+                remove_current_position_from_previously_visited_positions()
+                return furthest_distance_when_going_this_direction
+
+            furthest_reacheable_when_going_north = \
+                furthest_distance_reachable_when_trying('N')
+            furthest_reacheable_when_going_south = \
+                furthest_distance_reachable_when_trying('S')
+            furthest_reacheable_when_going_west = \
+                furthest_distance_reachable_when_trying('W')
+            furthest_reacheable_when_going_east = \
+                furthest_distance_reachable_when_trying('E')
+
+            return max(
+                dist_already_travelled,
+                furthest_reacheable_when_going_north,
+                furthest_reacheable_when_going_south,
+                furthest_reacheable_when_going_west,
+                furthest_reacheable_when_going_east,
+            )
+
+        return do_compute_furthest_distance_reachable_from_current_position(dist_already_travelled=0)
 
     def go_back_to_original_position(self):
         pass

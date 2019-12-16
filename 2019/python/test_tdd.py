@@ -1060,12 +1060,12 @@ class TestDay15:
             assert drone.shortest_distance_to_oxygen_from_current_position() == 9
 
         @patch.object(Drone, 'go_to_oxygen_tank')
-        @patch.object(Drone, 'compute_furthest_distance_reacheable_from_current_position')
+        @patch.object(Drone, 'compute_furthest_distance_reachable_from_current_position')
         @patch.object(Drone, 'go_back_to_original_position')
         def test_compute_time_to_fill(
             self,
             mock_go_back_to_original_position,
-            mock_compute_furthest_distance_reacheable_from_current_position,
+            mock_compute_furthest_distance_reachable_from_current_position,
             mock_go_to_oxygen_tank,
             drone
         ):
@@ -1075,18 +1075,17 @@ class TestDay15:
                 mock_go_to_oxygen_tank.assert_called_once()
                 return return_val
 
-            mock_compute_furthest_distance_reacheable_from_current_position.side_effect = \
+            mock_compute_furthest_distance_reachable_from_current_position.side_effect = \
                 lambda: ensure_at_oxygen_tank(return_val=expected_time_to_fill)
             mock_go_back_to_original_position.side_effect = \
                 lambda: ensure_at_oxygen_tank(return_val=None)
 
             time_to_fill = drone.compute_time_to_fill()
 
-            mock_compute_furthest_distance_reacheable_from_current_position.assert_called_once()
+            mock_compute_furthest_distance_reachable_from_current_position.assert_called_once()
             assert time_to_fill == expected_time_to_fill
             mock_go_back_to_original_position.assert_called_once()
 
-        @pytest.mark.skip
         def test_compute_furthest_distance_from_current_position(self):
             # Maze legend
             D = MAZE_DRONE
@@ -1098,4 +1097,12 @@ class TestDay15:
                 [_, O, _, _, _],
             ])
 
-            assert drone.compute_furthest_distance_reacheable_from_current_position() == 6
+            assert drone.compute_furthest_distance_reachable_from_current_position() == 6
+
+            assert MazeDrone([
+                [_, x, x, x, D],
+                [_, _, x, _, _],
+                [_, _, x, _, _],
+                [_, _, _, _, _],
+                [_, O, _, x, _],
+            ]).compute_furthest_distance_reachable_from_current_position() == 16
