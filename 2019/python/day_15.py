@@ -127,6 +127,22 @@ class Drone:
             dist_when_going_east,
         )
 
+    def compute_time_to_fill(self):
+        self.go_to_oxygen_tank()
+        time_to_fill = self.compute_furthest_distance_reacheable_from_current_position()
+        self.go_back_to_original_position()
+        return time_to_fill
+
+    def go_to_oxygen_tank(self):
+        pass
+
+    def compute_furthest_distance_reacheable_from_current_position(self):
+        return None
+
+    def go_back_to_original_position(self):
+        pass
+
+
 
 class Coordinates(NamedTuple):
     x: int

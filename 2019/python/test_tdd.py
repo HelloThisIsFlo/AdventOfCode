@@ -16,7 +16,7 @@ from day_4 import Day4, is_valid_pass, group
 from day_6 import Orbit, orbit_count_checksum, Planet, min_orbital_transfers
 from day_7 import max_thruster_signal
 from day_8 import split_layers, img_checksum, layer_checksum, find_layer_with_fewest_zeros, compute_img
-from day_15 import MazeDrone, MOVED, DIDNT_MOVE, MOVED_AND_FOUND_OXYGEN, MAZE_DRONE, MAZE_OXYGEN, MAZE_FREE, MAZE_WALL, IntcodeDrone, Coordinates
+from day_15 import Drone, MazeDrone, MOVED, DIDNT_MOVE, MOVED_AND_FOUND_OXYGEN, MAZE_DRONE, MAZE_OXYGEN, MAZE_FREE, MAZE_WALL, IntcodeDrone, Coordinates
 
 
 def assert_solution_part_1(day_class, given_input, expected_solution):
@@ -1058,3 +1058,44 @@ class TestDay15:
 
         def test_solve_maze(self, drone):
             assert drone.shortest_distance_to_oxygen() == 9
+
+        @patch.object(Drone, 'go_to_oxygen_tank')
+        @patch.object(Drone, 'compute_furthest_distance_reacheable_from_current_position')
+        @patch.object(Drone, 'go_back_to_original_position')
+        def test_compute_time_to_fill(
+            self,
+            mock_go_back_to_original_position,
+            mock_compute_furthest_distance_reacheable_from_current_position,
+            mock_go_to_oxygen_tank,
+            drone
+        ):
+            expected_time_to_fill = 123456
+
+            def ensure_at_oxygen_tank(return_val):
+                mock_go_to_oxygen_tank.assert_called_once()
+                return return_val
+
+            mock_compute_furthest_distance_reacheable_from_current_position.side_effect = \
+                lambda: ensure_at_oxygen_tank(return_val=expected_time_to_fill)
+            mock_go_back_to_original_position.side_effect = \
+                lambda: ensure_at_oxygen_tank(return_val=None)
+
+            time_to_fill = drone.compute_time_to_fill()
+
+            mock_compute_furthest_distance_reacheable_from_current_position.assert_called_once()
+            assert time_to_fill == expected_time_to_fill
+            mock_go_back_to_original_position.assert_called_once()
+
+        @pytest.mark.skip
+        def test_compute_furthest_distance_from_current_position(self):
+            # Maze legend
+            D = MAZE_DRONE
+            O = MAZE_OXYGEN
+            _ = MAZE_FREE
+            x = MAZE_WALL
+            drone = MazeDrone([
+                [_, x, x, x, D],
+                [_, O, _, _, _],
+            ])
+
+            assert drone.compute_furthest_distance_reacheable_from_current_position() == 6
