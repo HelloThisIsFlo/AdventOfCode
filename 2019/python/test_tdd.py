@@ -1059,44 +1059,22 @@ class TestDay15:
         def test_solve_maze(self, drone):
             assert drone.shortest_distance_to_oxygen_from_current_position() == 9
 
-        @patch.object(Drone, 'go_to_oxygen_tank')
-        @patch.object(Drone, 'furthest_location_from_current_position')
-        @patch.object(Drone, 'shortest_path_to')
-        @patch.object(Drone, 'go_back_to_original_position')
-        def test_compute_time_to_fill(
-            self,
-            mock_go_back_to_original_position,
-            mock_shortest_path_to,
-            mock_furthest_location_from_current_position,
-            mock_go_to_oxygen_tank,
-            drone
-        ):
-            furthest_from_oxygen = Mock()
-            shortest_path_to_furthest_location = Mock()
-            oxygen_location = Mock()
+        def test_go_to_oxygen_tank(self):
+            # Maze legend
+            D = MAZE_DRONE
+            O = MAZE_OXYGEN
+            _ = MAZE_FREE
+            x = MAZE_WALL
+            drone = MazeDrone([
+                [_, x, x, x, D],
+                [_, _, x, _, _],
+                [_, _, _, _, x],
+                [_, x, x, _, _],
+                [_, O, x, x, x],
+            ])
 
-            def ensure_at_oxygen_tank(return_value):
-                mock_go_to_oxygen_tank.assert_called_once()
-                return return_value
-
-            mock_furthest_location_from_current_position.side_effect = \
-                lambda: ensure_at_oxygen_tank(
-                    return_value=furthest_from_oxygen
-                )
-            mock_shortest_path_to.side_effect = \
-                lambda _: ensure_at_oxygen_tank(
-                    return_value=shortest_path_to_furthest_location
-                )
-            mock_go_back_to_original_position.side_effect = \
-                lambda: ensure_at_oxygen_tank(
-                    return_value=None
-                )
-
-            time_to_fill = drone.compute_time_to_fill()
-
-            mock_furthest_location_from_current_position.assert_called_once()
-            assert time_to_fill == shortest_path_to_furthest_location
-            mock_go_back_to_original_position.assert_called_once()
+            drone.go_to_oxygen_tank()
+            assert drone.relative_position == Coordinates(-3, 4)
 
         def test_compute_furthest_distance_from_current_position(self):
             # Maze legend
@@ -1109,12 +1087,18 @@ class TestDay15:
                 [_, O, _, _, _],
             ])
 
-            assert drone.compute_furthest_distance_reachable_from_current_position() == 6
+            assert drone.longest_possible_travel_distance_from_current_position() == 6
 
+            # NOTE: This is somewhat of a bug/feature. The furthest distance from current position
+            # is the furthest distance travelled, not the distance to the furthest point.
+            # So if the maze has corridors more than 1 tile wide, it is possible to zig-zag and artificially
+            # increase the distance travelled.
+            # So using this to compute the time to fill for the oxygen isn't 100% correct in the general case.
+            # But in the case of the advent of code . . . it works :)
             assert MazeDrone([
                 [_, x, x, x, D],
                 [_, _, x, _, _],
                 [_, _, x, _, _],
                 [_, _, _, _, _],
                 [_, O, _, x, _],
-            ]).compute_furthest_distance_reachable_from_current_position() == 16
+            ]).longest_possible_travel_distance_from_current_position() == 16

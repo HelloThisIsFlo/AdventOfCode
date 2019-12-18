@@ -14,11 +14,39 @@ MOVED_AND_FOUND_OXYGEN = 2
 INFINITE = 10000000000000000
 
 
+class ReversePath(list):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.dead_end = False
+
+    def __len__(self):
+        if self.dead_end:
+            return INFINITE
+        else:
+            return super().__len__()
+
+    def __repr__(self):
+        repr_ = super().__repr__()
+        if self.dead_end:
+            repr_ = f'D{repr_}'
+        return repr_
+
+    def apply(self, drone):
+        def path_in_correct_order():
+            path = self[:]
+            path.reverse()
+            return path
+
+        for step in path_in_correct_order():
+            drone._move_and_update_relative_position(step)
+
+
 class Drone:
     def __init__(self):
         self.relative_position = Coordinates(0, 0)
         self.previously_visited_relative_positions = [self.relative_position]
         self.performed_moves = []
+        self.at_oxygen = False
 
     def _move_and_update_relative_position(self, direction, record_move=True):
         def update_relative_position():
@@ -83,72 +111,72 @@ class Drone:
         elif last_performed_move == 'E':
             self._move_and_update_relative_position('W', record_move=False)
 
+    def already_visited_current_position(self):
+        return self.relative_position in self.previously_visited_relative_positions
+
+    def add_current_position_to_previously_visited_positions(self):
+        self.previously_visited_relative_positions.append(
+            self.relative_position
+        )
+
+    def remove_current_position_from_previously_visited_positions(self):
+        self.previously_visited_relative_positions.pop()
+
     def shortest_distance_to_oxygen_from_current_position(self):
-        def shortest_distance_when_trying(direction):
-            def already_visited_current_position():
-                return self.relative_position in self.previously_visited_relative_positions
+        return len(self.shortest_path_to_oxygen_from_current_position())
 
-            def add_current_position_to_previously_visited_positions():
-                self.previously_visited_relative_positions.append(
-                    self.relative_position
-                )
+    def shortest_path_to_oxygen_from_current_position(self):
+        def min_length(*paths):
+            min_length_path = paths[0]
+            for p in paths:
+                if len(p) < len(min_length_path):
+                    min_length_path = p
+            return min_length_path
 
-            def remove_current_position_from_previously_visited_positions():
-                self.previously_visited_relative_positions.pop()
-
-            add_current_position_to_previously_visited_positions()
+        def shortest_path_when_trying(direction):
+            self.add_current_position_to_previously_visited_positions()
             status = self._move_and_update_relative_position(direction)
 
             if status == DIDNT_MOVE:
-                distance_when_going_this_direction = INFINITE
+                path = ReversePath([direction])
+                path.dead_end = True
 
             elif status == MOVED_AND_FOUND_OXYGEN:
-                distance_when_going_this_direction = 1
+                path = ReversePath([direction])
 
-            elif status == MOVED and already_visited_current_position():
-                distance_when_going_this_direction = INFINITE
+            elif status == MOVED and self.already_visited_current_position():
+                path = ReversePath([direction])
+                path.dead_end = True
 
-            elif status == MOVED and not already_visited_current_position():
-                distance_when_going_this_direction = \
-                    self.shortest_distance_to_oxygen_from_current_position() + 1
+            elif status == MOVED and not self.already_visited_current_position():
+                path = self.shortest_path_to_oxygen_from_current_position()
+                path.append(direction)
 
             else:
                 raise ValueError('Should not end up here')
 
             self.revert_last_move()
-            remove_current_position_from_previously_visited_positions()
-            return distance_when_going_this_direction
+            self.remove_current_position_from_previously_visited_positions()
+            return path
 
-        dist_when_going_north = shortest_distance_when_trying('N')
-        dist_when_going_south = shortest_distance_when_trying('S')
-        dist_when_going_west = shortest_distance_when_trying('W')
-        dist_when_going_east = shortest_distance_when_trying('E')
+        path_when_going_north = shortest_path_when_trying('N')
+        path_when_going_south = shortest_path_when_trying('S')
+        path_when_going_west = shortest_path_when_trying('W')
+        path_when_going_east = shortest_path_when_trying('E')
 
-        return min(
-            dist_when_going_north,
-            dist_when_going_south,
-            dist_when_going_west,
-            dist_when_going_east,
+        return min_length(
+            path_when_going_north,
+            path_when_going_south,
+            path_when_going_west,
+            path_when_going_east,
         )
 
-    def compute_time_to_fill(self):
-        self.go_to_oxygen_tank()
-        furthest_location = self.furthest_location_from_current_position()
-        time_to_fill = self.shortest_path_to(furthest_location)
-        self.go_back_to_original_position()
-        return time_to_fill
-
     def go_to_oxygen_tank(self):
-        pass
+        path_to_oxygen_tank = self.shortest_path_to_oxygen_from_current_position()
+        path_to_oxygen_tank.apply(self)
 
-    def furthest_location_from_current_position(self):
-        pass
-
-    def shortest_path_to(self):
-        pass
-
-    def compute_furthest_distance_reachable_from_current_position(self):
-        def do_compute_furthest_distance_reachable_from_current_position(dist_already_travelled):
+    def longest_possible_travel_distance_from_current_position(self):
+        def do_longest_possible_travel_distance_from_current_position(dist_already_travelled):
             def furthest_distance_reachable_when_trying(direction):
                 def already_visited_current_position():
                     return self.relative_position in self.previously_visited_relative_positions
@@ -178,8 +206,9 @@ class Drone:
 
                 elif moved() and not already_visited_current_position():
                     furthest_distance_when_going_this_direction = \
-                        do_compute_furthest_distance_reachable_from_current_position(
-                            dist_already_travelled + 1)
+                        do_longest_possible_travel_distance_from_current_position(
+                            dist_already_travelled + 1
+                        )
 
                 else:
                     raise ValueError('Should not end up here')
@@ -205,10 +234,7 @@ class Drone:
                 furthest_reacheable_when_going_east,
             )
 
-        return do_compute_furthest_distance_reachable_from_current_position(dist_already_travelled=0)
-
-    def go_back_to_original_position(self):
-        pass
+        return do_longest_possible_travel_distance_from_current_position(dist_already_travelled=0)
 
 
 class Coordinates(NamedTuple):
@@ -310,8 +336,13 @@ class Day15(IntcodeDay):
     def solve_part_1(self):
         drone = IntcodeDrone(self.intcode)
         return str(
-            drone.shortest_distance_to_oxygen()
+            drone.shortest_distance_to_oxygen_from_current_position()
         )
 
     def solve_part_2(self):
-        pass
+        drone = IntcodeDrone(self.intcode)
+
+        drone.go_to_oxygen_tank()
+        return str(
+            drone.longest_possible_travel_distance_from_current_position()
+        )
