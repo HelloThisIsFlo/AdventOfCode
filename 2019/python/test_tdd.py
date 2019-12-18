@@ -1060,30 +1060,42 @@ class TestDay15:
             assert drone.shortest_distance_to_oxygen_from_current_position() == 9
 
         @patch.object(Drone, 'go_to_oxygen_tank')
-        @patch.object(Drone, 'compute_furthest_distance_reachable_from_current_position')
+        @patch.object(Drone, 'furthest_location_from_current_position')
+        @patch.object(Drone, 'shortest_path_to')
         @patch.object(Drone, 'go_back_to_original_position')
         def test_compute_time_to_fill(
             self,
             mock_go_back_to_original_position,
-            mock_compute_furthest_distance_reachable_from_current_position,
+            mock_shortest_path_to,
+            mock_furthest_location_from_current_position,
             mock_go_to_oxygen_tank,
             drone
         ):
-            expected_time_to_fill = 123456
+            furthest_from_oxygen = Mock()
+            shortest_path_to_furthest_location = Mock()
+            oxygen_location = Mock()
 
-            def ensure_at_oxygen_tank(return_val):
+            def ensure_at_oxygen_tank(return_value):
                 mock_go_to_oxygen_tank.assert_called_once()
-                return return_val
+                return return_value
 
-            mock_compute_furthest_distance_reachable_from_current_position.side_effect = \
-                lambda: ensure_at_oxygen_tank(return_val=expected_time_to_fill)
+            mock_furthest_location_from_current_position.side_effect = \
+                lambda: ensure_at_oxygen_tank(
+                    return_value=furthest_from_oxygen
+                )
+            mock_shortest_path_to.side_effect = \
+                lambda _: ensure_at_oxygen_tank(
+                    return_value=shortest_path_to_furthest_location
+                )
             mock_go_back_to_original_position.side_effect = \
-                lambda: ensure_at_oxygen_tank(return_val=None)
+                lambda: ensure_at_oxygen_tank(
+                    return_value=None
+                )
 
             time_to_fill = drone.compute_time_to_fill()
 
-            mock_compute_furthest_distance_reachable_from_current_position.assert_called_once()
-            assert time_to_fill == expected_time_to_fill
+            mock_furthest_location_from_current_position.assert_called_once()
+            assert time_to_fill == shortest_path_to_furthest_location
             mock_go_back_to_original_position.assert_called_once()
 
         def test_compute_furthest_distance_from_current_position(self):

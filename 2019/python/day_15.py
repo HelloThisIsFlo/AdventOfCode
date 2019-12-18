@@ -109,7 +109,8 @@ class Drone:
                 distance_when_going_this_direction = INFINITE
 
             elif status == MOVED and not already_visited_current_position():
-                distance_when_going_this_direction = self.shortest_distance_to_oxygen_from_current_position() + 1
+                distance_when_going_this_direction = \
+                    self.shortest_distance_to_oxygen_from_current_position() + 1
 
             else:
                 raise ValueError('Should not end up here')
@@ -132,11 +133,18 @@ class Drone:
 
     def compute_time_to_fill(self):
         self.go_to_oxygen_tank()
-        time_to_fill = self.compute_furthest_distance_reachable_from_current_position()
+        furthest_location = self.furthest_location_from_current_position()
+        time_to_fill = self.shortest_path_to(furthest_location)
         self.go_back_to_original_position()
         return time_to_fill
 
     def go_to_oxygen_tank(self):
+        pass
+
+    def furthest_location_from_current_position(self):
+        pass
+
+    def shortest_path_to(self):
         pass
 
     def compute_furthest_distance_reachable_from_current_position(self):
