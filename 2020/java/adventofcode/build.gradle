@@ -24,16 +24,17 @@ dependencies {
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:28.2-jre'
 
-    // Use JUnit Jupiter API for testing.
+    // Use JUnit Jupiter
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-
-    // Use JUnit Jupiter Engine for testing.
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
+
+    // AssertJ
+    testImplementation("org.assertj:assertj-core:3.18.1")
 }
 
 application {
     // Define the main class for the application.
-    mainClassName = 'adventofcode.App'
+    mainClassName = 'adventofcode.SolvePuzzles'
 }
 
 test {
