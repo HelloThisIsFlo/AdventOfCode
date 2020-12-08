@@ -1,13 +1,12 @@
 package adventofcode;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import adventofcode.Day1.TwoNumbers;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -21,28 +20,55 @@ class Day1Test {
   }
 
   @Nested
-  class Find2NumberThatGiveASum {
+  class FindNumbersThatGiveASum {
 
     @Test
-    void emptyList_throwError() {
-      assertThrows(IllegalStateException.class, () -> {
-        day1.findTwoNumbersThatSumTo(2020, Collections.emptyList());
-      });
+    void emptyList_returnEmpty() {
+      var result = day1.findNnumbersThatSumToS(2, 2020, Collections.emptyList());
+      assertTrue(result.isEmpty());
     }
 
     @Test
-    void listWithTwoElements_valid_returnResult() {
-      TwoNumbers result = day1.findTwoNumbersThatSumTo(2020, List.of(1000, 1020));
+    void listWithNotEnoughElements_returnEmpty() {
+      var result = day1.findNnumbersThatSumToS(2, 2020, List.of(1));
+      assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void listWithEnoughElements_valid_returnResult() {
+      List<Integer> result = day1.findNnumbersThatSumToS(2, 2020, List.of(1000, 1020))
+          .orElseThrow();
 
       assertTrue(result.contains(1000));
       assertTrue(result.contains(1020));
     }
 
     @Test
-    void listWithTwoElements_invalid_throwError() {
-      assertThrows(IllegalStateException.class, () -> {
-        day1.findTwoNumbersThatSumTo(2020, List.of(1, 2));
-      });
+    void listWithEnoughElements_invalid_returnEmpty() {
+      var result = day1.findNnumbersThatSumToS(2, 2020, List.of(1, 2));
+      assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findFourNumbersThatGiveSum() {
+      List<Integer> result = day1.findNnumbersThatSumToS(
+          4,
+          1234,
+          List.of(
+              723,
+              132,
+              17,
+              56,
+              300,
+              455,
+              746
+          )
+      ).orElseThrow();
+
+      assertTrue(result.contains(132));
+      assertTrue(result.contains(56));
+      assertTrue(result.contains(300));
+      assertTrue(result.contains(746));
     }
   }
 
@@ -50,7 +76,7 @@ class Day1Test {
   class Integration {
 
     @Test
-    void exampleFromTheProblemStatement() {
+    void part1_exampleFromTheProblemStatement() {
       day1.inputLines = List.of(
           "1721",
           "979",
@@ -63,6 +89,22 @@ class Day1Test {
       String result = day1.solvePart1();
 
       assertEquals("514579", result);
+    }
+
+    @Test
+    void part2_exampleFromTheProblemStatement() {
+      day1.inputLines = List.of(
+          "1721",
+          "979",
+          "366",
+          "299",
+          "675",
+          "1456"
+      );
+
+      String result = day1.solvePart2();
+
+      assertEquals("241861950", result);
     }
   }
 

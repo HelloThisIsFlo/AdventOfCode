@@ -2,6 +2,7 @@ package adventofcode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Day1 extends Day {
 
@@ -15,60 +16,73 @@ public class Day1 extends Day {
   public String solvePart1() {
     parseInputNumbers();
 
-    TwoNumbers numbersThatSumTo2020 = findTwoNumbersThatSumTo(2020, inputNumbers);
+    return findNnumbersThatSumToS(2, 2020, inputNumbers)
+        .map(this::multiplyAllNumbers)
+        .map(Object::toString)
+        .orElseThrow(() -> new IllegalStateException("Couldn't find 2 numbers that sum to 2020"));
+  }
 
-    Integer productOfBothNumbers = numbersThatSumTo2020.number1 * numbersThatSumTo2020.number2;
-    return productOfBothNumbers.toString();
+  @Override
+  public String solvePart2() {
+    parseInputNumbers();
+
+    return findNnumbersThatSumToS(3, 2020, inputNumbers)
+        .map(this::multiplyAllNumbers)
+        .map(Object::toString)
+        .orElseThrow(() -> new IllegalStateException("Couldn't find 3 numbers that sum to 2020"));
   }
 
   private void parseInputNumbers() {
     inputNumbers = parseInput(Integer::parseInt);
   }
 
-  @Override
-  public String solvePart2() {
-    return null;
+
+  // Couldn't find a more readable way to write 'N numbers'
+  @SuppressWarnings("SpellCheckingInspection")
+  public Optional<List<Integer>> findNnumbersThatSumToS(int n, int s, List<Integer> candidates) {
+    boolean notEnoughCandidates = candidates.size() < n;
+    boolean lookingForASingleNumberThatEqualS = n == 1;
+
+    if (notEnoughCandidates) {
+      return Optional.empty();
+    }
+    if (lookingForASingleNumberThatEqualS) {
+      return candidates.contains(s) ?
+          Optional.of(mutableListWithOneElement(s)) :
+          Optional.empty();
+    }
+
+    Integer first = candidates.get(0);
+    List<Integer> candidatesWithoutFirst = copyWithoutFirst(candidates);
+
+    Optional<List<Integer>> nMinus1numbersThatSumToSMinusFirst =
+        findNnumbersThatSumToS(n - 1, s - first, candidatesWithoutFirst);
+
+    return nMinus1numbersThatSumToSMinusFirst
+        .map(result -> {
+          result.add(first);
+          return result;
+        })
+        .or(() -> findNnumbersThatSumToS(n, s, candidatesWithoutFirst));
   }
 
-  public TwoNumbers findTwoNumbersThatSumTo(int expectedSum, List<Integer> numbers) {
-    if (numbers.size() <= 1) {
-      throw new IllegalStateException(
-          "Could not find two numbers which sum would be: " + expectedSum);
-    }
-
-    Integer candidate = numbers.get(0);
-    List<Integer> rest = new ArrayList<>(numbers);
-    rest.remove(0);
-
-    for (Integer otherNumber : rest) {
-      if (candidate + otherNumber == expectedSum) {
-        return new TwoNumbers(candidate, otherNumber);
-      }
-    }
-
-    return findTwoNumbersThatSumTo(expectedSum, rest);
+  private <T> List<T> mutableListWithOneElement(T element) {
+    List<T> list = new ArrayList<>();
+    list.add(element);
+    return list;
   }
 
-  static class TwoNumbers {
-
-    public final Integer number1;
-    public final Integer number2;
-
-    public TwoNumbers(Integer number1, Integer number2) {
-      this.number1 = number1;
-      this.number2 = number2;
-    }
-
-    public boolean contains(Integer number) {
-      return number.equals(number1) || number.equals(number2);
-    }
-
-    @Override
-    public String toString() {
-      return "TwoNumbers{" +
-          "number1=" + number1 +
-          ", number2=" + number2 +
-          '}';
-    }
+  private <T> List<T> copyWithoutFirst(List<T> list) {
+    List<T> candidatesWithoutFirst = new ArrayList<>(list);
+    candidatesWithoutFirst.remove(0);
+    return candidatesWithoutFirst;
   }
+
+  private Integer multiplyAllNumbers(List<Integer> numbers) {
+    return numbers
+        .stream()
+        .reduce((i, j) -> i * j)
+        .orElseThrow();
+  }
+
 }
