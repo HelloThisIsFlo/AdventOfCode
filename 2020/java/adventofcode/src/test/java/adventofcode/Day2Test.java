@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import adventofcode.day2.PasswordValidator;
+import adventofcode.day2.MinMaxPasswordValidator;
 import adventofcode.day2.dto.PasswordWithPolicy;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,13 +18,13 @@ import org.mockito.MockitoAnnotations;
 class Day2Test {
 
   @Mock
-  PasswordValidator passwordValidator;
+  MinMaxPasswordValidator minMaxPasswordValidator;
   private Day2 day2;
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.initMocks(this);
-    day2 = new Day2(passwordValidator);
+    day2 = new Day2(minMaxPasswordValidator);
   }
 
 
@@ -33,7 +33,7 @@ class Day2Test {
 
     @Test
     void itVerifiesValidityOfPasswordUsingPasswordValidator() {
-      when(passwordValidator.isValid(any())).thenReturn(true);
+      when(minMaxPasswordValidator.isValid(any())).thenReturn(true);
       day2.inputLines = List.of(
           "1-3 a: abcde",
           "1-3 b: cdefg",
@@ -42,17 +42,17 @@ class Day2Test {
 
       day2.solvePart1();
 
-      verify(passwordValidator)
+      verify(minMaxPasswordValidator)
           .isValid(PasswordWithPolicy.of(1, 3, "a", "abcde"));
-      verify(passwordValidator)
+      verify(minMaxPasswordValidator)
           .isValid(PasswordWithPolicy.of(1, 3, "b", "cdefg"));
-      verify(passwordValidator)
+      verify(minMaxPasswordValidator)
           .isValid(PasswordWithPolicy.of(2, 9, "c", "ccccccccc"));
     }
 
     @Test
     void itReturnsTheNumberOfValidPasswords() {
-      when(passwordValidator.isValid(any()))
+      when(minMaxPasswordValidator.isValid(any()))
           .thenReturn(true)
           .thenReturn(true)
           .thenReturn(false);
@@ -73,7 +73,7 @@ class Day2Test {
 
     @BeforeEach
     void setUp() {
-      day2 = new Day2(new PasswordValidator());
+      day2 = new Day2(new MinMaxPasswordValidator());
     }
 
     @Test

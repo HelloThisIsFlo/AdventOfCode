@@ -4,14 +4,14 @@ import java.util.Objects;
 
 public class Policy {
 
-  public final int minRepetition;
-  public final int maxRepetition;
-  public final String letterToRepeat;
+  public final int paramA;
+  public final int paramB;
+  public final String letter;
 
-  public Policy(int minRepetition, int maxRepetition, String letterToRepeat) {
-    this.minRepetition = minRepetition;
-    this.maxRepetition = maxRepetition;
-    this.letterToRepeat = letterToRepeat;
+  public Policy(int paramA, int paramB, String letter) {
+    this.paramA = paramA;
+    this.paramB = paramB;
+    this.letter = letter;
   }
 
   @Override
@@ -23,22 +23,22 @@ public class Policy {
       return false;
     }
     Policy that = (Policy) o;
-    return minRepetition == that.minRepetition &&
-        maxRepetition == that.maxRepetition &&
-        Objects.equals(letterToRepeat, that.letterToRepeat);
+    return paramA == that.paramA &&
+        paramB == that.paramB &&
+        Objects.equals(letter, that.letter);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(minRepetition, maxRepetition, letterToRepeat);
+    return Objects.hash(paramA, paramB, letter);
   }
 
   @Override
   public String toString() {
     return "PasswordPolicy{" +
-        "minRepetition=" + minRepetition +
-        ", maxRepetition=" + maxRepetition +
-        ", letterToRepeat='" + letterToRepeat + '\'' +
+        "paramA=" + paramA +
+        ", paramB=" + paramB +
+        ", letter='" + letter + '\'' +
         '}';
   }
 }

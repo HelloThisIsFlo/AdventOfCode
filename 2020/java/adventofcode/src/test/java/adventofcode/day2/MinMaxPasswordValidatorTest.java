@@ -7,13 +7,13 @@ import adventofcode.day2.dto.PasswordWithPolicy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class PasswordValidatorTest {
+class MinMaxPasswordValidatorTest {
 
-  PasswordValidator validator;
+  MinMaxPasswordValidator validator;
 
   @BeforeEach
   void setUp() {
-    validator = new PasswordValidator();
+    validator = new MinMaxPasswordValidator();
   }
 
   @Test

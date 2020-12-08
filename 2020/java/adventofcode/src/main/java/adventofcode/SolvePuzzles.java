@@ -3,7 +3,7 @@
  */
 package adventofcode;
 
-import adventofcode.day2.PasswordValidator;
+import adventofcode.day2.MinMaxPasswordValidator;
 import java.util.List;
 
 /*
@@ -40,10 +40,10 @@ public class SolvePuzzles {
   }
 
   private List<Day> initializeDays() {
-    PasswordValidator passwordValidator = new PasswordValidator();
+    MinMaxPasswordValidator minMaxPasswordValidator = new MinMaxPasswordValidator();
     return List.of(
         new Day1(),
-        new Day2(passwordValidator)
+        new Day2(minMaxPasswordValidator)
     );
   }
 

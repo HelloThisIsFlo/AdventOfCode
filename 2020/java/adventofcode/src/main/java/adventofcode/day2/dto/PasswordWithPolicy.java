@@ -13,12 +13,12 @@ public class PasswordWithPolicy {
   }
 
   public static PasswordWithPolicy of(
-      int minRepetition,
-      int maxRepetition,
-      String letterToRepeat,
+      int paramA,
+      int paramB,
+      String letter,
       String password) {
     return new PasswordWithPolicy(
-        new Policy(minRepetition, maxRepetition, letterToRepeat),
+        new Policy(paramA, paramB, letter),
         password
     );
   }

@@ -5,13 +5,13 @@ import adventofcode.day2.dto.Policy;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class PasswordValidator {
+public class MinMaxPasswordValidator {
 
   public boolean isValid(PasswordWithPolicy passwordWithPolicy) {
     String password = passwordWithPolicy.password;
     Policy policy = passwordWithPolicy.policy;
 
-    if (!password.contains(policy.letterToRepeat)) {
+    if (!password.contains(policy.letter)) {
       return false;
     }
 
@@ -22,10 +22,12 @@ public class PasswordValidator {
             .collect(Collectors.groupingBy(this::identity, Collectors.counting()));
 
     long occurrencesOfLetterToRepeat = letterCounts
-        .getOrDefault(policy.letterToRepeat.codePointAt(0), 0L);
+        .getOrDefault(policy.letter.codePointAt(0), 0L);
 
-    return occurrencesOfLetterToRepeat >= policy.minRepetition
-        && occurrencesOfLetterToRepeat <= policy.maxRepetition;
+    int minOccurrence = policy.paramA;
+    int maxOccurrence = policy.paramB;
+    return occurrencesOfLetterToRepeat >= minOccurrence
+        && occurrencesOfLetterToRepeat <= maxOccurrence;
   }
 
   private <T> T identity(T obj) {
