@@ -43,7 +43,7 @@ public abstract class Day {
 
   abstract public String solvePart2();
 
-  interface InputParser<T> {
+  public interface InputParser<T> {
 
     T parseLine(String line);
   }

@@ -4,7 +4,7 @@
     <module name="adventofcode.main" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="adventofcode.*" />
+        <option name="PATTERN" value="adventofcode.day2.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

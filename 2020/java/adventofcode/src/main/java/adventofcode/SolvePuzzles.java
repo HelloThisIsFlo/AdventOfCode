@@ -3,7 +3,7 @@
  */
 package adventofcode;
 
-import java.lang.reflect.InvocationTargetException;
+import adventofcode.day2.PasswordValidator;
 import java.util.List;
 
 /*
@@ -13,21 +13,20 @@ If I end up not using it, I'll delete 🙂👍
 */
 public class SolvePuzzles {
 
-  private final List<Class<? extends Day>> daysToSolve =
-      List.of(
-          Day1.class
-      );
+  private final List<Day> daysToSolve;
+
+  public SolvePuzzles() {
+    daysToSolve = initializeDays();
+  }
 
   public static void main(String[] args) {
     new SolvePuzzles().main();
   }
 
   private void main() {
-    daysToSolve.forEach(dayClass -> {
-      Day day = tryToInstantiate(dayClass);
-
+    daysToSolve.forEach(day -> {
       System.out.println("--------------------------------------");
-      System.out.println("Solving " + dayClass.getName());
+      System.out.println("Solving " + day.getClass().getName());
 
       String part1Result = day.solvePart1();
       System.out.println("Part 1: " + part1Result);
@@ -40,12 +39,12 @@ public class SolvePuzzles {
     });
   }
 
-  private Day tryToInstantiate(Class<? extends Day> dayClass) {
-    try {
-      return dayClass.getDeclaredConstructor().newInstance();
-    } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-      e.printStackTrace();
-      throw new IllegalStateException("Could not instantiate: " + dayClass);
-    }
+  private List<Day> initializeDays() {
+    PasswordValidator passwordValidator = new PasswordValidator();
+    return List.of(
+        new Day1(),
+        new Day2(passwordValidator)
+    );
   }
+
 }
