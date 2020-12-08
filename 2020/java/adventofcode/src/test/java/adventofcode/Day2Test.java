@@ -6,7 +6,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import adventofcode.day2.MinMaxPasswordValidator;
-import adventofcode.day2.PasswordValidator;
 import adventofcode.day2.PositionPasswordValidator;
 import adventofcode.day2.dto.PasswordWithPolicy;
 import java.util.List;
@@ -137,20 +136,16 @@ class Day2Test {
     }
 
     @Test
-    @Disabled
     void part2_exampleFromTheProblemStatement() {
       day2.inputLines = List.of(
-          "1721",
-          "979",
-          "366",
-          "299",
-          "675",
-          "1456"
+          "1-3 a: abcde",
+          "1-3 b: cdefg",
+          "2-9 c: ccccccccc"
       );
 
       String result = day2.solvePart2();
 
-      assertEquals("241861950", result);
+      assertEquals("1", result);
     }
   }
 

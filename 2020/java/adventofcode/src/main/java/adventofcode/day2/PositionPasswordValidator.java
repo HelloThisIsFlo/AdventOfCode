@@ -11,7 +11,10 @@ public class PositionPasswordValidator implements PasswordValidator {
     char letter = passwordWithPolicy.policy.letter;
     String password = passwordWithPolicy.password;
 
-//    boolean letterPresentInPosA = letter.equals(password.charAt(positionA));
-    return false;
+    boolean letterPresentInPosA = password.charAt(positionA - 1) == letter;
+    boolean letterPresentInPosB = password.charAt(positionB - 1) == letter;
+
+    return (letterPresentInPosA && !letterPresentInPosB)
+        || (!letterPresentInPosA && letterPresentInPosB);
   }
 }

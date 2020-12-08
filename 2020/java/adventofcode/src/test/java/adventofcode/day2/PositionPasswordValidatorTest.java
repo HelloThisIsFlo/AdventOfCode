@@ -17,28 +17,28 @@ class PositionPasswordValidatorTest {
     validator = new PositionPasswordValidator();
   }
 
-//  @Test
-//  void letterPresentInOnePosition_valid() {
-//    assertTrue(validator.isValid(
-//        PasswordWithPolicy.of(1, 3, "a", "abcde")
-//    ));
-//
-//    assertTrue(validator.isValid(
-//        PasswordWithPolicy.of(1, 3, "a", "cbade")
-//    ));
-//  }
-//
-//  @Test
-//  void letterMissingInBothPosition_invalid() {
-//    assertFalse(validator.isValid(
-//        PasswordWithPolicy.of(1, 3, "b", "cdefg")
-//    ));
-//  }
-//
-//  @Test
-//  void letterPresentInBothPosition_invalid() {
-//    assertFalse(validator.isValid(
-//        PasswordWithPolicy.of(2, 9, "c", "cccccccccc")
-//    ));
-//  }
+  @Test
+  void letterPresentInOnePosition_valid() {
+    assertTrue(validator.isValid(
+        PasswordWithPolicy.of(1, 3, 'a', "abcde")
+    ));
+
+    assertTrue(validator.isValid(
+        PasswordWithPolicy.of(1, 3, 'a', "cbade")
+    ));
+  }
+
+  @Test
+  void letterMissingInBothPosition_invalid() {
+    assertFalse(validator.isValid(
+        PasswordWithPolicy.of(1, 3, 'b', "cdefg")
+    ));
+  }
+
+  @Test
+  void letterPresentInBothPosition_invalid() {
+    assertFalse(validator.isValid(
+        PasswordWithPolicy.of(2, 9, 'c', "cccccccccc")
+    ));
+  }
 }
