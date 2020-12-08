@@ -19,14 +19,14 @@ class PasswordWithPolicyParserTest {
   @Test
   void itParsesThePolicyAndPassword() {
     PasswordWithPolicy result = parser.parseLine("1-3 a: abcde");
-    assertEquals(new Policy(1,3,"a"), result.policy);
+    assertEquals(new Policy(1,3,'a'), result.policy);
     assertEquals("abcde", result.password);
   }
 
   @Test
   void itHandlesMultipleDigits() {
     PasswordWithPolicy result = parser.parseLine("1111-33333 a: abcde");
-    assertEquals(new Policy(1111,33333,"a"), result.policy);
+    assertEquals(new Policy(1111,33333,'a'), result.policy);
     assertEquals("abcde", result.password);
   }
 }

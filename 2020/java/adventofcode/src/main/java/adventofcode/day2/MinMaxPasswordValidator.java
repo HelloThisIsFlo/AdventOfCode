@@ -5,13 +5,14 @@ import adventofcode.day2.dto.Policy;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class MinMaxPasswordValidator {
+public class MinMaxPasswordValidator implements PasswordValidator {
 
+  @Override
   public boolean isValid(PasswordWithPolicy passwordWithPolicy) {
     String password = passwordWithPolicy.password;
     Policy policy = passwordWithPolicy.policy;
 
-    if (!password.contains(policy.letter)) {
+    if (!contains(password, policy.letter)) {
       return false;
     }
 
@@ -22,7 +23,7 @@ public class MinMaxPasswordValidator {
             .collect(Collectors.groupingBy(this::identity, Collectors.counting()));
 
     long occurrencesOfLetterToRepeat = letterCounts
-        .getOrDefault(policy.letter.codePointAt(0), 0L);
+        .getOrDefault((int) policy.letter, 0L);
 
     int minOccurrence = policy.paramA;
     int maxOccurrence = policy.paramB;
@@ -34,4 +35,7 @@ public class MinMaxPasswordValidator {
     return obj;
   }
 
+  private boolean contains(String text, char candidate) {
+    return text.indexOf(candidate) != -1;
+  }
 }

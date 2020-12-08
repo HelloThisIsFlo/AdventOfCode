@@ -15,7 +15,7 @@ public class PasswordWithPolicy {
   public static PasswordWithPolicy of(
       int paramA,
       int paramB,
-      String letter,
+      char letter,
       String password) {
     return new PasswordWithPolicy(
         new Policy(paramA, paramB, letter),

@@ -6,9 +6,9 @@ public class Policy {
 
   public final int paramA;
   public final int paramB;
-  public final String letter;
+  public final char letter;
 
-  public Policy(int paramA, int paramB, String letter) {
+  public Policy(int paramA, int paramB, char letter) {
     this.paramA = paramA;
     this.paramB = paramB;
     this.letter = letter;

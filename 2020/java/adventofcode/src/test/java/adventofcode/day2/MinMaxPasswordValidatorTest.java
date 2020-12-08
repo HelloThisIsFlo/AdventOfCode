@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 class MinMaxPasswordValidatorTest {
 
-  MinMaxPasswordValidator validator;
+  PasswordValidator validator;
 
   @BeforeEach
   void setUp() {
@@ -20,7 +20,7 @@ class MinMaxPasswordValidatorTest {
   void letterIsNotPresent_invalid() {
     assertFalse(
         validator.isValid(
-            PasswordWithPolicy.of(1, 2, "a", "bcdef")
+            PasswordWithPolicy.of(1, 2, 'a', "bcdef")
         )
     );
   }
@@ -29,7 +29,7 @@ class MinMaxPasswordValidatorTest {
   void letterIsNotRepeatedEnough_invalid() {
     assertFalse(
         validator.isValid(
-            PasswordWithPolicy.of(2, 8, "a", "abcde")
+            PasswordWithPolicy.of(2, 8, 'a', "abcde")
         )
     );
   }
@@ -38,7 +38,7 @@ class MinMaxPasswordValidatorTest {
   void letterIsRepeatedTooMuchEnough_invalid() {
     assertFalse(
         validator.isValid(
-            PasswordWithPolicy.of(2, 4, "a", "aaaaabcde")
+            PasswordWithPolicy.of(2, 4, 'a', "aaaaabcde")
         )
     );
   }
@@ -47,22 +47,22 @@ class MinMaxPasswordValidatorTest {
   void letterIsRepeatedEnough_valid() {
     assertTrue(
         validator.isValid(
-            PasswordWithPolicy.of(2, 4, "a", "aaabcde")
+            PasswordWithPolicy.of(2, 4, 'a', "aaabcde")
         )
     );
     assertTrue(
         validator.isValid(
-            PasswordWithPolicy.of(2, 4, "a", "bcaaabcde")
+            PasswordWithPolicy.of(2, 4, 'a', "bcaaabcde")
         )
     );
     assertTrue(
         validator.isValid(
-            PasswordWithPolicy.of(2, 4, "a", "aabcde")
+            PasswordWithPolicy.of(2, 4, 'a', "aabcde")
         )
     );
     assertTrue(
         validator.isValid(
-            PasswordWithPolicy.of(2, 4, "a", "aaaabcde")
+            PasswordWithPolicy.of(2, 4, 'a', "aaaabcde")
         )
     );
   }

@@ -47,8 +47,8 @@ public class PasswordWithPolicyParser implements Day.InputParser<PasswordWithPol
 
     }
 
-    public String getLetterToRepeat() {
-      return getStringValue("letter");
+    public char getLetterToRepeat() {
+      return getStringValue("letter").charAt(0);
     }
 
     public String getPassword() {
