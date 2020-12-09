@@ -4,8 +4,8 @@
 package adventofcode;
 
 import adventofcode.day2.MinMaxPasswordValidator;
-import adventofcode.day2.PasswordValidator;
 import adventofcode.day2.PositionPasswordValidator;
+import adventofcode.day3.MountainsideFactory;
 import java.util.List;
 
 /*
@@ -42,11 +42,17 @@ public class SolvePuzzles {
   }
 
   private List<Day> initializeDays() {
+    // Day 2
     MinMaxPasswordValidator minMaxPasswordValidator = new MinMaxPasswordValidator();
     PositionPasswordValidator positionPasswordValidator = new PositionPasswordValidator();
+
+    // Day 3
+    MountainsideFactory mountainsideFactory = new MountainsideFactory();
+
     return List.of(
         new Day1(),
-        new Day2(minMaxPasswordValidator, positionPasswordValidator)
+        new Day2(minMaxPasswordValidator, positionPasswordValidator),
+        new Day3(mountainsideFactory)
     );
   }
 
