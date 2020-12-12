@@ -6,6 +6,9 @@ package adventofcode;
 import adventofcode.day2.MinMaxPasswordValidator;
 import adventofcode.day2.PositionPasswordValidator;
 import adventofcode.day3.MountainsideFactory;
+import adventofcode.day4.EmptyLineGrouper;
+import adventofcode.day4.PassportParser;
+import adventofcode.day4.PassportValidator;
 import java.util.List;
 
 /*
@@ -19,6 +22,27 @@ public class SolvePuzzles {
 
   public SolvePuzzles() {
     daysToSolve = initializeDays();
+  }
+
+  private List<Day> initializeDays() {
+    // Day 2
+    MinMaxPasswordValidator minMaxPasswordValidator = new MinMaxPasswordValidator();
+    PositionPasswordValidator positionPasswordValidator = new PositionPasswordValidator();
+
+    // Day 3
+    MountainsideFactory mountainsideFactory = new MountainsideFactory();
+
+    // Day 4
+    EmptyLineGrouper emptyLineGrouper = new EmptyLineGrouper();
+    PassportParser passportParser = new PassportParser();
+    PassportValidator passportValidator = new PassportValidator();
+
+    return List.of(
+        new Day1(),
+        new Day2(minMaxPasswordValidator, positionPasswordValidator),
+        new Day3(mountainsideFactory),
+        new Day4(emptyLineGrouper, passportParser, passportValidator)
+    );
   }
 
   public static void main(String[] args) {
@@ -39,21 +63,6 @@ public class SolvePuzzles {
       System.out.println("--------------------------------------");
       System.out.println();
     });
-  }
-
-  private List<Day> initializeDays() {
-    // Day 2
-    MinMaxPasswordValidator minMaxPasswordValidator = new MinMaxPasswordValidator();
-    PositionPasswordValidator positionPasswordValidator = new PositionPasswordValidator();
-
-    // Day 3
-    MountainsideFactory mountainsideFactory = new MountainsideFactory();
-
-    return List.of(
-        new Day1(),
-        new Day2(minMaxPasswordValidator, positionPasswordValidator),
-        new Day3(mountainsideFactory)
-    );
   }
 
 }
