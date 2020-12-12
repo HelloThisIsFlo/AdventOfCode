@@ -46,7 +46,8 @@ public class SolvePuzzles {
         new Day1(),
         new Day2(minMaxPasswordValidator, positionPasswordValidator),
         new Day3(mountainsideFactory),
-        new Day4(emptyLineGrouper, passportParser, passportValidator, advancedPassportValidator)
+        new Day4(emptyLineGrouper, passportParser, passportValidator, advancedPassportValidator),
+        new Day5()
     );
   }
 
