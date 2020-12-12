@@ -13,11 +13,6 @@ import adventofcode.day4.PassportParser;
 import adventofcode.day4.PassportValidator;
 import java.util.List;
 
-/*
-Keeping this here in case I need to run a CLI at some point soon.
-I haven't done java in a while so I'd rather have this around.
-If I end up not using it, I'll delete 🙂👍
-*/
 public class SolvePuzzles {
 
   private final List<Day> daysToSolve;
