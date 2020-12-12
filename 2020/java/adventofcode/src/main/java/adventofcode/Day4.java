@@ -1,5 +1,6 @@
 package adventofcode;
 
+import adventofcode.day4.AdvancedPassportValidator;
 import adventofcode.day4.EmptyLineGrouper;
 import adventofcode.day4.PassportParser;
 import adventofcode.day4.PassportValidator;
@@ -9,23 +10,27 @@ public class Day4 extends Day {
   private final EmptyLineGrouper emptyLineGrouper;
   private final PassportParser passportParser;
   private final PassportValidator passportValidator;
+  private final AdvancedPassportValidator advancedPassportValidator;
 
   public Day4(
       EmptyLineGrouper emptyLineGrouper,
       PassportParser passportParser,
-      PassportValidator passportValidator) {
+      PassportValidator passportValidator,
+      AdvancedPassportValidator advancedPassportValidator) {
     super("day4.txt");
     this.emptyLineGrouper = emptyLineGrouper;
     this.passportParser = passportParser;
     this.passportValidator = passportValidator;
+    this.advancedPassportValidator = advancedPassportValidator;
   }
 
   @Override
   public String solvePart1() {
-    return Integer.toString(countNumberOfValidPassports());
+    return Integer.toString(countNumberOfValidPassports(passportValidator));
   }
 
-  public int countNumberOfValidPassports() {
+
+  public int countNumberOfValidPassports(PassportValidator passportValidator) {
     return (int)
         emptyLineGrouper
             .groupOnEmptyLines(inputLines)
@@ -37,6 +42,6 @@ public class Day4 extends Day {
 
   @Override
   public String solvePart2() {
-    return "";
+    return Integer.toString(countNumberOfValidPassports(advancedPassportValidator));
   }
 }

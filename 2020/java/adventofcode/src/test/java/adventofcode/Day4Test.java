@@ -7,7 +7,9 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import adventofcode.day4.AdvancedPassportValidator;
 import adventofcode.day4.EmptyLineGrouper;
+import adventofcode.day4.FieldValidatorFactory;
 import adventofcode.day4.PassportParser;
 import adventofcode.day4.PassportValidator;
 import adventofcode.day4.dto.Passport;
@@ -28,12 +30,15 @@ class Day4Test {
   PassportParser passportParser;
   @Mock
   PassportValidator passportValidator;
+
+  @Mock
+  AdvancedPassportValidator advancedPassportValidator;
   private Day4 day4;
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.initMocks(this);
-    day4 = new Day4(emptyLineGrouper, passportParser, passportValidator);
+    day4 = new Day4(emptyLineGrouper, passportParser, passportValidator, null);
   }
 
 
@@ -60,7 +65,7 @@ class Day4Test {
           "Block 4"
       );
 
-      day4.countNumberOfValidPassports();
+      day4.countNumberOfValidPassports(passportValidator);
 
       verify(emptyLineGrouper).groupOnEmptyLines(List.of(
           "Block 1",
@@ -90,7 +95,7 @@ class Day4Test {
           "Block4\nBlock4"
       ));
 
-      day4.countNumberOfValidPassports();
+      day4.countNumberOfValidPassports(passportValidator);
 
       InOrder inOrder = inOrder(passportParser);
       inOrder.verify(passportParser).parse("Block1\nBlock1\nBlock1");
@@ -114,7 +119,7 @@ class Day4Test {
           .thenReturn(false)
           .thenReturn(true);
 
-      int numberOfValidPassports = day4.countNumberOfValidPassports();
+      int numberOfValidPassports = day4.countNumberOfValidPassports(passportValidator);
 
       assertEquals(3, numberOfValidPassports);
     }
@@ -133,7 +138,10 @@ class Day4Test {
       day4 = new Day4(
           new EmptyLineGrouper(),
           new PassportParser(),
-          new PassportValidator()
+          new PassportValidator(),
+          new AdvancedPassportValidator(
+              new FieldValidatorFactory()
+          )
       );
     }
 
@@ -161,8 +169,7 @@ class Day4Test {
     }
 
     @Test
-    @Disabled
-    void part2_exampleFromTheProblemStatement() {
+    void part1_exampleFromTheProblemStatementCombinedWithArtificialInput() {
       day4.inputLines = List.of(
           "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd",
           "byr:1937 iyr:2017 cid:147 hgt:183cm",
@@ -176,12 +183,61 @@ class Day4Test {
           "hgt:179cm",
           "",
           "hcl:#cfa07d eyr:2025 pid:166559648",
-          "iyr:2011 ecl:brn hgt:59in"
+          "iyr:2011 ecl:brn hgt:59in",
+          "",
+          // This passport should be treated as valid for part 1, even though it's invalid for part 2
+          "eyr:111 ecl:notacolor cid:129 byr:1989",
+          "iyr:200 pid:896056539 hcl:#a97842 hgt:165cm"
+      );
+
+      String result = day4.solvePart1();
+
+      assertEquals("3", result);
+    }
+
+    @Test
+    void part2_exampleFromTheProblemStatement_1() {
+      day4.inputLines = List.of(
+          "eyr:1972 cid:100",
+          "hcl:#18171d ecl:amb hgt:170 pid:186cm iyr:2018 byr:1926",
+          "",
+          "iyr:2019",
+          "hcl:#602927 eyr:1967 hgt:170cm",
+          "ecl:grn pid:012533040 byr:1946",
+          "",
+          "hcl:dab227 iyr:2012",
+          "ecl:brn hgt:182cm pid:021572410 eyr:2020 byr:1992 cid:277",
+          "",
+          "hgt:59cm ecl:zzz",
+          "eyr:2038 hcl:74454a iyr:2023",
+          "pid:3556412378 byr:2007"
       );
 
       String result = day4.solvePart2();
 
-      assertEquals("336", result);
+      assertEquals("0", result);
+    }
+
+    @Test
+    void part2_exampleFromTheProblemStatement_2() {
+      day4.inputLines = List.of(
+          "pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:2030 byr:1980",
+          "hcl:#623a2f",
+          "",
+          "eyr:2029 ecl:blu cid:129 byr:1989",
+          "iyr:2014 pid:896056539 hcl:#a97842 hgt:165cm",
+          "",
+          "hcl:#888785",
+          "hgt:164cm byr:2001 iyr:2015 cid:88",
+          "pid:545766238 ecl:hzl",
+          "eyr:2022",
+          "",
+          "iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719"
+      );
+
+      String result = day4.solvePart2();
+
+      assertEquals("4", result);
     }
   }
 

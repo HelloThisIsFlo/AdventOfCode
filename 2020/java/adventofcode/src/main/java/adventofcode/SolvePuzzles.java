@@ -6,7 +6,9 @@ package adventofcode;
 import adventofcode.day2.MinMaxPasswordValidator;
 import adventofcode.day2.PositionPasswordValidator;
 import adventofcode.day3.MountainsideFactory;
+import adventofcode.day4.AdvancedPassportValidator;
 import adventofcode.day4.EmptyLineGrouper;
+import adventofcode.day4.FieldValidatorFactory;
 import adventofcode.day4.PassportParser;
 import adventofcode.day4.PassportValidator;
 import java.util.List;
@@ -36,12 +38,15 @@ public class SolvePuzzles {
     EmptyLineGrouper emptyLineGrouper = new EmptyLineGrouper();
     PassportParser passportParser = new PassportParser();
     PassportValidator passportValidator = new PassportValidator();
+    FieldValidatorFactory fieldValidatorFactory = new FieldValidatorFactory();
+    AdvancedPassportValidator advancedPassportValidator =
+        new AdvancedPassportValidator(fieldValidatorFactory);
 
     return List.of(
         new Day1(),
         new Day2(minMaxPasswordValidator, positionPasswordValidator),
         new Day3(mountainsideFactory),
-        new Day4(emptyLineGrouper, passportParser, passportValidator)
+        new Day4(emptyLineGrouper, passportParser, passportValidator, advancedPassportValidator)
     );
   }
 

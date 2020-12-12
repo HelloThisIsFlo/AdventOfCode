@@ -16,6 +16,7 @@ public class PassportValidator {
       Field.PID
   );
 
+
   public boolean isValid(Passport passport) {
     return REQUIRED_FIELDS
         .stream()
