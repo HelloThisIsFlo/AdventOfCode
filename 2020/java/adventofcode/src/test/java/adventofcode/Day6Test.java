@@ -57,5 +57,30 @@ class Day6Test {
       assertEquals("11", result);
     }
 
+    @Test
+    void part2_exampleFromTheProblemStatement() {
+      day6.inputLines = List.of(
+          "abc",
+          "",
+          "a",
+          "b",
+          "c",
+          "",
+          "ab",
+          "ac",
+          "",
+          "a",
+          "a",
+          "a",
+          "a",
+          "",
+          "b"
+      );
+
+      String result = day6.solvePart2();
+
+      assertEquals("6", result);
+    }
+
   }
 }

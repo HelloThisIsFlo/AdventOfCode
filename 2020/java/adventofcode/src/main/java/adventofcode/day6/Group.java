@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Group {
 
@@ -36,5 +37,17 @@ public class Group {
       uniqueAnswers.addAll(personAnswer.getAnswers());
     }
     return uniqueAnswers;
+  }
+
+  public Set<Answer> computeAnswersInCommon() {
+    List<Answer> firstPersonAnswers = personAnswers.get(0).getAnswers();
+
+    Stream<Answer> answersInCommon = firstPersonAnswers.stream();
+    for (PersonAnswers personAnswer : personAnswers) {
+      List<Answer> answers = personAnswer.getAnswers();
+      answersInCommon = answersInCommon .filter(answers::contains);
+    }
+
+    return answersInCommon.collect(Collectors.toSet());
   }
 }

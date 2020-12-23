@@ -66,4 +66,16 @@ class GroupTest {
 
     assertEquals(Set.of(A, B, C, D, E, F, H), group.computeUniqueAnswers());
   }
+
+  @Test
+  void computeAnswersInCommon() {
+    Group group = new Group(List.of(
+        new PersonAnswers(List.of(A, B, C)),
+        new PersonAnswers(List.of(B, E, C)),
+        new PersonAnswers(List.of(B, C, H))
+    ));
+
+
+    assertEquals(Set.of(B, C), group.computeAnswersInCommon());
+  }
 }
