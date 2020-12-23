@@ -22,6 +22,9 @@ public class SolvePuzzles {
   }
 
   private List<Day> initializeDays() {
+    // Common
+    EmptyLineGrouper emptyLineGrouper = new EmptyLineGrouper();
+
     // Day 2
     MinMaxPasswordValidator minMaxPasswordValidator = new MinMaxPasswordValidator();
     PositionPasswordValidator positionPasswordValidator = new PositionPasswordValidator();
@@ -29,8 +32,6 @@ public class SolvePuzzles {
     // Day 3
     MountainsideFactory mountainsideFactory = new MountainsideFactory();
 
-    // Day 4
-    EmptyLineGrouper emptyLineGrouper = new EmptyLineGrouper();
     PassportParser passportParser = new PassportParser();
     PassportValidator passportValidator = new PassportValidator();
     FieldValidatorFactory fieldValidatorFactory = new FieldValidatorFactory();
@@ -42,7 +43,8 @@ public class SolvePuzzles {
         new Day2(minMaxPasswordValidator, positionPasswordValidator),
         new Day3(mountainsideFactory),
         new Day4(emptyLineGrouper, passportParser, passportValidator, advancedPassportValidator),
-        new Day5()
+        new Day5(),
+        new Day6(emptyLineGrouper)
     );
   }
 
