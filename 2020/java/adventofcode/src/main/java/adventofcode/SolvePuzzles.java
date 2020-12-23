@@ -7,7 +7,7 @@ import adventofcode.day2.MinMaxPasswordValidator;
 import adventofcode.day2.PositionPasswordValidator;
 import adventofcode.day3.MountainsideFactory;
 import adventofcode.day4.AdvancedPassportValidator;
-import adventofcode.day4.EmptyLineGrouper;
+import adventofcode.common.EmptyLineGrouper;
 import adventofcode.day4.FieldValidatorFactory;
 import adventofcode.day4.PassportParser;
 import adventofcode.day4.PassportValidator;

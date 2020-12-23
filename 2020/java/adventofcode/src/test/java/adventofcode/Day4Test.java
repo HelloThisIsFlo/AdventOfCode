@@ -8,14 +8,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import adventofcode.day4.AdvancedPassportValidator;
-import adventofcode.day4.EmptyLineGrouper;
+import adventofcode.common.EmptyLineGrouper;
 import adventofcode.day4.FieldValidatorFactory;
 import adventofcode.day4.PassportParser;
 import adventofcode.day4.PassportValidator;
 import adventofcode.day4.dto.Passport;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;

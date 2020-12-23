@@ -1,7 +1,7 @@
 package adventofcode;
 
 import adventofcode.day4.AdvancedPassportValidator;
-import adventofcode.day4.EmptyLineGrouper;
+import adventofcode.common.EmptyLineGrouper;
 import adventofcode.day4.PassportParser;
 import adventofcode.day4.PassportValidator;
 

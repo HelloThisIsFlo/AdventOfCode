@@ -2,6 +2,7 @@ package adventofcode.day4;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import adventofcode.common.EmptyLineGrouper;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
