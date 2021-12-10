@@ -8,6 +8,8 @@ pytest = "*"
 autopep8 = "*"
 pytest-watch = "*"
 numpy = "*"
+python-dotenv = "*"
+requests = "*"
 
 [dev-packages]
 
