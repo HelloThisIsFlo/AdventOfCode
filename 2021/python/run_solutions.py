@@ -1,5 +1,7 @@
 from days.day import Day
 from days.day_1 import Day1
+from days.day_2 import Day2
+from days.day_3 import Day3
 
 
 def solve_and_print_result(day_class):
@@ -22,6 +24,8 @@ def print_intro():
 if __name__ == '__main__':
     print_intro()
     for day_class in [
-        Day1
+        Day1,
+        Day2,
+        Day3
     ]:
         solve_and_print_result(day_class)
