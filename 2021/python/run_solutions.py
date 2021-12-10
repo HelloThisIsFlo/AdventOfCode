@@ -31,7 +31,7 @@ def solve_and_print_result(day_number):
     def download_puzzle_input():
         return requests.get(
                 f'https://adventofcode.com/2021/day/{day_number}/input',
-                cookies={'session': COOKIE_SESSION_VALUE}
+                cookies={'session': get_session_value()}
         ).text
 
     day_class = load_day_class()
@@ -54,7 +54,6 @@ def print_intro():
 
 if __name__ == '__main__':
     load_dotenv()
-    COOKIE_SESSION_VALUE = get_session_value()
     print_intro()
     for day_number in DAYS_TO_RUN:
         solve_and_print_result(day_number)
