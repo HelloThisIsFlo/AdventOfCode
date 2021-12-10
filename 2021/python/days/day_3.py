@@ -17,7 +17,7 @@ class Day3(Day):
         return str(self.gamma() * self.epsilon())
 
     def solve_part_2(self):
-        return "asdf"
+        return "Not Implemented"
 
     def gamma(self):
         gamma_bin = ['0'] * self.bits

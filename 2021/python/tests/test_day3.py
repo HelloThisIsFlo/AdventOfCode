@@ -32,4 +32,4 @@ def test_example_part_1(day):
 
 
 def test_example_part_2(day):
-    assert day.solve_part_2() == "asdf"
+    assert day.solve_part_2() == "Not Implemented"

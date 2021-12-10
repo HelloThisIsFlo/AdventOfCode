@@ -9,7 +9,8 @@ from days.day import Day
 DAYS_TO_RUN = [
     1,
     2,
-    3
+    3,
+    4
 ]
 
 
