@@ -2,7 +2,8 @@ from textwrap import dedent
 
 import pytest
 
-from days.day_4 import Day4
+from days.day_4 import Day4, Board
+from tests.common import highlight
 
 EXAMPLE_INPUT = dedent(
         """
@@ -35,8 +36,50 @@ def day():
 
 
 def test_example_part_1(day):
-    assert day.solve_part_1() == "198"
+    assert day.solve_part_1() == "4512"
 
 
 def test_example_part_2(day):
-    assert day.solve_part_2() == "asdf"
+    # "25344" was too high
+    assert day.solve_part_2() == "1924"
+
+
+def test_board_complete_row():
+    board = Board([
+        [11, 12, 13, 14, 15],
+        [21, 22, 23, 24, 25],
+        [31, 32, 33, 34, 35],
+        [41, 42, 43, 44, 45],
+        [51, 52, 53, 54, 55],
+    ])
+
+    board.try_num(21)
+    board.try_num(22)
+    board.try_num(23)
+    board.try_num(24)
+    assert not board.is_complete()
+    board.try_num(25)
+    assert board.is_complete()
+
+
+def test_board_complete_col():
+    board = Board([
+        [11, 12, 13, 14, 15],
+        [21, 22, 23, 24, 25],
+        [31, 32, 33, 34, 35],
+        [41, 42, 43, 44, 45],
+        [51, 52, 53, 54, 55],
+    ])
+
+    board.try_num(12)
+    board.try_num(22)
+    board.try_num(32)
+    board.try_num(42)
+    assert not board.is_complete()
+    board.try_num(52)
+    assert board.is_complete()
+
+
+def test_sandbox():
+    sandbox = 'yo ' * 5
+    print(f'{sandbox=}')
