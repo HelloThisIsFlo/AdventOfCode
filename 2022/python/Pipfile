@@ -10,6 +10,8 @@ pytest-watch = "*"
 numpy = "*"
 python-dotenv = "*"
 requests = "*"
+graphviz = "*"
+seaborn = "*"
 
 [dev-packages]
 
