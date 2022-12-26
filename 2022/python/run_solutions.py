@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 from days.day import Day
 
-YEAR = 2021
+YEAR = 2022
 DAYS_TO_RUN = [
     1,
 ]
@@ -39,12 +39,9 @@ def solve_and_print_result(day_number):
     puzzle_input = download_puzzle_input()
     day: Day = day_class(puzzle_input)
 
-    part1_result = day.solve_part_1()
-    part2_result = day.solve_part_2()
-
     print("")
-    print(f"{day_class.__name__}.1: {part1_result}")
-    print(f"{day_class.__name__}.2: {part2_result}")
+    print(f"{day_class.__name__}.1: {day.solve_part_1()}")
+    print(f"{day_class.__name__}.2: {day.solve_part_2()}")
 
 
 def print_intro():
