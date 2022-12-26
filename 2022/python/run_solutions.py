@@ -9,6 +9,7 @@ from days.day import Day
 YEAR = 2022
 DAYS_TO_RUN = [
     1,
+    16,
 ]
 
 
